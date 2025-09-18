@@ -14,7 +14,7 @@ import JobFilters from './jobs/JobFilters';
 import { Plus, LogOut, User, Briefcase, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
-  const { currentUser, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [jobs, setJobs] = useState<JobApplication[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<JobApplication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,10 +26,10 @@ const Dashboard: React.FC = () => {
 
   // Load jobs on component mount
   useEffect(() => {
-    if (currentUser) {
+    if (user) {
       loadJobs();
     }
-  }, [currentUser]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Apply filters whenever jobs or filters change
   useEffect(() => {
@@ -37,12 +37,12 @@ const Dashboard: React.FC = () => {
   }, [jobs, filters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadJobs = async () => {
-    if (!currentUser) return;
+    if (!user) return;
     
     try {
       setIsLoading(true);
       setError(null);
-      const userJobs = await getJobApplications(currentUser.uid);
+      const userJobs = await getJobApplications(user.id);
       setJobs(userJobs);
     } catch (err) {
       setError('Failed to load job applications');
@@ -53,13 +53,13 @@ const Dashboard: React.FC = () => {
   };
 
   const applyFilters = async () => {
-    if (!currentUser) return;
+    if (!user) return;
 
     try {
       if (Object.keys(filters).length === 0) {
         setFilteredJobs(jobs);
       } else {
-        const filtered = await searchJobApplications(currentUser.uid, filters);
+        const filtered = await searchJobApplications(user.id, filters);
         setFilteredJobs(filtered);
       }
     } catch (err) {
@@ -69,12 +69,12 @@ const Dashboard: React.FC = () => {
   };
 
   const handleCreateJob = async (jobData: CreateJobApplication) => {
-    if (!currentUser) return;
+    if (!user) return;
 
     try {
       setIsSubmitting(true);
       setError(null);
-      await createJobApplication(jobData, currentUser.uid);
+      await createJobApplication(jobData, user.id);
       await loadJobs(); // Reload jobs to get the updated list
       setShowJobForm(false);
     } catch (err) {
@@ -86,12 +86,12 @@ const Dashboard: React.FC = () => {
   };
 
   const handleUpdateJob = async (jobData: CreateJobApplication) => {
-    if (!currentUser || !editingJob) return;
+    if (!user || !editingJob) return;
 
     try {
       setIsSubmitting(true);
       setError(null);
-      await updateJobApplication(editingJob.id, jobData, currentUser.uid);
+      await updateJobApplication(editingJob.id, jobData, user.id);
       await loadJobs(); // Reload jobs to get the updated list
       setEditingJob(null);
     } catch (err) {
@@ -103,7 +103,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleDeleteJob = async (jobId: string) => {
-    if (!currentUser) return;
+    if (!user) return;
 
     if (!window.confirm('Are you sure you want to delete this job application?')) {
       return;
@@ -111,7 +111,7 @@ const Dashboard: React.FC = () => {
 
     try {
       setError(null);
-      await deleteJobApplication(jobId, currentUser.uid);
+      await deleteJobApplication(jobId, user.id);
       await loadJobs(); // Reload jobs to get the updated list
     } catch (err) {
       setError('Failed to delete job application');
@@ -177,7 +177,7 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center text-sm text-gray-600">
                 <User className="h-4 w-4 mr-2" />
-                <span>{currentUser?.displayName || currentUser?.email}</span>
+                <span>{user?.user_metadata?.display_name || user?.email}</span>
               </div>
               <button
                 onClick={handleLogout}

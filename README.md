@@ -1,10 +1,10 @@
 # Job Application Tracker
 
-A professional, full-stack job application tracking application built with React, TypeScript, Firebase, and deployed on Vercel. Track your job applications with ease and maintain a comprehensive record of your job search progress.
+A professional, full-stack job application tracking application built with React, TypeScript, Supabase, and deployed on Vercel. Track your job applications with ease and maintain a comprehensive record of your job search progress.
 
 ## 🚀 Features
 
-- **User Authentication**: Secure email/password authentication with Firebase Auth
+- **User Authentication**: Secure email/password authentication with Supabase Auth
 - **Job Application Management**: Create, read, update, and delete job applications
 - **Advanced Filtering**: Filter by status, search by company/position, date range filtering
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
@@ -17,8 +17,8 @@ A professional, full-stack job application tracking application built with React
 
 - **Frontend**: React 18 with TypeScript
 - **Styling**: Tailwind CSS
-- **Authentication**: Firebase Auth
-- **Database**: Cloud Firestore
+- **Authentication**: Supabase Auth (Email/Password + Google OAuth)
+- **Database**: PostgreSQL with Row Level Security
 - **Icons**: Lucide React
 - **Routing**: React Router v6
 - **Deployment**: Vercel
@@ -58,9 +58,9 @@ Each job application tracks:
    npm install
    ```
 
-3. **Set up Firebase:**
-   - Follow the detailed guide in [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)
-   - Copy `env.example` to `.env` and fill in your Firebase configuration
+3. **Set up Supabase:**
+   - Follow the detailed guide in [SUPABASE_MIGRATION.md](./SUPABASE_MIGRATION.md)
+   - Copy `env.example` to `.env` and fill in your Supabase configuration
 
 4. **Start the development server:**
    ```bash
@@ -74,32 +74,16 @@ Each job application tracks:
 
 ### Environment Variables
 
-Create a `.env` file in the root directory with your Firebase configuration:
+Create a `.env` file in the root directory with your Supabase configuration:
 
 ```env
-REACT_APP_FIREBASE_API_KEY=your-api-key
-REACT_APP_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-REACT_APP_FIREBASE_PROJECT_ID=your-project-id
-REACT_APP_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-REACT_APP_FIREBASE_MESSAGING_SENDER_ID=123456789
-REACT_APP_FIREBASE_APP_ID=your-app-id
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
-### Firebase Security Rules
+### Supabase Database Schema
 
-Ensure your Firestore security rules are configured correctly:
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /jobApplications/{document} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
-    }
-  }
-}
-```
+The application uses PostgreSQL with Row Level Security (RLS). Run the SQL schema from `supabase-schema.sql` in your Supabase SQL Editor to create the required tables and policies.
 
 ## 📱 Usage
 

@@ -1,19 +1,5 @@
-import {
-  collection,
-  doc,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  getDocs,
-  getDoc,
-  query,
-  where,
-  orderBy
-} from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { supabase } from '../lib/supabase';
 import { JobApplication, CreateJobApplication, JobFilters } from '../types/job';
-
-const COLLECTION_NAME = 'jobApplications';
 
 // Create a new job application
 export const createJobApplication = async (
@@ -21,15 +7,22 @@ export const createJobApplication = async (
   userId: string
 ): Promise<string> => {
   try {
-    const docRef = await addDoc(collection(db, COLLECTION_NAME), {
-      ...jobData,
-      userId,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
+    const { data, error } = await supabase
+      .from('jobs')
+      .insert({
+        user_id: userId,
+        title: jobData.position,
+        company: jobData.company,
+        status: jobData.status,
+        notes: jobData.notes || null,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
     
-    console.log('Job application created with ID:', docRef.id);
-    return docRef.id;
+    console.log('Job application created with ID:', data.id);
+    return data.id;
   } catch (error) {
     console.error('Error creating job application:', error);
     throw new Error('Failed to create job application');
@@ -39,24 +32,27 @@ export const createJobApplication = async (
 // Get all job applications for a user
 export const getJobApplications = async (userId: string): Promise<JobApplication[]> => {
   try {
-    const q = query(
-      collection(db, COLLECTION_NAME),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
-    );
+    const { data, error } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
     
-    const querySnapshot = await getDocs(q);
-    const jobs: JobApplication[] = [];
-    
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      jobs.push({
-        id: doc.id,
-        ...data,
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date()
-      } as JobApplication);
-    });
+    const jobs: JobApplication[] = data.map(job => ({
+      id: job.id,
+      company: job.company,
+      position: job.title,
+      dateApplied: new Date(job.created_at).toISOString().split('T')[0],
+      status: job.status as any,
+      salary: '', // Not in current schema
+      notes: job.notes || '',
+      jobUrl: '', // Not in current schema
+      userId: job.user_id,
+      createdAt: new Date(job.created_at),
+      updatedAt: new Date(job.created_at)
+    }));
     
     console.log(`Retrieved ${jobs.length} job applications for user ${userId}`);
     return jobs;
@@ -69,26 +65,33 @@ export const getJobApplications = async (userId: string): Promise<JobApplication
 // Get a single job application by ID
 export const getJobApplication = async (jobId: string, userId: string): Promise<JobApplication | null> => {
   try {
-    const docRef = doc(db, COLLECTION_NAME, jobId);
-    const docSnap = await getDoc(docRef);
-    
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      
-      // Verify the job belongs to the user
-      if (data.userId !== userId) {
-        throw new Error('Unauthorized access to job application');
+    const { data, error } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('id', jobId)
+      .eq('user_id', userId)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null; // No rows returned
       }
-      
-      return {
-        id: docSnap.id,
-        ...data,
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date()
-      } as JobApplication;
-    } else {
-      return null;
+      throw error;
     }
+    
+    return {
+      id: data.id,
+      company: data.company,
+      position: data.title,
+      dateApplied: new Date(data.created_at).toISOString().split('T')[0],
+      status: data.status as any,
+      salary: '', // Not in current schema
+      notes: data.notes || '',
+      jobUrl: '', // Not in current schema
+      userId: data.user_id,
+      createdAt: new Date(data.created_at),
+      updatedAt: new Date(data.created_at)
+    };
   } catch (error) {
     console.error('Error getting job application:', error);
     throw new Error('Failed to retrieve job application');
@@ -102,17 +105,20 @@ export const updateJobApplication = async (
   userId: string
 ): Promise<void> => {
   try {
-    // First verify the job belongs to the user
-    const existingJob = await getJobApplication(jobId, userId);
-    if (!existingJob) {
-      throw new Error('Job application not found or unauthorized');
-    }
+    const updateData: any = {};
     
-    const docRef = doc(db, COLLECTION_NAME, jobId);
-    await updateDoc(docRef, {
-      ...updates,
-      updatedAt: new Date()
-    });
+    if (updates.company) updateData.company = updates.company;
+    if (updates.position) updateData.title = updates.position;
+    if (updates.status) updateData.status = updates.status;
+    if (updates.notes !== undefined) updateData.notes = updates.notes;
+    
+    const { error } = await supabase
+      .from('jobs')
+      .update(updateData)
+      .eq('id', jobId)
+      .eq('user_id', userId);
+
+    if (error) throw error;
     
     console.log('Job application updated:', jobId);
   } catch (error) {
@@ -124,14 +130,13 @@ export const updateJobApplication = async (
 // Delete a job application
 export const deleteJobApplication = async (jobId: string, userId: string): Promise<void> => {
   try {
-    // First verify the job belongs to the user
-    const existingJob = await getJobApplication(jobId, userId);
-    if (!existingJob) {
-      throw new Error('Job application not found or unauthorized');
-    }
-    
-    const docRef = doc(db, COLLECTION_NAME, jobId);
-    await deleteDoc(docRef);
+    const { error } = await supabase
+      .from('jobs')
+      .delete()
+      .eq('id', jobId)
+      .eq('user_id', userId);
+
+    if (error) throw error;
     
     console.log('Job application deleted:', jobId);
   } catch (error) {
@@ -146,29 +151,33 @@ export const searchJobApplications = async (
   filters: JobFilters = {}
 ): Promise<JobApplication[]> => {
   try {
-    let q = query(
-      collection(db, COLLECTION_NAME),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
-    );
-    
+    let query = supabase
+      .from('jobs')
+      .select('*')
+      .eq('user_id', userId);
+
     // Apply status filter if provided
     if (filters.status) {
-      q = query(q, where('status', '==', filters.status));
+      query = query.eq('status', filters.status);
     }
+
+    const { data, error } = await query.order('created_at', { ascending: false });
+
+    if (error) throw error;
     
-    const querySnapshot = await getDocs(q);
-    let jobs: JobApplication[] = [];
-    
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      jobs.push({
-        id: doc.id,
-        ...data,
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date()
-      } as JobApplication);
-    });
+    let jobs: JobApplication[] = data.map(job => ({
+      id: job.id,
+      company: job.company,
+      position: job.title,
+      dateApplied: new Date(job.created_at).toISOString().split('T')[0],
+      status: job.status as any,
+      salary: '', // Not in current schema
+      notes: job.notes || '',
+      jobUrl: '', // Not in current schema
+      userId: job.user_id,
+      createdAt: new Date(job.created_at),
+      updatedAt: new Date(job.created_at)
+    }));
     
     // Apply client-side filters for search and date range
     if (filters.search) {
