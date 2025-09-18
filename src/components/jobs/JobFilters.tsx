@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { JobFilters as JobFiltersType, JobStatus } from '../../types/job';
-import { Search, Filter, Calendar } from 'lucide-react';
+import { Search, Filter, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface JobFiltersProps {
   filters: JobFiltersType;
@@ -9,6 +9,7 @@ interface JobFiltersProps {
 }
 
 const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onClearFilters }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
   const statusOptions: JobStatus[] = ['Applied', 'Interview', 'Offer', 'Rejected', 'Withdrawn'];
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,20 +49,29 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
           <Filter className="h-5 w-5 mr-2" />
           Filters
         </h3>
-        {hasActiveFilters && (
+        <div className="flex items-center space-x-2">
+          {hasActiveFilters && (
+            <button
+              onClick={onClearFilters}
+              className="text-sm text-indigo-600 hover:text-indigo-800 min-h-[44px] px-2"
+            >
+              Clear all
+            </button>
+          )}
           <button
-            onClick={onClearFilters}
-            className="text-sm text-indigo-600 hover:text-indigo-800"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="md:hidden p-2 text-gray-400 hover:text-gray-600 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            aria-label={isExpanded ? "Collapse filters" : "Expand filters"}
           >
-            Clear all filters
+            {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
           </button>
-        )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${isExpanded ? 'block' : 'hidden md:grid'}`}>
         {/* Search */}
         <div>
-          <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="search" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
             Search
           </label>
           <div className="relative">
@@ -73,7 +83,7 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
               id="search"
               value={filters.search || ''}
               onChange={handleSearchChange}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base sm:text-sm min-h-[44px]"
               placeholder="Company, position, notes..."
             />
           </div>
@@ -81,14 +91,14 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
 
         {/* Status Filter */}
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="status" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
             Status
           </label>
           <select
             id="status"
             value={filters.status || ''}
             onChange={handleStatusChange}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="block w-full px-3 py-3 sm:py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base sm:text-sm min-h-[44px]"
           >
             <option value="">All Statuses</option>
             {statusOptions.map(status => (
@@ -101,7 +111,7 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
 
         {/* Date From */}
         <div>
-          <label htmlFor="dateFrom" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="dateFrom" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
             From Date
           </label>
           <div className="relative">
@@ -113,14 +123,14 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
               id="dateFrom"
               value={filters.dateFrom || ''}
               onChange={handleDateFromChange}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base sm:text-sm min-h-[44px]"
             />
           </div>
         </div>
 
         {/* Date To */}
         <div>
-          <label htmlFor="dateTo" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="dateTo" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
             To Date
           </label>
           <div className="relative">
@@ -132,7 +142,7 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
               id="dateTo"
               value={filters.dateTo || ''}
               onChange={handleDateToChange}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base sm:text-sm min-h-[44px]"
             />
           </div>
         </div>
@@ -164,6 +174,19 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
               </span>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Mobile Quick Filter Toggle */}
+      {!isExpanded && (
+        <div className="md:hidden mt-4 pt-4 border-t border-gray-200">
+          <button
+            onClick={() => setIsExpanded(true)}
+            className="w-full flex items-center justify-center px-4 py-3 text-sm font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 rounded-md hover:bg-indigo-50 min-h-[44px]"
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            {hasActiveFilters ? 'View Active Filters' : 'Show Filters'}
+          </button>
         </div>
       )}
     </div>
