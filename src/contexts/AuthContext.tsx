@@ -12,7 +12,9 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<void>;
   loading: boolean;
   error: string | null;
+  success: string | null;
   clearError: () => void;
+  clearSuccess: () => void;
 }
 
 // Create the context
@@ -36,9 +38,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   // Clear error function
   const clearError = () => setError(null);
+  
+  // Clear success function
+  const clearSuccess = () => setSuccess(null);
 
   // Helper function to handle Supabase auth errors
   const getErrorMessage = (error: any): string => {
@@ -67,6 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signup = async (email: string, password: string, displayName: string): Promise<void> => {
     try {
       setError(null);
+      setSuccess(null);
       setLoading(true);
       
       const { data, error } = await supabase.auth.signUp({
@@ -82,6 +89,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (error) throw error;
       
       console.log('User signed up successfully:', data.user?.id);
+      
+      // Show success message for email confirmation
+      if (data.user && !data.user.email_confirmed_at) {
+        setSuccess('Account created successfully! Please check your email inbox to confirm your account before signing in.');
+      }
     } catch (error) {
       const errorMessage = getErrorMessage(error);
       setError(errorMessage);
@@ -212,7 +224,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     resetPassword,
     loading,
     error,
-    clearError
+    success,
+    clearError,
+    clearSuccess
   };
 
   return (
