@@ -7,7 +7,6 @@ interface AuthContextType {
   user: User | null;
   signup: (email: string, password: string, displayName: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   loading: boolean;
@@ -128,31 +127,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Google Sign-In function
-  const signInWithGoogle = async (): Promise<void> => {
-    try {
-      setError(null);
-      setLoading(true);
-      
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`,
-        },
-      });
-
-      if (error) throw error;
-      
-      console.log('Google sign-in initiated');
-    } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      setError(errorMessage);
-      console.error('Google sign-in error:', error);
-      throw new Error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Logout function
   const logout = async (): Promise<void> => {
@@ -219,7 +193,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     signup,
     login,
-    signInWithGoogle,
     logout,
     resetPassword,
     loading,
