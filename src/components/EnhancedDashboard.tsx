@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { JobApplication, CreateJobApplication, JobFilters as JobFiltersType } from '../types/job';
 import { 
@@ -42,21 +42,9 @@ const EnhancedDashboard: React.FC = () => {
   const { ref: jobsRef, isVisible: jobsVisible } = useScrollReveal();
 
   // Use optimistic updates
-  const { jobs: optimisticJobs, updateJob, deleteJob, bulkUpdateJobs, bulkDeleteJobs } = useOptimisticJobUpdate(jobs);
+  const { updateJob, deleteJob, bulkUpdateJobs, bulkDeleteJobs } = useOptimisticJobUpdate(jobs);
 
-  // Load jobs on component mount
-  useEffect(() => {
-    if (user) {
-      loadJobs();
-    }
-  }, [user]);
-
-  // Apply filters whenever jobs or filters change
-  useEffect(() => {
-    applyFilters();
-  }, [jobs, filters]);
-
-  const loadJobs = async () => {
+  const loadJobs = useCallback(async () => {
     if (!user) return;
     
     try {
@@ -80,9 +68,9 @@ const EnhancedDashboard: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user, filters]);
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = [...jobs];
 
     if (filters.search) {
@@ -107,7 +95,19 @@ const EnhancedDashboard: React.FC = () => {
     }
 
     setFilteredJobs(filtered);
-  };
+  }, [jobs, filters]);
+
+  // Load jobs on component mount
+  useEffect(() => {
+    if (user) {
+      loadJobs();
+    }
+  }, [user, loadJobs]);
+
+  // Apply filters whenever jobs or filters change
+  useEffect(() => {
+    applyFilters();
+  }, [jobs, filters, applyFilters]);
 
   const handleCreateJob = async (jobData: CreateJobApplication) => {
     if (!user) return;
