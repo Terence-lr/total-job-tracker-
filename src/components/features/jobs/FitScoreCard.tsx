@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { FitScoreResult } from '../../types/fitScore';
-import { analyzeJobFitWithAI } from '../../services/fitScoreService';
+import { FitScoreResult } from '../../../types/fitScore';
+import { analyzeJobFitWithAI } from '../../../services/fitScoreService';
 import SkillsCompare from '../SkillsCompare';
 import { FileText, Copy, Loader2, Target, AlertCircle, GitCompare } from 'lucide-react';
 

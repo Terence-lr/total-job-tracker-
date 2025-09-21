@@ -5,16 +5,16 @@ import {
   createJobApplication, 
   getJobApplications
 } from '../services/jobService';
-import JobForm from './jobs/JobForm';
-import JobFilters from './jobs/JobFilters';
-import ProfessionalNavigation from './ProfessionalNavigation';
+import JobForm from './features/jobs/JobForm';
+import JobFilters from './features/jobs/JobFilters';
+import ProfessionalNavigation from './layouts/ProfessionalNavigation';
 import FollowUpsWidget from './FollowUpsWidget';
-import DashboardMetrics from './analytics/DashboardMetrics';
-import StatusDistribution from './analytics/StatusDistribution';
-import ApplicationTrends from './analytics/ApplicationTrends';
-import EnhancedJobCard from './jobs/EnhancedJobCard';
-import BulkActions from './jobs/BulkActions';
-import ResponsiveGrid from './responsive/ResponsiveGrid';
+import DashboardMetrics from './features/analytics/DashboardMetrics';
+import StatusDistribution from './features/analytics/StatusDistribution';
+import ApplicationTrends from './features/analytics/ApplicationTrends';
+import EnhancedJobCard from './features/jobs/EnhancedJobCard';
+import BulkActions from './features/jobs/BulkActions';
+import ResponsiveGrid from './features/responsive/ResponsiveGrid';
 import Pagination from './ui/Pagination';
 import ErrorBoundary from './ui/ErrorBoundary';
 import { useScrollReveal } from '../hooks/useScrollReveal';

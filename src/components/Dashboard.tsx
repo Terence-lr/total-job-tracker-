@@ -8,9 +8,9 @@ import {
   deleteJobApplication,
   searchJobApplications 
 } from '../services/jobService';
-import JobForm from './jobs/JobForm';
-import JobCard from './jobs/JobCard';
-import JobFilters from './jobs/JobFilters';
+import JobForm from './features/jobs/JobForm';
+import JobCard from './features/jobs/JobCard';
+import JobFilters from './features/jobs/JobFilters';
 import Navigation from './Navigation';
 import FollowUpsWidget from './FollowUpsWidget';
 import { useScrollReveal } from '../hooks/useScrollReveal';

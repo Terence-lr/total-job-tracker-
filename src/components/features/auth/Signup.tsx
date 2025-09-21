@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import { Mail, Lock, User, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 const Signup: React.FC = () => {

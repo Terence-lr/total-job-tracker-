@@ -1,6 +1,6 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { JobApplication } from '../../types/job';
+import { JobApplication } from '../../../types/job';
 
 interface StatusDistributionProps {
   data: JobApplication[];

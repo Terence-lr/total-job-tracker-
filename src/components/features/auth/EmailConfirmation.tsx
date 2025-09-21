@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 import { CheckCircle, AlertCircle, Loader } from 'lucide-react';
 
 const EmailConfirmation: React.FC = () => {

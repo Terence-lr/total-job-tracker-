@@ -2,7 +2,7 @@ import React from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { MoreVertical, Edit, Trash2, ArrowRight, Archive, Copy } from 'lucide-react';
-import { JobApplication } from '../../types/job';
+import { JobApplication } from '../../../types/job';
 
 interface JobActionsMenuProps {
   job: JobApplication;

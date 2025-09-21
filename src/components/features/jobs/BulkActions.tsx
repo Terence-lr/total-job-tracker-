@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Archive, Trash2, X, Check } from 'lucide-react';
-import { JobApplication } from '../../types/job';
+import { JobApplication } from '../../../types/job';
 
 interface BulkActionsProps {
   selectedJobs: string[];

@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Briefcase, BarChart3, Plus } from 'lucide-react';
 import UserMenu from './UserMenu';
-import MobileNavigation from './responsive/MobileNavigation';
+import MobileNavigation from '../features/responsive/MobileNavigation';
 import clsx from 'clsx';
 
 const ProfessionalNavigation: React.FC = () => {

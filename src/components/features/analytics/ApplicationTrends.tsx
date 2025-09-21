@@ -1,6 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { JobApplication } from '../../types/job';
+import { JobApplication } from '../../../types/job';
 
 interface ApplicationTrendsProps {
   data: JobApplication[];

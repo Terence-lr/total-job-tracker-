@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { JobFilters as JobFiltersType, JobStatus } from '../../types/job';
+import { JobFilters as JobFiltersType, JobStatus } from '../../../types/job';
 import { Filter, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface JobFiltersProps {

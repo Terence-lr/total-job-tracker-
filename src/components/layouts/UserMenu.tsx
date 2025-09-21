@@ -2,7 +2,7 @@ import React from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const UserMenu: React.FC = () => {

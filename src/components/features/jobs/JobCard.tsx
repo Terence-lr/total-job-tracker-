@@ -1,7 +1,7 @@
 import React from 'react';
-import { JobApplication, JobStatus } from '../../types/job';
+import { JobApplication, JobStatus } from '../../../types/job';
 import { Calendar, DollarSign, ExternalLink, Edit, Trash2, MapPin } from 'lucide-react';
-import { useCursorHalo } from '../../hooks/useScrollReveal';
+import { useCursorHalo } from '../../../hooks/useScrollReveal';
 
 interface JobCardProps {
   job: JobApplication;

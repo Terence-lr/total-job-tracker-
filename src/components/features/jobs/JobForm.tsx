@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { JobApplication, CreateJobApplication, JobStatus } from '../../types/job';
+import { JobApplication, CreateJobApplication, JobStatus } from '../../../types/job';
 import { X, Calendar, DollarSign, Link as LinkIcon, FileText } from 'lucide-react';
 import FitScoreCard from './FitScoreCard';
 

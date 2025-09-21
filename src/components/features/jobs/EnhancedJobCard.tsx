@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, DollarSign, ExternalLink, Check } from 'lucide-react';
-import { JobApplication } from '../../types/job';
+import { JobApplication } from '../../../types/job';
 import JobActionsMenu from './JobActionsMenu';
 import clsx from 'clsx';
 

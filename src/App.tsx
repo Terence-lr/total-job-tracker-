@@ -3,13 +3,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Welcome from './components/Welcome';
-import Login from './components/auth/Login';
-import Signup from './components/auth/Signup';
-import ForgotPassword from './components/auth/ForgotPassword';
-import EmailConfirmation from './components/auth/EmailConfirmation';
+import Login from './components/features/auth/Login';
+import Signup from './components/features/auth/Signup';
+import ForgotPassword from './components/features/auth/ForgotPassword';
+import EmailConfirmation from './components/features/auth/EmailConfirmation';
 import EnhancedDashboard from './components/EnhancedDashboard';
 import Profile from './components/Profile';
-import Footer from './components/Footer';
+import Footer from './components/layouts/Footer';
 
 function App() {
   return (

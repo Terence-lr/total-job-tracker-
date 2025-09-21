@@ -1,6 +1,6 @@
 import React from 'react';
 import { Briefcase, TrendingUp, Calendar, Target } from 'lucide-react';
-import { JobApplication } from '../../types/job';
+import { JobApplication } from '../../../types/job';
 import MetricCard from './MetricCard';
 
 interface DashboardMetricsProps {
