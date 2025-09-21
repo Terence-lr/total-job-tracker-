@@ -12,7 +12,6 @@ import JobForm from './jobs/JobForm';
 import JobCard from './jobs/JobCard';
 import JobFilters from './jobs/JobFilters';
 import Navigation from './Navigation';
-import Footer from './Footer';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { Briefcase, TrendingUp, Calendar, AlertCircle, FileText, Download } from 'lucide-react';
 
@@ -166,7 +165,7 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-var(--bg) flex flex-col">
       <Navigation onAddJob={() => setShowJobForm(true)} />
 
-      <main className="flex-1 container py-8">
+      <main className="container section">
         {/* Error Message */}
         {error && (
           <div className="mb-6 card p-4 border-var(--err)">
@@ -245,10 +244,21 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 space-y-4 sm:space-y-0">
-          <h2 className="text-xl font-semibold text-var(--text)">Your Job Applications</h2>
-          <div className="flex flex-col sm:flex-row gap-3">
+        <h1 className="page-title text-xl font-semibold text-var(--text)">Your Job Applications</h1>
+
+        {/* Filters */}
+        <section className="card stack" style={{["--stack-gap" as any]:"var(--s-4)"}}>
+          <header className="stack" style={{["--stack-gap" as any]:"var(--s-2)"}}>
+            <h2 className="h4" style={{margin:0}}>Filters</h2>
+          </header>
+
+          <JobFilters
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onClearFilters={handleClearFilters}
+          />
+
+          <div className="btn-row">
             <button className="btn btn-secondary cursor-halo">
               <Download className="h-4 w-4" />
               Export CSV
@@ -258,16 +268,7 @@ const Dashboard: React.FC = () => {
               Filters
             </button>
           </div>
-        </div>
-
-        {/* Filters */}
-        <div className="mb-8">
-          <JobFilters
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-            onClearFilters={handleClearFilters}
-          />
-        </div>
+        </section>
 
         {/* Jobs List */}
         <div 
@@ -319,8 +320,6 @@ const Dashboard: React.FC = () => {
           isLoading={isSubmitting}
         />
       )}
-
-      <Footer />
     </div>
   );
 };

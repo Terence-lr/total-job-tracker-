@@ -44,25 +44,23 @@ const Login: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-var(--bg) py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="card p-8">
-          <div>
-            <h2 className="text-center text-3xl font-extrabold text-var(--text)">
-              Sign in to your account
-            </h2>
-            <p className="mt-2 text-center text-var(--muted)">
-              Or{' '}
-              <Link
-                to="/signup"
-                className="font-medium text-var(--accent) hover:text-var(--accent-2) link-underline"
-              >
-                create a new account
-              </Link>
-            </p>
-          </div>
+    <main className="container section--tight">
+      <div className="login-wrap">
+        <div className="card login-card stack" style={{["--stack-gap" as any]:"var(--s-5)"}}>
+          <h1 className="login-title text-center text-3xl font-extrabold text-var(--text)">
+            Sign in to your account
+          </h1>
+          <p className="login-sub text-center text-var(--muted)">
+            Or{' '}
+            <Link
+              to="/signup"
+              className="font-medium text-var(--accent) hover:text-var(--accent-2) link-underline"
+            >
+              create a new account
+            </Link>
+          </p>
           
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <form className="stack" style={{["--stack-gap" as any]:"var(--s-5)"}} onSubmit={handleSubmit}>
             {error && (
               <div className="card p-4 border-var(--err)">
                 <div className="flex">
@@ -89,61 +87,59 @@ const Login: React.FC = () => {
               </div>
             )}
             
-            <div className="space-y-6">
-              <div>
-                <label htmlFor="email" className="form-label">
-                  Email address
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-var(--muted)" />
-                  </div>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="form-input w-full pl-10"
-                    placeholder="Enter your email"
-                  />
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">
+                Email address
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-var(--muted)" />
                 </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="form-input w-full pl-10"
+                  placeholder="Enter your email"
+                />
               </div>
-              
-              <div>
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-var(--muted)" />
-                  </div>
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="form-input w-full pl-10 pr-10"
-                    placeholder="Enter your password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center min-h-[44px] min-w-[44px] justify-center cursor-halo"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-var(--muted)" />
-                    ) : (
-                      <Eye className="h-5 w-5 text-var(--muted)" />
-                    )}
-                  </button>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-var(--muted)" />
                 </div>
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="form-input w-full pl-10 pr-10"
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center min-h-[44px] min-w-[44px] justify-center cursor-halo"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-var(--muted)" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-var(--muted)" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -158,11 +154,11 @@ const Login: React.FC = () => {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="btn-row">
               <button
                 type="submit"
                 disabled={isLoading || !email || !password}
-                className="btn btn-primary w-full cursor-halo disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn btn-primary cursor-halo disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <div className="flex items-center">
@@ -177,7 +173,7 @@ const Login: React.FC = () => {
           </form>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

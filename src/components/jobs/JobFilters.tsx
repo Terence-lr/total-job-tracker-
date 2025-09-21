@@ -43,12 +43,8 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
   const hasActiveFilters = filters.search || filters.status || filters.dateFrom || filters.dateTo;
 
   return (
-    <div className="card p-6 mb-6">
+    <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium text-var(--text) flex items-center">
-          <Filter className="h-5 w-5 mr-2" />
-          Filters
-        </h3>
         <div className="flex items-center space-x-2">
           {hasActiveFilters && (
             <button
@@ -68,7 +64,7 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
         </div>
       </div>
 
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${isExpanded ? 'block' : 'hidden md:grid'}`}>
+      <div className={`filters-grid ${isExpanded ? 'block' : 'hidden md:grid'}`}>
         {/* Search */}
         <div>
           <label htmlFor="search" className="form-label">
