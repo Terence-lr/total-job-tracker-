@@ -12,7 +12,7 @@ export interface JobApplication {
   updatedAt: Date;
 }
 
-export type JobStatus = 'Applied' | 'Interview' | 'Offer' | 'Rejected' | 'Withdrawn';
+export type JobStatus = 'Applied' | 'Interview' | 'Offer' | 'Rejected' | 'Withdrawn' | 'Archived';
 
 export interface CreateJobApplication {
   company: string;
@@ -29,8 +29,10 @@ export interface UpdateJobApplication extends Partial<CreateJobApplication> {
 }
 
 export interface JobFilters {
-  status?: JobStatus;
+  status?: JobStatus | JobStatus[];
   search?: string;
   dateFrom?: string;
   dateTo?: string;
+  minSalary?: number;
+  maxSalary?: number;
 }
