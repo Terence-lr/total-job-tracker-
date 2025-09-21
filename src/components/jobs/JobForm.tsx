@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { JobApplication, CreateJobApplication, JobStatus } from '../../types/job';
 import { X, Calendar, DollarSign, Link as LinkIcon, FileText } from 'lucide-react';
+import FitScoreCard from './FitScoreCard';
 
 interface JobFormProps {
   job?: JobApplication;
@@ -268,6 +269,20 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
               />
             </div>
           </div>
+
+          {/* Fit Score Analysis */}
+          <FitScoreCard
+            onCopyToNotes={(text) => {
+              setFormData(prev => ({
+                ...prev,
+                notes: prev.notes ? `${prev.notes}\n\n${text}` : text
+              }));
+            }}
+            profile={{
+              skills: ['React', 'TypeScript', 'Node.js', 'Python', 'SQL'], // This should come from user profile
+              summary: 'Full-stack developer with experience in modern web technologies'
+            }}
+          />
 
           <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-3 pt-6">
             <button

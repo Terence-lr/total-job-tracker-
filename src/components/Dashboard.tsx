@@ -12,8 +12,11 @@ import JobForm from './jobs/JobForm';
 import JobCard from './jobs/JobCard';
 import JobFilters from './jobs/JobFilters';
 import Navigation from './Navigation';
+import FollowUpsWidget from './FollowUpsWidget';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { Briefcase, TrendingUp, Calendar, AlertCircle, FileText, Download } from 'lucide-react';
+import { FollowUp } from '../types/fitScore';
+import { generateFollowUps } from '../services/followUpService';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -25,6 +28,7 @@ const Dashboard: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<JobFiltersType>({});
+  const [followUps, setFollowUps] = useState<FollowUp[]>([]);
   const { ref: statsRef, isVisible: statsVisible } = useScrollReveal();
   const { ref: jobsRef, isVisible: jobsVisible } = useScrollReveal();
 
@@ -48,6 +52,16 @@ const Dashboard: React.FC = () => {
       setError(null);
       const userJobs = await getJobApplications(user.id);
       setJobs(userJobs);
+      
+      // Generate follow-ups for jobs
+      const newFollowUps: FollowUp[] = [];
+      userJobs.forEach(job => {
+        if (job.status === 'Applied' || job.status === 'Interview') {
+          const jobFollowUps = generateFollowUps(job.id, job.status, job.dateApplied);
+          newFollowUps.push(...jobFollowUps);
+        }
+      });
+      setFollowUps(newFollowUps);
     } catch (err) {
       setError('Failed to load job applications');
       console.error('Error loading jobs:', err);
@@ -178,10 +192,10 @@ const Dashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Statistics */}
+        {/* KPI Cards */}
         <div 
           ref={statsRef}
-          className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8 scroll-reveal ${statsVisible ? 'revealed' : ''}`}
+          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 scroll-reveal ${statsVisible ? 'revealed' : ''}`}
         >
           <div className="card p-4 cursor-halo">
             <div className="flex items-center">
@@ -247,11 +261,7 @@ const Dashboard: React.FC = () => {
         <h1 className="page-title text-xl font-semibold text-var(--text)">Your Job Applications</h1>
 
         {/* Filters */}
-        <section className="card stack" style={{["--stack-gap" as any]:"var(--s-4)"}}>
-          <header className="stack" style={{["--stack-gap" as any]:"var(--s-2)"}}>
-            <h2 className="h4" style={{margin:0}}>Filters</h2>
-          </header>
-
+        <section className="card stack" style={{["--stack-gap" as any]:"16px"}}>
           <JobFilters
             filters={filters}
             onFiltersChange={handleFiltersChange}
@@ -269,6 +279,18 @@ const Dashboard: React.FC = () => {
             </button>
           </div>
         </section>
+
+        {/* Follow-up Reminders */}
+        <FollowUpsWidget
+          followUps={followUps}
+          jobs={jobs.map(job => ({
+            id: job.id,
+            company: job.company,
+            position: job.position,
+            status: job.status
+          }))}
+          onUpdateFollowUps={setFollowUps}
+        />
 
         {/* Jobs List */}
         <div 

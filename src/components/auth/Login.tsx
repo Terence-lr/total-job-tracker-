@@ -46,7 +46,7 @@ const Login: React.FC = () => {
   return (
     <main className="container section--tight">
       <div className="login-wrap">
-        <div className="card login-card stack" style={{["--stack-gap" as any]:"var(--s-5)"}}>
+        <div className="card login-card stack" style={{["--stack-gap" as any]:"24px"}}>
           <h1 className="login-title text-center text-3xl font-extrabold text-var(--text)">
             Sign in to your account
           </h1>
@@ -60,7 +60,7 @@ const Login: React.FC = () => {
             </Link>
           </p>
           
-          <form className="stack" style={{["--stack-gap" as any]:"var(--s-5)"}} onSubmit={handleSubmit}>
+          <form className="stack" style={{["--stack-gap" as any]:"24px"}} onSubmit={handleSubmit}>
             {error && (
               <div className="card p-4 border-var(--err)">
                 <div className="flex">
