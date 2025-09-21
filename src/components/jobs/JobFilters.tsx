@@ -43,9 +43,9 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
   const hasActiveFilters = filters.search || filters.status || filters.dateFrom || filters.dateTo;
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+    <div className="card p-6 mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium text-gray-900 flex items-center">
+        <h3 className="text-lg font-medium text-var(--text) flex items-center">
           <Filter className="h-5 w-5 mr-2" />
           Filters
         </h3>
@@ -53,14 +53,14 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
           {hasActiveFilters && (
             <button
               onClick={onClearFilters}
-              className="text-sm text-indigo-600 hover:text-indigo-800 min-h-[44px] px-2"
+              className="text-sm text-var(--accent) hover:text-var(--accent-2) min-h-[44px] px-2 cursor-halo"
             >
               Clear all
             </button>
           )}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="md:hidden p-2 text-gray-400 hover:text-gray-600 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="md:hidden p-2 text-var(--muted) hover:text-var(--text) min-h-[44px] min-w-[44px] flex items-center justify-center cursor-halo"
             aria-label={isExpanded ? "Collapse filters" : "Expand filters"}
           >
             {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
@@ -71,19 +71,19 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
       <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${isExpanded ? 'block' : 'hidden md:grid'}`}>
         {/* Search */}
         <div>
-          <label htmlFor="search" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+          <label htmlFor="search" className="form-label">
             Search
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-gray-400" />
+              <Search className="h-4 w-4 text-var(--muted)" />
             </div>
             <input
               type="text"
               id="search"
               value={filters.search || ''}
               onChange={handleSearchChange}
-              className="block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base sm:text-sm min-h-[44px]"
+              className="form-input w-full pl-10"
               placeholder="Company, position, notes..."
             />
           </div>
@@ -91,14 +91,14 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
 
         {/* Status Filter */}
         <div>
-          <label htmlFor="status" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+          <label htmlFor="status" className="form-label">
             Status
           </label>
           <select
             id="status"
             value={filters.status || ''}
             onChange={handleStatusChange}
-            className="block w-full px-3 py-3 sm:py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base sm:text-sm min-h-[44px]"
+            className="form-input w-full"
           >
             <option value="">All Statuses</option>
             {statusOptions.map(status => (
@@ -111,38 +111,38 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
 
         {/* Date From */}
         <div>
-          <label htmlFor="dateFrom" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+          <label htmlFor="dateFrom" className="form-label">
             From Date
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Calendar className="h-4 w-4 text-gray-400" />
+              <Calendar className="h-4 w-4 text-var(--muted)" />
             </div>
             <input
               type="date"
               id="dateFrom"
               value={filters.dateFrom || ''}
               onChange={handleDateFromChange}
-              className="block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base sm:text-sm min-h-[44px]"
+              className="form-input w-full pl-10"
             />
           </div>
         </div>
 
         {/* Date To */}
         <div>
-          <label htmlFor="dateTo" className="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+          <label htmlFor="dateTo" className="form-label">
             To Date
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Calendar className="h-4 w-4 text-gray-400" />
+              <Calendar className="h-4 w-4 text-var(--muted)" />
             </div>
             <input
               type="date"
               id="dateTo"
               value={filters.dateTo || ''}
               onChange={handleDateToChange}
-              className="block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base sm:text-sm min-h-[44px]"
+              className="form-input w-full pl-10"
             />
           </div>
         </div>
@@ -150,26 +150,26 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
 
       {/* Active Filters Display */}
       {hasActiveFilters && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="mt-4 pt-4 border-t border-var(--border)">
           <div className="flex flex-wrap gap-2">
-            <span className="text-sm text-gray-600">Active filters:</span>
+            <span className="text-sm text-var(--muted)">Active filters:</span>
             {filters.search && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+              <span className="status-pill status-applied">
                 Search: "{filters.search}"
               </span>
             )}
             {filters.status && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+              <span className="status-pill status-interview">
                 Status: {filters.status}
               </span>
             )}
             {filters.dateFrom && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+              <span className="status-pill status-offer">
                 From: {new Date(filters.dateFrom).toLocaleDateString()}
               </span>
             )}
             {filters.dateTo && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+              <span className="status-pill status-offer">
                 To: {new Date(filters.dateTo).toLocaleDateString()}
               </span>
             )}
@@ -179,10 +179,10 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
 
       {/* Mobile Quick Filter Toggle */}
       {!isExpanded && (
-        <div className="md:hidden mt-4 pt-4 border-t border-gray-200">
+        <div className="md:hidden mt-4 pt-4 border-t border-var(--border)">
           <button
             onClick={() => setIsExpanded(true)}
-            className="w-full flex items-center justify-center px-4 py-3 text-sm font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 rounded-md hover:bg-indigo-50 min-h-[44px]"
+            className="btn btn-secondary w-full cursor-halo"
           >
             <Filter className="h-4 w-4 mr-2" />
             {hasActiveFilters ? 'View Active Filters' : 'Show Filters'}

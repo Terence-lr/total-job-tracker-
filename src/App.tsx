@@ -7,12 +7,13 @@ import Signup from './components/auth/Signup';
 import ForgotPassword from './components/auth/ForgotPassword';
 import EmailConfirmation from './components/auth/EmailConfirmation';
 import Dashboard from './components/Dashboard';
+import Footer from './components/Footer';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="App">
+        <div className="App min-h-screen bg-var(--bg) flex flex-col">
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
@@ -28,6 +29,7 @@ function App() {
             />
             <Route path="/" element={<Navigate to="/dashboard" />} />
           </Routes>
+          <Footer />
         </div>
       </Router>
     </AuthProvider>

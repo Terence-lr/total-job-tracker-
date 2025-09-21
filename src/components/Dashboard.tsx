@@ -11,10 +11,13 @@ import {
 import JobForm from './jobs/JobForm';
 import JobCard from './jobs/JobCard';
 import JobFilters from './jobs/JobFilters';
-import { Plus, LogOut, User, Briefcase, TrendingUp, Calendar, AlertCircle, Menu, X } from 'lucide-react';
+import Navigation from './Navigation';
+import Footer from './Footer';
+import { useScrollReveal } from '../hooks/useScrollReveal';
+import { Briefcase, TrendingUp, Calendar, AlertCircle, FileText, Download } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [jobs, setJobs] = useState<JobApplication[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<JobApplication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +26,8 @@ const Dashboard: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<JobFiltersType>({});
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { ref: statsRef, isVisible: statsVisible } = useScrollReveal();
+  const { ref: jobsRef, isVisible: jobsVisible } = useScrollReveal();
 
   // Load jobs on component mount
   useEffect(() => {
@@ -137,13 +141,6 @@ const Dashboard: React.FC = () => {
     setFilters({});
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (err) {
-      console.error('Error logging out:', err);
-    }
-  };
 
   // Calculate statistics
   const stats = {
@@ -156,210 +153,162 @@ const Dashboard: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-var(--bg) flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading your job applications...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-var(--accent) mx-auto"></div>
+          <p className="mt-4 text-var(--muted)">Loading your job applications...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-3 sm:py-4">
-            <div className="flex items-center">
-              <Briefcase className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-600 mr-2 sm:mr-3" />
-              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Job Tracker</h1>
-            </div>
-            
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-4">
-              <div className="flex items-center text-sm text-gray-600">
-                <User className="h-4 w-4 mr-2" />
-                <span className="truncate max-w-32">{user?.user_metadata?.display_name || user?.email}</span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </button>
-            </div>
+    <div className="min-h-screen bg-var(--bg) flex flex-col">
+      <Navigation onAddJob={() => setShowJobForm(true)} />
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-              aria-label="Toggle mobile menu"
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
-          </div>
-
-          {/* Mobile Navigation Menu */}
-          {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 py-4">
-              <div className="space-y-3">
-                <div className="flex items-center text-sm text-gray-600 px-2">
-                  <User className="h-4 w-4 mr-2" />
-                  <span className="truncate">{user?.user_metadata?.display_name || user?.email}</span>
-                </div>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 p-2 rounded-md transition-colors"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <main className="flex-1 container py-8">
         {/* Error Message */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
+          <div className="mb-6 card p-4 border-var(--err)">
             <div className="flex">
-              <AlertCircle className="h-5 w-5 text-red-400" />
+              <AlertCircle className="h-5 w-5 text-var(--err)" />
               <div className="ml-3">
-                <p className="text-sm text-red-800">{error}</p>
+                <p className="text-sm text-var(--err)">{error}</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Statistics */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+        <div 
+          ref={statsRef}
+          className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8 scroll-reveal ${statsVisible ? 'revealed' : ''}`}
+        >
+          <div className="card p-4 cursor-halo">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Briefcase className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-600" />
+                <Briefcase className="h-8 w-8 text-var(--accent)" />
               </div>
-              <div className="ml-2 sm:ml-4">
-                <p className="text-xs sm:text-sm font-medium text-gray-500">Total</p>
-                <p className="text-lg sm:text-2xl font-semibold text-gray-900">{stats.total}</p>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-var(--muted)">Total</p>
+                <p className="text-2xl font-semibold text-var(--text)">{stats.total}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+          <div className="card p-4 cursor-halo">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+                <Calendar className="h-8 w-8 text-blue-400" />
               </div>
-              <div className="ml-2 sm:ml-4">
-                <p className="text-xs sm:text-sm font-medium text-gray-500">Applied</p>
-                <p className="text-lg sm:text-2xl font-semibold text-gray-900">{stats.applied}</p>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-var(--muted)">Applied</p>
+                <p className="text-2xl font-semibold text-var(--text)">{stats.applied}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+          <div className="card p-4 cursor-halo">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600" />
+                <TrendingUp className="h-8 w-8 text-var(--warn)" />
               </div>
-              <div className="ml-2 sm:ml-4">
-                <p className="text-xs sm:text-sm font-medium text-gray-500">Interviews</p>
-                <p className="text-lg sm:text-2xl font-semibold text-gray-900">{stats.interviews}</p>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-var(--muted)">Interviews</p>
+                <p className="text-2xl font-semibold text-var(--text)">{stats.interviews}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+          <div className="card p-4 cursor-halo">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
+                <TrendingUp className="h-8 w-8 text-var(--ok)" />
               </div>
-              <div className="ml-2 sm:ml-4">
-                <p className="text-xs sm:text-sm font-medium text-gray-500">Offers</p>
-                <p className="text-lg sm:text-2xl font-semibold text-gray-900">{stats.offers}</p>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-var(--muted)">Offers</p>
+                <p className="text-2xl font-semibold text-var(--text)">{stats.offers}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+          <div className="card p-4 cursor-halo">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-red-600" />
+                <AlertCircle className="h-8 w-8 text-var(--err)" />
               </div>
-              <div className="ml-2 sm:ml-4">
-                <p className="text-xs sm:text-sm font-medium text-gray-500">Rejected</p>
-                <p className="text-lg sm:text-2xl font-semibold text-gray-900">{stats.rejected}</p>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-var(--muted)">Rejected</p>
+                <p className="text-2xl font-semibold text-var(--text)">{stats.rejected}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Add Job Button */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 space-y-3 sm:space-y-0">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Your Job Applications</h2>
-          <button
-            onClick={() => setShowJobForm(true)}
-            className="inline-flex items-center justify-center px-4 py-3 sm:py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 min-h-[44px] w-full sm:w-auto"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Job Application
-          </button>
+        {/* Quick Actions */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 space-y-4 sm:space-y-0">
+          <h2 className="text-xl font-semibold text-var(--text)">Your Job Applications</h2>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button className="btn btn-secondary cursor-halo">
+              <Download className="h-4 w-4" />
+              Export CSV
+            </button>
+            <button className="btn btn-secondary cursor-halo">
+              <FileText className="h-4 w-4" />
+              Filters
+            </button>
+          </div>
         </div>
 
         {/* Filters */}
-        <JobFilters
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-          onClearFilters={handleClearFilters}
-        />
+        <div className="mb-8">
+          <JobFilters
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onClearFilters={handleClearFilters}
+          />
+        </div>
 
         {/* Jobs List */}
-        {filteredJobs.length === 0 ? (
-          <div className="text-center py-12">
-            <Briefcase className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No job applications</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              {jobs.length === 0 
-                ? "Get started by adding your first job application."
-                : "No applications match your current filters."
-              }
-            </p>
-            {jobs.length === 0 && (
-              <div className="mt-6">
-                <button
-                  onClick={() => setShowJobForm(true)}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Job Application
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {filteredJobs.map((job) => (
-              <JobCard
-                key={job.id}
-                job={job}
-                onEdit={handleEditJob}
-                onDelete={handleDeleteJob}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+        <div 
+          ref={jobsRef}
+          className={`scroll-reveal ${jobsVisible ? 'revealed' : ''}`}
+        >
+          {filteredJobs.length === 0 ? (
+            <div className="text-center py-16">
+              <Briefcase className="mx-auto h-16 w-16 text-var(--muted)" />
+              <h3 className="mt-4 text-lg font-medium text-var(--text)">No job applications</h3>
+              <p className="mt-2 text-var(--muted)">
+                {jobs.length === 0 
+                  ? "Get started by adding your first job application."
+                  : "No applications match your current filters."
+                }
+              </p>
+              {jobs.length === 0 && (
+                <div className="mt-8">
+                  <button
+                    onClick={() => setShowJobForm(true)}
+                    className="btn btn-primary cursor-halo"
+                  >
+                    Add Job Application
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="grid-responsive">
+              {filteredJobs.map((job) => (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  onEdit={handleEditJob}
+                  onDelete={handleDeleteJob}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
 
       {/* Job Form Modal */}
       {(showJobForm || editingJob) && (
@@ -370,6 +319,8 @@ const Dashboard: React.FC = () => {
           isLoading={isSubmitting}
         />
       )}
+
+      <Footer />
     </div>
   );
 };
