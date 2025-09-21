@@ -14,11 +14,11 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
   const [formData, setFormData] = useState<CreateJobApplication>({
     company: '',
     position: '',
-    dateApplied: new Date().toISOString().split('T')[0],
+    date_applied: new Date().toISOString().split('T')[0],
     status: 'Applied',
     salary: '',
     notes: '',
-    jobUrl: ''
+    job_url: ''
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -38,11 +38,11 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
       setFormData({
         company: job.company,
         position: job.position,
-        dateApplied: job.dateApplied,
+        date_applied: job.date_applied,
         status: job.status,
         salary: job.salary || '',
         notes: job.notes || '',
-        jobUrl: job.jobUrl || ''
+        job_url: job.job_url || ''
       });
     }
   }, [job]);
@@ -74,12 +74,12 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
       newErrors.position = 'Position is required';
     }
 
-    if (!formData.dateApplied) {
-      newErrors.dateApplied = 'Date applied is required';
+    if (!formData.date_applied) {
+      newErrors.date_applied = 'Date applied is required';
     }
 
-    if (formData.jobUrl && !isValidUrl(formData.jobUrl)) {
-      newErrors.jobUrl = 'Please enter a valid URL';
+    if (formData.job_url && !isValidUrl(formData.job_url)) {
+      newErrors.job_url = 'Please enter a valid URL';
     }
 
     setErrors(newErrors);
@@ -173,7 +173,7 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label htmlFor="dateApplied" className="block text-sm font-medium text-gray-300">
+                <label htmlFor="date_applied" className="block text-sm font-medium text-gray-300">
                   Date Applied *
                 </label>
                 <div className="relative">
@@ -182,17 +182,17 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                   </div>
                   <input
                     type="date"
-                    id="dateApplied"
-                    name="dateApplied"
-                    value={formData.dateApplied}
+                    id="date_applied"
+                    name="date_applied"
+                    value={formData.date_applied}
                     onChange={handleChange}
                     className={`w-full px-3 py-2 pl-10 bg-gray-800 border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent ${
-                      errors.dateApplied ? 'border-red-500' : 'border-gray-600'
+                      errors.date_applied ? 'border-red-500' : 'border-gray-600'
                     }`}
                   />
                 </div>
-                {errors.dateApplied && (
-                  <p className="text-sm text-red-400">{errors.dateApplied}</p>
+                {errors.date_applied && (
+                  <p className="text-sm text-red-400">{errors.date_applied}</p>
                 )}
               </div>
 
@@ -237,7 +237,7 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="jobUrl" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="job_url" className="block text-sm font-medium text-gray-300">
                 Job URL
               </label>
               <div className="relative">
@@ -246,18 +246,18 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                 </div>
                 <input
                   type="url"
-                  id="jobUrl"
-                  name="jobUrl"
-                  value={formData.jobUrl}
+                  id="job_url"
+                  name="job_url"
+                  value={formData.job_url}
                   onChange={handleChange}
                   className={`w-full px-3 py-2 pl-10 bg-gray-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent ${
-                    errors.jobUrl ? 'border-red-500' : 'border-gray-600'
+                    errors.job_url ? 'border-red-500' : 'border-gray-600'
                   }`}
                   placeholder="https://company.com/job-posting"
                 />
               </div>
-              {errors.jobUrl && (
-                <p className="text-sm text-red-400">{errors.jobUrl}</p>
+              {errors.job_url && (
+                <p className="text-sm text-red-400">{errors.job_url}</p>
               )}
             </div>
 

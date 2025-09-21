@@ -27,7 +27,7 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
       position: job.position,
       salary: job.salary,
       notes: job.notes,
-      jobUrl: job.jobUrl
+      jobUrl: job.job_url
     };
     navigator.clipboard.writeText(JSON.stringify(jobData, null, 2));
   };

@@ -43,15 +43,15 @@ export const getJobApplications = async (userId: string): Promise<JobApplication
     const jobs: JobApplication[] = data.map(job => ({
       id: job.id,
       company: job.company,
-      position: job.title,
-      dateApplied: new Date(job.created_at).toISOString().split('T')[0],
+      position: job.position,
+      date_applied: job.date_applied || new Date(job.created_at).toISOString().split('T')[0],
       status: job.status as any,
-      salary: '', // Not in current schema
+      salary: job.salary || '',
       notes: job.notes || '',
-      jobUrl: '', // Not in current schema
-      userId: job.user_id,
-      createdAt: new Date(job.created_at),
-      updatedAt: new Date(job.created_at)
+      job_url: job.job_url || '',
+      user_id: job.user_id,
+      created_at: new Date(job.created_at),
+      updated_at: new Date(job.updated_at || job.created_at)
     }));
     
     console.log(`Retrieved ${jobs.length} job applications for user ${userId}`);
@@ -82,15 +82,15 @@ export const getJobApplication = async (jobId: string, userId: string): Promise<
     return {
       id: data.id,
       company: data.company,
-      position: data.title,
-      dateApplied: new Date(data.created_at).toISOString().split('T')[0],
+      position: data.position,
+      date_applied: data.date_applied || new Date(data.created_at).toISOString().split('T')[0],
       status: data.status as any,
-      salary: '', // Not in current schema
+      salary: data.salary || '',
       notes: data.notes || '',
-      jobUrl: '', // Not in current schema
-      userId: data.user_id,
-      createdAt: new Date(data.created_at),
-      updatedAt: new Date(data.created_at)
+      job_url: data.job_url || '',
+      user_id: data.user_id,
+      created_at: new Date(data.created_at),
+      updated_at: new Date(data.updated_at || data.created_at)
     };
   } catch (error) {
     console.error('Error getting job application:', error);
@@ -168,15 +168,15 @@ export const searchJobApplications = async (
     let jobs: JobApplication[] = data.map(job => ({
       id: job.id,
       company: job.company,
-      position: job.title,
-      dateApplied: new Date(job.created_at).toISOString().split('T')[0],
+      position: job.position,
+      date_applied: job.date_applied || new Date(job.created_at).toISOString().split('T')[0],
       status: job.status as any,
-      salary: '', // Not in current schema
+      salary: job.salary || '',
       notes: job.notes || '',
-      jobUrl: '', // Not in current schema
-      userId: job.user_id,
-      createdAt: new Date(job.created_at),
-      updatedAt: new Date(job.created_at)
+      job_url: job.job_url || '',
+      user_id: job.user_id,
+      created_at: new Date(job.created_at),
+      updated_at: new Date(job.updated_at || job.created_at)
     }));
     
     // Apply client-side filters for search and date range
@@ -191,12 +191,12 @@ export const searchJobApplications = async (
     
     if (filters.dateFrom) {
       const fromDate = new Date(filters.dateFrom);
-      jobs = jobs.filter(job => new Date(job.dateApplied) >= fromDate);
+      jobs = jobs.filter(job => new Date(job.date_applied) >= fromDate);
     }
     
     if (filters.dateTo) {
       const toDate = new Date(filters.dateTo);
-      jobs = jobs.filter(job => new Date(job.dateApplied) <= toDate);
+      jobs = jobs.filter(job => new Date(job.date_applied) <= toDate);
     }
     
     console.log(`Found ${jobs.length} job applications matching filters`);

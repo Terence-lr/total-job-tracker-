@@ -94,7 +94,7 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
       <div className="space-y-2">
         <div className="flex items-center text-xs text-gray-500">
           <Calendar className="w-3 h-3 mr-1" />
-          <span>Applied {formatDate(job.dateApplied)}</span>
+          <span>Applied {formatDate(job.date_applied)}</span>
         </div>
         
         {job.salary && (
@@ -104,11 +104,11 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
           </div>
         )}
         
-        {job.jobUrl && (
+        {job.job_url && (
           <div className="flex items-center text-xs text-gray-500">
             <ExternalLink className="w-3 h-3 mr-1" />
             <a 
-              href={job.jobUrl} 
+              href={job.job_url} 
               target="_blank" 
               rel="noopener noreferrer"
               className="hover:text-blue-600 transition-colors"

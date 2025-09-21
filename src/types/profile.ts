@@ -8,3 +8,4 @@ export type Profile = {
   skills: Skill[]; 
   summary?: string;
 };
+

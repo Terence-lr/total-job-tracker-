@@ -112,3 +112,4 @@ export const InteractiveCard: React.FC<InteractiveCardProps> = ({
 };
 
 export default InteractiveCard;
+

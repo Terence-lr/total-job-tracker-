@@ -9,7 +9,7 @@ interface ApplicationTrendsProps {
 const ApplicationTrends: React.FC<ApplicationTrendsProps> = ({ data }) => {
   // Group applications by month
   const monthlyData = data.reduce((acc, job) => {
-    const date = new Date(job.dateApplied);
+    const date = new Date(job.date_applied);
     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
     const monthName = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
     

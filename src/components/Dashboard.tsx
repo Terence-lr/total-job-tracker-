@@ -57,7 +57,7 @@ const Dashboard: React.FC = () => {
       const newFollowUps: FollowUp[] = [];
       userJobs.forEach(job => {
         if (job.status === 'Applied' || job.status === 'Interview') {
-          const jobFollowUps = generateFollowUps(job.id, job.status, job.dateApplied);
+          const jobFollowUps = generateFollowUps(job.id, job.status, job.date_applied);
           newFollowUps.push(...jobFollowUps);
         }
       });

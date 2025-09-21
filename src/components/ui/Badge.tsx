@@ -76,3 +76,4 @@ export const JobStatusBadge: React.FC<JobStatusBadgeProps> = ({
 };
 
 export default Badge;
+

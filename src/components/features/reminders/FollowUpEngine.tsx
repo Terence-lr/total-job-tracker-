@@ -46,7 +46,7 @@ const FollowUpEngine: React.FC<FollowUpEngineProps> = ({ applications }) => {
     const now = new Date();
 
     applications.forEach(app => {
-      const appliedDate = new Date(app.dateApplied);
+      const appliedDate = new Date(app.date_applied);
       const daysSinceApplied = Math.floor((now.getTime() - appliedDate.getTime()) / (1000 * 60 * 60 * 24));
       
       // Different follow-up strategies based on status and time

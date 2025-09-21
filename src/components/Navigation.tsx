@@ -135,3 +135,4 @@ const Navigation: React.FC<NavigationProps> = ({ onAddJob }) => {
 };
 
 export default Navigation;
+

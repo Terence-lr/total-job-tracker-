@@ -23,7 +23,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ applications }) => 
   const oneWeekAgo = new Date();
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
   const thisWeekApps = applications.filter(app => 
-    new Date(app.dateApplied) >= oneWeekAgo
+    new Date(app.date_applied) >= oneWeekAgo
   ).length;
 
   // Calculate trends (simplified - comparing last 30 days vs previous 30 days)
@@ -33,11 +33,11 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ applications }) => 
   sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
   const last30Days = applications.filter(app => 
-    new Date(app.dateApplied) >= thirtyDaysAgo
+    new Date(app.date_applied) >= thirtyDaysAgo
   ).length;
   
   const previous30Days = applications.filter(app => {
-    const date = new Date(app.dateApplied);
+    const date = new Date(app.date_applied);
     return date >= sixtyDaysAgo && date < thirtyDaysAgo;
   }).length;
 

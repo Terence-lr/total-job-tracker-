@@ -51,10 +51,10 @@ const VelocityMeter: React.FC<VelocityMeterProps> = ({ applications }) => {
 
     // Filter applications by time periods
     const weeklyApps = apps.filter(app => 
-      new Date(app.dateApplied) >= oneWeekAgo
+      new Date(app.date_applied) >= oneWeekAgo
     );
     const monthlyApps = apps.filter(app => 
-      new Date(app.dateApplied) >= oneMonthAgo
+      new Date(app.date_applied) >= oneMonthAgo
     );
 
     // Calculate daily average
@@ -63,7 +63,7 @@ const VelocityMeter: React.FC<VelocityMeterProps> = ({ applications }) => {
     // Calculate streak (consecutive days with applications)
     let streak = 0;
     const sortedApps = apps
-      .map(app => new Date(app.dateApplied))
+      .map(app => new Date(app.date_applied))
       .sort((a, b) => b.getTime() - a.getTime());
 
     let currentDate = new Date(now);
@@ -87,7 +87,7 @@ const VelocityMeter: React.FC<VelocityMeterProps> = ({ applications }) => {
     // Calculate best week
     const weeklyGroups: { [key: string]: number } = {};
     monthlyApps.forEach(app => {
-      const weekStart = new Date(app.dateApplied);
+      const weekStart = new Date(app.date_applied);
       weekStart.setDate(weekStart.getDate() - weekStart.getDay());
       const weekKey = weekStart.toISOString().split('T')[0];
       weeklyGroups[weekKey] = (weeklyGroups[weekKey] || 0) + 1;
@@ -97,7 +97,7 @@ const VelocityMeter: React.FC<VelocityMeterProps> = ({ applications }) => {
 
     // Determine momentum
     const lastWeek = apps.filter(app => {
-      const appDate = new Date(app.dateApplied);
+      const appDate = new Date(app.date_applied);
       const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
       return appDate >= twoWeeksAgo && appDate < oneWeekAgo;
     }).length;

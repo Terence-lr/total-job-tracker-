@@ -122,3 +122,4 @@ const ResumeImport: React.FC<ResumeImportProps> = ({ onAccept }) => {
 };
 
 export default ResumeImport;
+

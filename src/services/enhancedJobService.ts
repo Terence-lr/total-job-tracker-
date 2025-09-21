@@ -1,15 +1,41 @@
 import { supabase } from '../lib/supabase';
 import { JobApplication, JobFilters } from '../types/job';
 
-export const createJobApplication = async (job: Omit<JobApplication, 'id' | 'createdAt' | 'updatedAt'>) => {
+export const createJobApplication = async (job: Omit<JobApplication, 'id' | 'created_at' | 'updated_at'>) => {
+  // Map the job data to match database column names
+  const dbJob = {
+    company: job.company,
+    position: job.position,
+    date_applied: job.date_applied,
+    status: job.status,
+    salary: job.salary,
+    notes: job.notes,
+    job_url: job.job_url,
+    user_id: job.user_id
+  };
+
   const { data, error } = await supabase
     .from('jobs')
-    .insert(job)
+    .insert(dbJob)
     .select()
     .single();
 
   if (error) throw error;
-  return data;
+  
+  // Map the returned data to match TypeScript interface
+  return {
+    id: data.id,
+    company: data.company,
+    position: data.position,
+    date_applied: data.date_applied,
+    status: data.status,
+    salary: data.salary || '',
+    notes: data.notes || '',
+    job_url: data.job_url || '',
+    user_id: data.user_id,
+    created_at: new Date(data.created_at),
+    updated_at: new Date(data.updated_at || data.created_at)
+  };
 };
 
 export const getJobsWithFilters = async (
@@ -32,11 +58,11 @@ export const getJobsWithFilters = async (
 
   // Date range filtering
   if (filters.dateFrom) {
-    query = query.gte('dateApplied', filters.dateFrom);
+    query = query.gte('date_applied', filters.dateFrom);
   }
 
   if (filters.dateTo) {
-    query = query.lte('dateApplied', filters.dateTo);
+    query = query.lte('date_applied', filters.dateTo);
   }
 
   // Search filtering (company, position, notes)
@@ -56,10 +82,24 @@ export const getJobsWithFilters = async (
   }
 
   const { data, error } = await query
-    .order('dateApplied', { ascending: false });
+    .order('date_applied', { ascending: false });
 
   if (error) throw error;
-  return data || [];
+  
+  // Map database columns to TypeScript interface
+  return (data || []).map(job => ({
+    id: job.id,
+    company: job.company,
+    position: job.position,
+    date_applied: job.date_applied,
+    status: job.status as any,
+    salary: job.salary || '',
+    notes: job.notes || '',
+    job_url: job.job_url || '',
+    user_id: job.user_id,
+    created_at: new Date(job.created_at),
+    updated_at: new Date(job.updated_at || job.created_at)
+  }));
 };
 
 export const subscribeToJobsChanges = (
@@ -119,7 +159,21 @@ export const updateJobApplication = async (id: string, updates: Partial<JobAppli
     .single();
 
   if (error) throw error;
-  return data;
+  
+  // Map the returned data to match TypeScript interface
+  return {
+    id: data.id,
+    company: data.company,
+    position: data.position,
+    date_applied: data.date_applied,
+    status: data.status,
+    salary: data.salary || '',
+    notes: data.notes || '',
+    job_url: data.job_url || '',
+    user_id: data.user_id,
+    created_at: new Date(data.created_at),
+    updated_at: new Date(data.updated_at || data.created_at)
+  };
 };
 
 export const deleteJobApplication = async (id: string, userId: string) => {
@@ -139,8 +193,8 @@ export const deleteJob = deleteJobApplication;
 export const getJobStats = async (userId: string) => {
   const { data, error } = await supabase
     .from('jobs')
-    .select('status, dateApplied')
-    .eq('userId', userId);
+    .select('status, date_applied')
+    .eq('user_id', userId);
 
   if (error) throw error;
 
@@ -155,7 +209,7 @@ export const getJobStats = async (userId: string) => {
     stats.byStatus[job.status] = (stats.byStatus[job.status] || 0) + 1;
     
     // Count by month
-    const month = new Date(job.dateApplied).toISOString().substring(0, 7);
+    const month = new Date(job.date_applied).toISOString().substring(0, 7);
     stats.byMonth[month] = (stats.byMonth[month] || 0) + 1;
   });
 
@@ -183,11 +237,11 @@ export const exportJobsToCSV = async (
     ...jobs.map(job => [
       `"${job.company}"`,
       `"${job.position}"`,
-      job.dateApplied,
+      job.date_applied,
       job.status,
       `"${job.salary || ''}"`,
       `"${job.notes || ''}"`,
-      `"${job.jobUrl || ''}"`
+      `"${job.job_url || ''}"`
     ].join(','))
   ].join('\n');
 

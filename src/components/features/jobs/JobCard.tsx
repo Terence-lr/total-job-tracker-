@@ -77,7 +77,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete }) => {
       <div className="space-y-3">
         <div className="flex items-center text-sm text-var(--muted)">
           <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
-          <span className="truncate">Applied: {formatDate(job.dateApplied)}</span>
+          <span className="truncate">Applied: {formatDate(job.date_applied)}</span>
         </div>
 
         <div className="flex items-center text-sm text-var(--muted)">
@@ -85,11 +85,11 @@ const JobCard: React.FC<JobCardProps> = ({ job, onEdit, onDelete }) => {
           <span className="truncate">Salary: {formatSalary(job.salary)}</span>
         </div>
 
-        {job.jobUrl && (
+        {job.job_url && (
           <div className="flex items-center text-sm">
             <ExternalLink className="h-4 w-4 mr-2 text-var(--muted) flex-shrink-0" />
             <a
-              href={job.jobUrl}
+              href={job.job_url}
               target="_blank"
               rel="noopener noreferrer"
               className="text-var(--accent) hover:text-var(--accent-2) truncate min-h-[44px] flex items-center link-underline"

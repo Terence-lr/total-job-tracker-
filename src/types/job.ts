@@ -2,14 +2,14 @@ export interface JobApplication {
   id: string;
   company: string;
   position: string;
-  dateApplied: string;
+  date_applied: string;
   status: JobStatus;
   salary?: string;
   notes?: string;
-  jobUrl?: string;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
+  job_url?: string;
+  user_id: string;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export type JobStatus = 'Applied' | 'Interview' | 'Offer' | 'Rejected' | 'Withdrawn' | 'Archived';
@@ -17,11 +17,11 @@ export type JobStatus = 'Applied' | 'Interview' | 'Offer' | 'Rejected' | 'Withdr
 export interface CreateJobApplication {
   company: string;
   position: string;
-  dateApplied: string;
+  date_applied: string;
   status: JobStatus;
   salary?: string;
   notes?: string;
-  jobUrl?: string;
+  job_url?: string;
 }
 
 export interface UpdateJobApplication extends Partial<CreateJobApplication> {

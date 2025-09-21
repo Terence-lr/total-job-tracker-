@@ -57,7 +57,7 @@ const EnhancedDashboard: React.FC = () => {
       const newFollowUps: FollowUp[] = [];
       userJobs.forEach(job => {
         if (job.status === 'Applied' || job.status === 'Interview') {
-          const jobFollowUps = generateFollowUps(job.id, job.status, job.dateApplied);
+          const jobFollowUps = generateFollowUps(job.id, job.status, job.date_applied);
           newFollowUps.push(...jobFollowUps);
         }
       });
@@ -87,11 +87,11 @@ const EnhancedDashboard: React.FC = () => {
     }
 
     if (filters.dateFrom) {
-      filtered = filtered.filter(job => new Date(job.dateApplied) >= new Date(filters.dateFrom!));
+      filtered = filtered.filter(job => new Date(job.date_applied) >= new Date(filters.dateFrom!));
     }
 
     if (filters.dateTo) {
-      filtered = filtered.filter(job => new Date(job.dateApplied) <= new Date(filters.dateTo!));
+      filtered = filtered.filter(job => new Date(job.date_applied) <= new Date(filters.dateTo!));
     }
 
     setFilteredJobs(filtered);
@@ -115,7 +115,7 @@ const EnhancedDashboard: React.FC = () => {
     try {
       setIsSubmitting(true);
       setError(null);
-      await createJobApplication({ ...jobData, userId: user.id });
+      await createJobApplication({ ...jobData, user_id: user.id });
       await loadJobs();
       setShowJobForm(false);
     } catch (err: any) {

@@ -125,7 +125,7 @@ const AnimatedJobCard: React.FC<AnimatedJobCardProps> = ({
         <div className="space-y-3 mb-4">
           <div className="flex items-center text-sm text-gray-400">
             <Calendar className="w-4 h-4 mr-2" />
-            Applied {formatDate(job.dateApplied)}
+            Applied {formatDate(job.date_applied)}
           </div>
           
           {job.salary && (
@@ -135,11 +135,11 @@ const AnimatedJobCard: React.FC<AnimatedJobCardProps> = ({
             </div>
           )}
           
-          {job.jobUrl && (
+          {job.job_url && (
             <div className="flex items-center text-sm text-blue-400">
               <ExternalLink className="w-4 h-4 mr-2" />
               <a 
-                href={job.jobUrl} 
+                href={job.job_url} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="hover:underline"
@@ -177,7 +177,7 @@ const AnimatedJobCard: React.FC<AnimatedJobCardProps> = ({
           </div>
           
           <div className="text-xs text-gray-500">
-            {formatDate(job.createdAt.toString())}
+            {formatDate(job.created_at.toString())}
           </div>
         </div>
 

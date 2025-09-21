@@ -163,3 +163,4 @@ const FollowUpsWidget: React.FC<FollowUpsWidgetProps> = ({
 };
 
 export default FollowUpsWidget;
+
