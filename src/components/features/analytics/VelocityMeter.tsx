@@ -9,10 +9,10 @@ import {
   Award,
   Clock
 } from 'lucide-react';
-import { AnimatedCard } from '../../ui/AnimatedCard';
-import { ProgressRing } from '../../ui/ProgressRing';
-import { AnimatedCounter } from '../../ui/AnimatedCounter';
-import { InteractiveCard } from '../../ui/InteractiveCard';
+import { AnimatedCard } from '@/ui/AnimatedCard';
+import { ProgressRing } from '@/ui/ProgressRing';
+import { AnimatedCounter } from '@/ui/AnimatedCounter';
+import { InteractiveCard } from '@/ui/InteractiveCard';
 
 interface VelocityData {
   weeklyApplications: number;

@@ -12,9 +12,9 @@ import {
   DollarSign,
   Clock
 } from 'lucide-react';
-import { AnimatedCard } from '../../ui/AnimatedCard';
-import { ProgressRing } from '../../ui/ProgressRing';
-import { AnimatedCounter } from '../../ui/AnimatedCounter';
+import { AnimatedCard } from '@/ui/AnimatedCard';
+import { ProgressRing } from '@/ui/ProgressRing';
+import { AnimatedCounter } from '@/ui/AnimatedCounter';
 import clsx from 'clsx';
 
 interface JobMatchScoreProps {

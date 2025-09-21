@@ -1,6 +1,17 @@
 import { supabase } from '../lib/supabase';
 import { JobApplication, JobFilters } from '../types/job';
 
+export const createJobApplication = async (job: Omit<JobApplication, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const { data, error } = await supabase
+    .from('jobs')
+    .insert(job)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
 export const getJobsWithFilters = async (
   userId: string,
   filters: JobFilters
@@ -76,24 +87,54 @@ export const subscribeToJobsChanges = (
 
 export const bulkUpdateJobs = async (
   jobIds: string[],
-  updates: Partial<JobApplication>
+  updates: Partial<JobApplication>,
+  userId: string
 ): Promise<void> => {
   const { error } = await supabase
     .from('jobs')
     .update(updates)
-    .in('id', jobIds);
+    .in('id', jobIds)
+    .eq('user_id', userId);
 
   if (error) throw error;
 };
 
-export const bulkDeleteJobs = async (jobIds: string[]): Promise<void> => {
+export const bulkDeleteJobs = async (jobIds: string[], userId: string): Promise<void> => {
   const { error } = await supabase
     .from('jobs')
     .delete()
-    .in('id', jobIds);
+    .in('id', jobIds)
+    .eq('user_id', userId);
 
   if (error) throw error;
 };
+
+export const updateJobApplication = async (id: string, updates: Partial<JobApplication>, userId: string) => {
+  const { data, error } = await supabase
+    .from('jobs')
+    .update(updates)
+    .eq('id', id)
+    .eq('user_id', userId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const deleteJobApplication = async (id: string, userId: string) => {
+  const { error } = await supabase
+    .from('jobs')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', userId);
+
+  if (error) throw error;
+};
+
+// Alias functions for compatibility
+export const updateJob = updateJobApplication;
+export const deleteJob = deleteJobApplication;
 
 export const getJobStats = async (userId: string) => {
   const { data, error } = await supabase

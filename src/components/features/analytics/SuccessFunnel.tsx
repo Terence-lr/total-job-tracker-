@@ -10,9 +10,9 @@ import {
   Percent,
   BarChart3
 } from 'lucide-react';
-import { AnimatedCard } from '../../ui/AnimatedCard';
-import { AnimatedCounter } from '../../ui/AnimatedCounter';
-import { InteractiveCard } from '../../ui/InteractiveCard';
+import { AnimatedCard } from '@/ui/AnimatedCard';
+import { AnimatedCounter } from '@/ui/AnimatedCounter';
+import { InteractiveCard } from '@/ui/InteractiveCard';
 import clsx from 'clsx';
 
 interface FunnelStage {

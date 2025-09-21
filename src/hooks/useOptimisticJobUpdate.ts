@@ -66,7 +66,7 @@ export const useOptimisticJobUpdate = (initialJobs: JobApplication[]) => {
     try {
       // Import the bulk update function
       const { bulkUpdateJobs: bulkUpdate } = await import('../services/enhancedJobService');
-      await bulkUpdate(jobIds, updates);
+      await bulkUpdate(jobIds, updates, userId);
     } catch (error) {
       // Revert on error
       setJobs(current => 
@@ -92,7 +92,7 @@ export const useOptimisticJobUpdate = (initialJobs: JobApplication[]) => {
     try {
       // Import the bulk delete function
       const { bulkDeleteJobs: bulkDelete } = await import('../services/enhancedJobService');
-      await bulkDelete(jobIds);
+      await bulkDelete(jobIds, userId);
     } catch (error) {
       // Revert on error
       setJobs(current => [...current, ...originalJobs]);

@@ -13,9 +13,9 @@ import {
   Zap,
   Target
 } from 'lucide-react';
-import { AnimatedCard } from '../../ui/AnimatedCard';
-import { InteractiveCard } from '../../ui/InteractiveCard';
-import { AnimatedCounter } from '../../ui/AnimatedCounter';
+import { AnimatedCard } from '@/ui/AnimatedCard';
+import { InteractiveCard } from '@/ui/InteractiveCard';
+import { AnimatedCounter } from '@/ui/AnimatedCounter';
 import clsx from 'clsx';
 
 interface FollowUpReminder {

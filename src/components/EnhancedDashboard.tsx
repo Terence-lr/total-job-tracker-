@@ -3,8 +3,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { JobApplication, CreateJobApplication, JobFilters as JobFiltersType } from '../types/job';
 import { 
   createJobApplication, 
-  getJobApplications
-} from '../services/jobService';
+  getJobsWithFilters
+} from '../services/enhancedJobService';
 import JobForm from './features/jobs/JobForm';
 import JobFilters from './features/jobs/JobFilters';
 import ProfessionalNavigation from './layouts/ProfessionalNavigation';
@@ -42,7 +42,7 @@ const EnhancedDashboard: React.FC = () => {
   const { ref: jobsRef, isVisible: jobsVisible } = useScrollReveal();
 
   // Use optimistic updates
-  const { jobs: optimisticJobs, updateJob, deleteJob, bulkUpdateJobs, bulkDeleteJobs } = useOptimisticJobUpdate(jobs);
+  const { jobs: optimisticJobs, updateJob, deleteJob, bulkUpdateJobs, bulkDeleteJobs } = useOptimisticJobUpdate(jobs, user?.id || '');
 
   // Load jobs on component mount
   useEffect(() => {
@@ -62,7 +62,7 @@ const EnhancedDashboard: React.FC = () => {
     try {
       setIsLoading(true);
       setError(null);
-      const userJobs = await getJobApplications(user.id);
+      const userJobs = await getJobsWithFilters(user.id, filters);
       setJobs(userJobs);
       
       // Generate follow-ups for jobs
@@ -115,7 +115,7 @@ const EnhancedDashboard: React.FC = () => {
     try {
       setIsSubmitting(true);
       setError(null);
-      await createJobApplication(jobData, user.id);
+      await createJobApplication({ ...jobData, userId: user.id });
       await loadJobs();
       setShowJobForm(false);
     } catch (err: any) {
