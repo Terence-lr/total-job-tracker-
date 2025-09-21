@@ -3,6 +3,17 @@ export { default as ApplicationPipeline } from './ApplicationPipeline';
 export { default as AnimatedJobCard } from './jobs/AnimatedJobCard';
 export { default as AdvancedMetrics } from './analytics/AdvancedMetrics';
 
+// Advanced Analytics Components
+export { default as AnalyticsDashboard } from './analytics/AnalyticsDashboard';
+export { default as VelocityMeter } from './analytics/VelocityMeter';
+export { default as SuccessFunnel } from './analytics/SuccessFunnel';
+
+// AI-Powered Components
+export { default as JobMatchScore } from './ai/JobMatchScore';
+
+// Reminder System
+export { default as FollowUpEngine } from './reminders/FollowUpEngine';
+
 // Analytics Components
 export { default as DashboardMetrics } from './analytics/DashboardMetrics';
 export { default as StatusDistribution } from './analytics/StatusDistribution';
