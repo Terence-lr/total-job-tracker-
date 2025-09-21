@@ -22,8 +22,8 @@ const ProfessionalNavigation: React.FC = () => {
         className={clsx(
           'flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors',
           isActive
-            ? 'bg-blue-100 text-blue-700'
-            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+            ? 'bg-red-900/30 text-red-400'
+            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
         )}
       >
         {icon && <span className="w-4 h-4">{icon}</span>}
@@ -33,15 +33,15 @@ const ProfessionalNavigation: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+    <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center space-x-8">
             <Link 
               to="/dashboard" 
-              className="flex items-center space-x-2 text-xl font-bold text-gray-900"
+              className="flex items-center space-x-2 text-xl font-bold text-white"
             >
-              <Briefcase className="w-6 h-6 text-blue-600" />
+              <Briefcase className="w-6 h-6 text-red-600" />
               <span>JobTracker Pro</span>
             </Link>
             <nav className="hidden md:flex space-x-1">
@@ -61,7 +61,7 @@ const ProfessionalNavigation: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="hidden sm:flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+              className="hidden sm:flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
             >
               <Plus className="w-4 h-4" />
               <span>Add Job</span>

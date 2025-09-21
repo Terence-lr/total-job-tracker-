@@ -1,17 +1,17 @@
-// Design System Tokens
+// TERENCE RICHARDSON SIGNATURE DESIGN SYSTEM
 export const COLORS = {
-  // Primary Colors
+  // Primary Colors - Black Theme
   primary: {
-    50: '#eff6ff',
-    100: '#dbeafe',
-    200: '#bfdbfe',
-    300: '#93c5fd',
-    400: '#60a5fa',
-    500: '#3b82f6',
-    600: '#2563eb',
-    700: '#1d4ed8',
-    800: '#1e40af',
-    900: '#1e3a8a',
+    50: '#f7f7f8',
+    100: '#e5e5e5',
+    200: '#d4d4d4',
+    300: '#a3a3a3',
+    400: '#737373',
+    500: '#000000', // Primary black
+    600: '#0a0a0a', // Secondary black
+    700: '#111111', // Panel black
+    800: '#0a0a0a',
+    900: '#000000',
   },
   
   // Secondary Colors
@@ -28,15 +28,15 @@ export const COLORS = {
     900: '#0f172a',
   },
   
-  // Accent Colors
+  // Accent Colors - Signature Red
   accent: {
     50: '#fef2f2',
     100: '#fee2e2',
     200: '#fecaca',
     300: '#fca5a5',
     400: '#f87171',
-    500: '#ef4444',
-    600: '#dc2626',
+    500: '#dc2626', // Signature red
+    600: '#b91c1c', // Red hover
     700: '#b91c1c',
     800: '#991b1b',
     900: '#7f1d1d',
@@ -82,18 +82,18 @@ export const COLORS = {
     900: '#7f1d1d',
   },
   
-  // Neutral Colors
+  // Neutral Colors - Dark Theme
   neutral: {
-    50: '#fafafa',
-    100: '#f5f5f5',
-    200: '#e5e5e5',
-    300: '#d4d4d4',
-    400: '#a3a3a3',
-    500: '#737373',
-    600: '#525252',
-    700: '#404040',
-    800: '#262626',
-    900: '#171717',
+    50: '#ffffff', // Text primary
+    100: '#e5e5e5', // Text secondary
+    200: '#9ca3af', // Text muted
+    300: '#6b7280',
+    400: '#4b5563',
+    500: '#374151',
+    600: '#2d2d2d', // Border
+    700: '#3d3d3d', // Border hover
+    800: '#1f2937',
+    900: '#111827',
   },
 } as const;
 
@@ -311,6 +311,62 @@ export const PAGINATION = {
   MAX_PAGE_SIZE: 100,
 } as const;
 
+// TERENCE RICHARDSON SIGNATURE DESIGN TOKENS
+export const SIGNATURE_TOKENS = {
+  // Core Colors
+  primaryBg: '#000000',
+  secondaryBg: '#0a0a0a',
+  panelBg: '#111111',
+  accent: '#dc2626',
+  accentHover: '#b91c1c',
+  accentGlow: 'rgba(220, 38, 38, 0.5)',
+  
+  // Text Colors
+  textPrimary: '#ffffff',
+  textSecondary: '#e5e5e5',
+  textMuted: '#9ca3af',
+  
+  // Borders & Overlays
+  border: '#2d2d2d',
+  borderHover: '#3d3d3d',
+  overlay: 'rgba(0, 0, 0, 0.8)',
+  
+  // Status Colors
+  success: '#10b981',
+  warning: '#f59e0b',
+  info: '#3b82f6',
+  error: '#ef4444',
+  
+  // Spacing Scale (8px grid)
+  spaceXs: '0.5rem',
+  spaceSm: '0.75rem',
+  spaceMd: '1rem',
+  spaceLg: '1.5rem',
+  spaceXl: '2rem',
+  space2xl: '3rem',
+  
+  // Typography Scale
+  fontXs: '0.75rem',
+  fontSm: '0.875rem',
+  fontMd: '1rem',
+  fontLg: '1.125rem',
+  fontXl: '1.5rem',
+  font2xl: '2rem',
+  font3xl: '2.5rem',
+  
+  // Animation
+  transitionFast: '150ms ease',
+  transitionBase: '250ms ease',
+  transitionSlow: '350ms ease',
+  
+  // Shadows
+  shadowSm: '0 1px 2px rgba(0, 0, 0, 0.5)',
+  shadowMd: '0 4px 6px rgba(0, 0, 0, 0.5)',
+  shadowLg: '0 10px 15px rgba(0, 0, 0, 0.5)',
+  shadowXl: '0 20px 25px rgba(0, 0, 0, 0.5)',
+  shadowGlow: '0 0 20px rgba(220, 38, 38, 0.5)',
+} as const;
+
 // Export all constants as a single object for easy access
 export const DESIGN_TOKENS = {
   colors: COLORS,
@@ -329,4 +385,5 @@ export const DESIGN_TOKENS = {
   storage: STORAGE_KEYS,
   validation: VALIDATION,
   pagination: PAGINATION,
+  signature: SIGNATURE_TOKENS,
 } as const;

@@ -204,17 +204,18 @@ const EnhancedDashboard: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-black">
+        <div className="grid-overlay" />
         <ProfessionalNavigation />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Error Message */}
           {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
+            <div className="mb-6 bg-red-900/20 border border-red-500/30 rounded-md p-4">
               <div className="flex">
                 <AlertCircle className="h-5 w-5 text-red-400" />
                 <div className="ml-3">
-                  <p className="text-sm text-red-800">{error}</p>
+                  <p className="text-sm text-red-300">{error}</p>
                 </div>
               </div>
             </div>
@@ -237,10 +238,10 @@ const EnhancedDashboard: React.FC = () => {
             </div>
           </div>
 
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Your Job Applications</h1>
+          <h1 className="text-2xl font-bold text-white mb-6">Your Job Applications</h1>
 
           {/* Filters */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="signature-card p-6 mb-6">
             <JobFilters
               filters={filters}
               onFiltersChange={setFilters}
@@ -280,14 +281,14 @@ const EnhancedDashboard: React.FC = () => {
             ) : paginatedJobs.length === 0 ? (
               <div className="text-center py-12">
                 <Briefcase className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No job applications</h3>
-                <p className="mt-1 text-sm text-gray-500">
+                <h3 className="mt-2 text-sm font-medium text-white">No job applications</h3>
+                <p className="mt-1 text-sm text-gray-400">
                   Get started by adding your first job application.
                 </p>
                 <div className="mt-6">
                   <button
                     onClick={() => setShowJobForm(true)}
-                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="signature-btn inline-flex items-center"
                   >
                     <Briefcase className="w-4 h-4 mr-2" />
                     Add Job Application
