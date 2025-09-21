@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -88,13 +88,9 @@ const Login: React.FC = () => {
             )}
             
             <div className="form-group">
-              <label htmlFor="email" className="form-label">
-                Email address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-var(--muted)" />
-                </div>
+              <label htmlFor="email">Email address</label>
+              <div className="input">
+                <span className="input__icon">📧</span>
                 <input
                   id="email"
                   name="email"
@@ -103,20 +99,15 @@ const Login: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="form-input w-full pl-10"
                   placeholder="Enter your email"
                 />
               </div>
             </div>
             
             <div className="form-group">
-              <label htmlFor="password" className="form-label">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-var(--muted)" />
-                </div>
+              <label htmlFor="password">Password</label>
+              <div className="input" style={{ gridTemplateColumns: '28px 1fr 28px' }}>
+                <span className="input__icon">🔒</span>
                 <input
                   id="password"
                   name="password"
@@ -125,20 +116,15 @@ const Login: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="form-input w-full pl-10 pr-10"
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center min-h-[44px] min-w-[44px] justify-center cursor-halo"
+                  className="input__icon cursor-halo"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-var(--muted)" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-var(--muted)" />
-                  )}
+                  {showPassword ? '🙈' : '👁️'}
                 </button>
               </div>
             </div>

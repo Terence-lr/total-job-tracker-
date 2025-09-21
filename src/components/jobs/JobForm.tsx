@@ -23,6 +23,16 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Get profile skills from localStorage
+  const getProfileSkills = (): string[] => {
+    const saved = localStorage.getItem('profile_demo');
+    if (saved) {
+      const profile = JSON.parse(saved);
+      return profile.skills?.map((s: any) => s.name) || [];
+    }
+    return [];
+  };
+
   useEffect(() => {
     if (job) {
       setFormData({
@@ -279,7 +289,7 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
               }));
             }}
             profile={{
-              skills: ['React', 'TypeScript', 'Node.js', 'Python', 'SQL'], // This should come from user profile
+              skills: getProfileSkills(), // Get from localStorage
               summary: 'Full-stack developer with experience in modern web technologies'
             }}
           />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { JobFilters as JobFiltersType, JobStatus } from '../../types/job';
-import { Search, Filter, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { Filter, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface JobFiltersProps {
   filters: JobFiltersType;
@@ -66,79 +66,64 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
 
       <div className={`filters-grid ${isExpanded ? 'block' : 'hidden md:grid'}`}>
         {/* Search */}
-        <div>
-          <label htmlFor="search" className="form-label">
-            Search
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-var(--muted)" />
-            </div>
+        <div className="form-group">
+          <label htmlFor="search">Search</label>
+          <div className="input">
+            <span className="input__icon">🔎</span>
             <input
               type="text"
               id="search"
               value={filters.search || ''}
               onChange={handleSearchChange}
-              className="form-input w-full pl-10"
               placeholder="Company, position, notes..."
             />
           </div>
         </div>
 
         {/* Status Filter */}
-        <div>
-          <label htmlFor="status" className="form-label">
-            Status
-          </label>
-          <select
-            id="status"
-            value={filters.status || ''}
-            onChange={handleStatusChange}
-            className="form-input w-full"
-          >
-            <option value="">All Statuses</option>
-            {statusOptions.map(status => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
+        <div className="form-group">
+          <label htmlFor="status">Status</label>
+          <div className="input">
+            <span className="input__icon">📊</span>
+            <select
+              id="status"
+              value={filters.status || ''}
+              onChange={handleStatusChange}
+            >
+              <option value="">All Statuses</option>
+              {statusOptions.map(status => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Date From */}
-        <div>
-          <label htmlFor="dateFrom" className="form-label">
-            From Date
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Calendar className="h-4 w-4 text-var(--muted)" />
-            </div>
+        <div className="form-group">
+          <label htmlFor="dateFrom">From Date</label>
+          <div className="input">
+            <span className="input__icon">📅</span>
             <input
               type="date"
               id="dateFrom"
               value={filters.dateFrom || ''}
               onChange={handleDateFromChange}
-              className="form-input w-full pl-10"
             />
           </div>
         </div>
 
         {/* Date To */}
-        <div>
-          <label htmlFor="dateTo" className="form-label">
-            To Date
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Calendar className="h-4 w-4 text-var(--muted)" />
-            </div>
+        <div className="form-group">
+          <label htmlFor="dateTo">To Date</label>
+          <div className="input">
+            <span className="input__icon">📅</span>
             <input
               type="date"
               id="dateTo"
               value={filters.dateTo || ''}
               onChange={handleDateToChange}
-              className="form-input w-full pl-10"
             />
           </div>
         </div>

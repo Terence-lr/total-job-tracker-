@@ -1,0 +1,39 @@
+.welcome { 
+  display: grid; 
+  place-items: center; 
+  min-height: calc(100dvh - var(--header-h));
+}
+
+.welcome__wrap { 
+  display: grid; 
+  gap: var(--s-7); 
+  place-items: center;
+}
+
+.welcome__neon { 
+  filter: drop-shadow(0 10px 24px rgba(225,29,72,.25));
+}
+
+.welcome__start { 
+  font-weight: 600; 
+  padding-inline: 24px;
+}
+
+.briefcase__overlay {
+  position: fixed; 
+  inset: 0; 
+  display: grid; 
+  place-items: center;
+  background: rgba(0,0,0,.6); 
+  backdrop-filter: blur(2px);
+}
+
+.briefcase__card {
+  position: absolute; 
+  width: min(520px, 92vw); 
+  height: 360px; 
+  border-radius: 24px;
+  background: var(--panel); 
+  border: 1px solid var(--border); 
+  box-shadow: var(--shadow);
+}

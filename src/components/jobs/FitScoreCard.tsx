@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { FitScoreResult } from '../../types/fitScore';
 import { analyzeJobFitWithAI } from '../../services/fitScoreService';
-import { FileText, Copy, Loader2, Target, AlertCircle } from 'lucide-react';
+import SkillsCompare from '../SkillsCompare';
+import { FileText, Copy, Loader2, Target, AlertCircle, GitCompare } from 'lucide-react';
 
 interface FitScoreCardProps {
   onCopyToNotes: (text: string) => void;
@@ -16,6 +17,7 @@ const FitScoreCard: React.FC<FitScoreCardProps> = ({ onCopyToNotes, profile }) =
   const [result, setResult] = useState<FitScoreResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showCompare, setShowCompare] = useState(false);
 
   const handleAnalyze = async () => {
     if (!jobDescription.trim()) {
@@ -112,13 +114,22 @@ const FitScoreCard: React.FC<FitScoreCardProps> = ({ onCopyToNotes, profile }) =
           <div className="mt-6 p-4 bg-var(--panel) border border-var(--border) rounded-lg">
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-md font-medium text-var(--text)">Analysis Results</h4>
-              <button
-                onClick={handleCopyToNotes}
-                className="btn btn-secondary cursor-halo"
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copy to Notes
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setShowCompare(!showCompare)}
+                  className="btn btn-outline cursor-halo"
+                >
+                  <GitCompare className="h-4 w-4 mr-2" />
+                  {showCompare ? 'Hide' : 'Compare'}
+                </button>
+                <button
+                  onClick={handleCopyToNotes}
+                  className="btn btn-secondary cursor-halo"
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy to Notes
+                </button>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -177,6 +188,16 @@ const FitScoreCard: React.FC<FitScoreCardProps> = ({ onCopyToNotes, profile }) =
                 <p className="text-sm text-var(--muted) leading-relaxed">{result.notes}</p>
               </div>
             </div>
+
+            {/* Skills Compare */}
+            {showCompare && (
+              <div className="mt-4 pt-4 border-t border-var(--border)">
+                <SkillsCompare 
+                  userSkills={profile.skills} 
+                  jobKeywords={result.missingKeywords} 
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
