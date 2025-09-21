@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Briefcase, TrendingUp, Calendar, Clock, ArrowRight } from 'lucide-react';
-import { fadeInUp, staggerContainer, staggerItem } from '../../../lib/animations';
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -14,10 +13,9 @@ interface StatCardProps {
 const StatCard: React.FC<StatCardProps> = ({ icon, value, label, delay = 0 }) => {
   return (
     <motion.div
-      variants={staggerItem}
-      initial="hidden"
-      animate="visible"
-      transition={{ delay }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.5 }}
       className="signature-card p-6 text-center cursor-pointer group"
     >
       <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
@@ -57,14 +55,16 @@ const EnhancedWelcome: React.FC = () => {
       <div className="grid-overlay" />
       
       <motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
         className="text-center z-10 px-8 max-w-4xl mx-auto"
       >
         {/* Logo Section */}
         <motion.div
-          variants={fadeInUp}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           className="mb-12"
         >
           <motion.h1
@@ -89,7 +89,9 @@ const EnhancedWelcome: React.FC = () => {
 
         {/* Stats Grid */}
         <motion.div
-          variants={staggerContainer}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 max-w-2xl mx-auto"
         >
           <StatCard
@@ -120,7 +122,9 @@ const EnhancedWelcome: React.FC = () => {
 
         {/* CTA Button */}
         <motion.div
-          variants={fadeInUp}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
           className="mb-8"
         >
           <Link to="/dashboard">
@@ -137,7 +141,9 @@ const EnhancedWelcome: React.FC = () => {
 
         {/* Loading Animation */}
         <motion.div
-          variants={fadeInUp}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
           className="flex justify-center"
         >
           <div className="loading-dots">
