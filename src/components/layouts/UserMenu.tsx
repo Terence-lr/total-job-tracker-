@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
+import { User, Settings, LogOut, ChevronDown, Download, Upload, Bell, Shield, HelpCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -40,7 +40,7 @@ const UserMenu: React.FC = () => {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+        <Menu.Items className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
           <div className="py-1">
             <Menu.Item>
               {({ active }) => (
@@ -68,6 +68,73 @@ const UserMenu: React.FC = () => {
                 </button>
               )}
             </Menu.Item>
+            <div className="border-t border-gray-100 my-1"></div>
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  onClick={() => {/* TODO: Implement export functionality */}}
+                  className={`${
+                    active ? 'bg-gray-100' : ''
+                  } flex items-center w-full px-4 py-2 text-sm text-gray-700`}
+                >
+                  <Download className="w-4 h-4 mr-3" />
+                  Export Data
+                </button>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  onClick={() => {/* TODO: Implement import functionality */}}
+                  className={`${
+                    active ? 'bg-gray-100' : ''
+                  } flex items-center w-full px-4 py-2 text-sm text-gray-700`}
+                >
+                  <Upload className="w-4 h-4 mr-3" />
+                  Import Data
+                </button>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  onClick={() => {/* TODO: Implement notifications settings */}}
+                  className={`${
+                    active ? 'bg-gray-100' : ''
+                  } flex items-center w-full px-4 py-2 text-sm text-gray-700`}
+                >
+                  <Bell className="w-4 h-4 mr-3" />
+                  Notifications
+                </button>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  onClick={() => {/* TODO: Implement privacy settings */}}
+                  className={`${
+                    active ? 'bg-gray-100' : ''
+                  } flex items-center w-full px-4 py-2 text-sm text-gray-700`}
+                >
+                  <Shield className="w-4 h-4 mr-3" />
+                  Privacy & Security
+                </button>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  onClick={() => {/* TODO: Implement help/support */}}
+                  className={`${
+                    active ? 'bg-gray-100' : ''
+                  } flex items-center w-full px-4 py-2 text-sm text-gray-700`}
+                >
+                  <HelpCircle className="w-4 h-4 mr-3" />
+                  Help & Support
+                </button>
+              )}
+            </Menu.Item>
+            <div className="border-t border-gray-100 my-1"></div>
             <Menu.Item>
               {({ active }) => (
                 <button

@@ -1,18 +1,21 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Briefcase, BarChart3, Plus } from 'lucide-react';
+import { Briefcase, Plus } from 'lucide-react';
 import UserMenu from './UserMenu';
 import MobileNavigation from '../features/responsive/MobileNavigation';
 import clsx from 'clsx';
 
-const ProfessionalNavigation: React.FC = () => {
+interface ProfessionalNavigationProps {
+  onAddJob?: () => void;
+}
+
+const ProfessionalNavigation: React.FC<ProfessionalNavigationProps> = ({ onAddJob }) => {
   const location = useLocation();
 
-  const NavLink: React.FC<{ href: string; children: React.ReactNode; icon?: React.ReactNode }> = ({ 
+  const NavLink: React.FC<{ href: string; children: React.ReactNode }> = ({ 
     href, 
-    children, 
-    icon 
+    children
   }) => {
     const isActive = location.pathname === href;
     
@@ -20,14 +23,13 @@ const ProfessionalNavigation: React.FC = () => {
       <Link
         to={href}
         className={clsx(
-          'flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+          'px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap',
           isActive
             ? 'bg-red-900/30 text-red-400'
             : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
         )}
       >
-        {icon && <span className="w-4 h-4">{icon}</span>}
-        <span>{children}</span>
+        {children}
       </Link>
     );
   };
@@ -44,14 +46,14 @@ const ProfessionalNavigation: React.FC = () => {
               <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 flex-shrink-0" />
               <span className="truncate">JobTracker Pro</span>
             </Link>
-            <nav className="hidden md:flex space-x-1">
-              <NavLink href="/dashboard" icon={<BarChart3 />}>
+            <nav className="hidden md:flex space-x-2">
+              <NavLink href="/dashboard">
                 Dashboard
               </NavLink>
-              <NavLink href="/jobs" icon={<Briefcase />}>
+              <NavLink href="/jobs">
                 Applications
               </NavLink>
-              <NavLink href="/analytics" icon={<BarChart3 />}>
+              <NavLink href="/analytics">
                 Analytics
               </NavLink>
             </nav>
@@ -61,6 +63,7 @@ const ProfessionalNavigation: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              onClick={onAddJob}
               className="hidden sm:flex items-center space-x-2 bg-red-600 text-white px-3 sm:px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
             >
               <Plus className="w-4 h-4" />

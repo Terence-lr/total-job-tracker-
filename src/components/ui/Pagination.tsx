@@ -56,10 +56,10 @@ const Pagination: React.FC<PaginationProps> = ({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className={clsx(
-            'p-2 rounded-md border border-gray-300',
+            'p-2 rounded-md border border-gray-600',
             currentPage === 1
-              ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
-              : 'bg-white text-gray-700 hover:bg-gray-50'
+              ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+              : 'bg-gray-900 text-gray-300 hover:bg-gray-800'
           )}
         >
           <ChevronLeft className="w-4 h-4" />
@@ -69,15 +69,15 @@ const Pagination: React.FC<PaginationProps> = ({
           {visiblePages.map((page, index) => (
             <React.Fragment key={index}>
               {page === '...' ? (
-                <span className="px-3 py-2 text-gray-500">...</span>
+                <span className="px-3 py-2 text-gray-400">...</span>
               ) : (
                 <button
                   onClick={() => onPageChange(page as number)}
                   className={clsx(
                     'px-3 py-2 rounded-md text-sm font-medium',
                     currentPage === page
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                      ? 'bg-red-600 text-white'
+                      : 'bg-gray-900 text-gray-300 hover:bg-gray-800 border border-gray-600'
                   )}
                 >
                   {page}
@@ -91,17 +91,17 @@ const Pagination: React.FC<PaginationProps> = ({
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className={clsx(
-            'p-2 rounded-md border border-gray-300',
+            'p-2 rounded-md border border-gray-600',
             currentPage === totalPages
-              ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
-              : 'bg-white text-gray-700 hover:bg-gray-50'
+              ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+              : 'bg-gray-900 text-gray-300 hover:bg-gray-800'
           )}
         >
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="text-sm text-gray-700">
+      <div className="text-sm text-gray-300">
         Page {currentPage} of {totalPages}
       </div>
     </div>
