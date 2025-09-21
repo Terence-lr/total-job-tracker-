@@ -64,15 +64,15 @@ const FitScoreCard: React.FC<FitScoreCardProps> = ({ onCopyToNotes, profile }) =
   };
 
   return (
-    <div className="card p-6">
+    <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
       <div className="flex items-center mb-4">
-        <Target className="h-5 w-5 text-var(--accent) mr-2" />
-        <h3 className="text-lg font-medium text-var(--text)">Analyze Job Fit</h3>
+        <Target className="h-5 w-5 text-red-500 mr-2" />
+        <h3 className="text-lg font-medium text-white">Analyze Job Fit</h3>
       </div>
 
       <div className="space-y-4">
-        <div>
-          <label htmlFor="job-description" className="form-label">
+        <div className="space-y-2">
+          <label htmlFor="job-description" className="block text-sm font-medium text-gray-300">
             Job Description
           </label>
           <textarea
@@ -80,22 +80,22 @@ const FitScoreCard: React.FC<FitScoreCardProps> = ({ onCopyToNotes, profile }) =
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
             placeholder="Paste the job description here to analyze how well your skills match..."
-            className="form-input w-full h-32 resize-none"
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent h-32 resize-none"
             rows={6}
           />
         </div>
 
         {error && (
-          <div className="flex items-center p-3 bg-red-50 border border-red-200 rounded-lg">
-            <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
-            <span className="text-sm text-red-700">{error}</span>
+          <div className="flex items-center p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
+            <AlertCircle className="h-4 w-4 text-red-400 mr-2" />
+            <span className="text-sm text-red-300">{error}</span>
           </div>
         )}
 
         <button
           onClick={handleAnalyze}
           disabled={isLoading || !jobDescription.trim()}
-          className="btn btn-primary w-full cursor-halo disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isLoading ? (
             <div className="flex items-center justify-center">
@@ -111,22 +111,22 @@ const FitScoreCard: React.FC<FitScoreCardProps> = ({ onCopyToNotes, profile }) =
         </button>
 
         {result && (
-          <div className="mt-6 p-4 bg-var(--panel) border border-var(--border) rounded-lg">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-md font-medium text-var(--text)">Analysis Results</h4>
-              <div className="flex items-center space-x-2">
+          <div className="mt-6 p-4 bg-gray-700 border border-gray-600 rounded-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-2 sm:space-y-0">
+              <h4 className="text-md font-medium text-white">Analysis Results</h4>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                 <button
                   onClick={() => setShowCompare(!showCompare)}
-                  className="btn btn-outline cursor-halo"
+                  className="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition-colors text-sm"
                 >
-                  <GitCompare className="h-4 w-4 mr-2" />
+                  <GitCompare className="h-4 w-4 mr-2 inline" />
                   {showCompare ? 'Hide' : 'Compare'}
                 </button>
                 <button
                   onClick={handleCopyToNotes}
-                  className="btn btn-secondary cursor-halo"
+                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                 >
-                  <Copy className="h-4 w-4 mr-2" />
+                  <Copy className="h-4 w-4 mr-2 inline" />
                   Copy to Notes
                 </button>
               </div>
@@ -138,7 +138,7 @@ const FitScoreCard: React.FC<FitScoreCardProps> = ({ onCopyToNotes, profile }) =
                 <div className="relative w-16 h-16">
                   <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
                     <path
-                      className="text-gray-300"
+                      className="text-gray-400"
                       stroke="currentColor"
                       strokeWidth="3"
                       fill="none"
@@ -160,20 +160,20 @@ const FitScoreCard: React.FC<FitScoreCardProps> = ({ onCopyToNotes, profile }) =
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-var(--text)">Fit Score</p>
-                  <p className="text-xs text-var(--muted)">Based on skill alignment</p>
+                  <p className="text-sm font-medium text-white">Fit Score</p>
+                  <p className="text-xs text-gray-400">Based on skill alignment</p>
                 </div>
               </div>
 
               {/* Missing Keywords */}
               {result.missingKeywords.length > 0 && (
                 <div>
-                  <p className="text-sm font-medium text-var(--text) mb-2">Missing Keywords</p>
+                  <p className="text-sm font-medium text-white mb-2">Missing Keywords</p>
                   <div className="flex flex-wrap gap-2">
                     {result.missingKeywords.map((keyword, index) => (
                       <span
                         key={index}
-                        className="px-2 py-1 bg-var(--elev) text-var(--muted) text-xs rounded-full border border-var(--border)"
+                        className="px-2 py-1 bg-gray-600 text-gray-300 text-xs rounded-full border border-gray-500"
                       >
                         {keyword}
                       </span>
@@ -184,14 +184,14 @@ const FitScoreCard: React.FC<FitScoreCardProps> = ({ onCopyToNotes, profile }) =
 
               {/* Notes */}
               <div>
-                <p className="text-sm font-medium text-var(--text) mb-2">Notes</p>
-                <p className="text-sm text-var(--muted) leading-relaxed">{result.notes}</p>
+                <p className="text-sm font-medium text-white mb-2">Notes</p>
+                <p className="text-sm text-gray-300 leading-relaxed">{result.notes}</p>
               </div>
             </div>
 
             {/* Skills Compare */}
             {showCompare && (
-              <div className="mt-4 pt-4 border-t border-var(--border)">
+              <div className="mt-4 pt-4 border-t border-gray-600">
                 <SkillsCompare 
                   userSkills={profile.skills} 
                   jobKeywords={result.missingKeywords} 

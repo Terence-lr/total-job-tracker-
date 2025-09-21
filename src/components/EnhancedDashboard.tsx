@@ -42,7 +42,7 @@ const EnhancedDashboard: React.FC = () => {
   const { ref: jobsRef, isVisible: jobsVisible } = useScrollReveal();
 
   // Use optimistic updates
-  const { jobs: optimisticJobs, updateJob, deleteJob, bulkUpdateJobs, bulkDeleteJobs } = useOptimisticJobUpdate(jobs, user?.id || '');
+  const { jobs: optimisticJobs, updateJob, deleteJob, bulkUpdateJobs, bulkDeleteJobs } = useOptimisticJobUpdate(jobs);
 
   // Load jobs on component mount
   useEffect(() => {
