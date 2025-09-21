@@ -1,8 +1,8 @@
 import React from 'react';
-import TestWelcome from './TestWelcome';
+import EnhancedWelcome from './features/welcome/EnhancedWelcome';
 
 const Welcome: React.FC = () => {
-  return <TestWelcome />;
+  return <EnhancedWelcome />;
 };
 
 export default Welcome;

@@ -1,5 +1,15 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "build",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "env": {
+    "REACT_APP_SUPABASE_URL": "https://ytujemrpjnzdhwfhaode.supabase.co",
+    "REACT_APP_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl0dWplbXJwam56ZGh3Zmhhb2RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxNzYwMDgsImV4cCI6MjA3Mzc1MjAwOH0.FginFAg7d-p89zKdpByimkgBRMC71ax7ZmMHBMz0EXA"
+  }
 }
