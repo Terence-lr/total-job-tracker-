@@ -10,15 +10,15 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
-    "@types/react": "^19.1.13",
-    "@types/react-dom": "^19.1.9",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "@types/react-router-dom": "^5.3.3",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.16",
     "lucide-react": "^0.544.0",
     "pdf-parse": "^1.1.1",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-router-dom": "^7.9.1",
     "react-scripts": "5.0.1",
     "recharts": "^3.2.1",
@@ -32,6 +32,10 @@
     "eject": "react-scripts eject",
     "vercel-build": "node scripts/verifyEnv.mjs && react-scripts build",
     "verify-env": "node scripts/verifyEnv.mjs"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
   "eslintConfig": {
     "extends": [
