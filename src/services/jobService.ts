@@ -11,9 +11,12 @@ export const createJobApplication = async (
       .from('jobs')
       .insert({
         user_id: userId,
-        title: jobData.position,
+        position: jobData.position,
         company: jobData.company,
+        date_applied: jobData.date_applied,
         status: jobData.status,
+        salary: jobData.salary || null,
+        job_url: jobData.job_url || null,
         notes: jobData.notes || null,
       })
       .select()
