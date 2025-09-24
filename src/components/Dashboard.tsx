@@ -13,6 +13,7 @@ import JobCard from './features/jobs/JobCard';
 import JobFilters from './features/jobs/JobFilters';
 import Navigation from './Navigation';
 import FollowUpsWidget from './FollowUpsWidget';
+import AnalyticsDashboard from './AnalyticsDashboard';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { Briefcase, TrendingUp, Calendar, AlertCircle, FileText, Download } from 'lucide-react';
 import { FollowUp } from '../types/fitScore';
@@ -257,6 +258,12 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Analytics Dashboard */}
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-var(--text) mb-6">Analytics Dashboard</h2>
+          <AnalyticsDashboard isLoading={isLoading} />
+        </section>
 
         <h1 className="page-title text-xl font-semibold text-var(--text)">Your Job Applications</h1>
 
