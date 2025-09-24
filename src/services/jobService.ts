@@ -1,24 +1,22 @@
-import { supabase } from '../lib/supabase';
+import { supabase, getCurrentUser } from '../lib/supabase';
 import { JobApplication, CreateJobApplication, JobFilters } from '../types/job';
 
 // Create a new job application
 export const createJobApplication = async (
-  jobData: CreateJobApplication,
-  userId: string
+  jobData: CreateJobApplication
 ): Promise<string> => {
   try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) throw new Error('User not authenticated');
+
     const { data, error } = await supabase
       .from('jobs')
-      .insert({
-        user_id: userId,
-        company: jobData.company,
-        position: jobData.position,
-        date_applied: jobData.date_applied || new Date().toISOString(),
-        status: jobData.status || 'Applied',
-        salary: jobData.salary || null,
-        job_url: jobData.job_url || null,
-        notes: jobData.notes || null,
-      })
+      .insert([
+        {
+          ...jobData,
+          user_id: currentUser.id  // Now this is a UUID
+        }
+      ])
       .select()
       .single();
 
@@ -36,13 +34,16 @@ export const createJobApplication = async (
 };
 
 // Get all job applications for a user
-export const getJobApplications = async (userId: string): Promise<JobApplication[]> => {
+export const getJobApplications = async (): Promise<JobApplication[]> => {
   try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) throw new Error('User not authenticated');
+
     const { data, error } = await supabase
       .from('jobs')
       .select('*')
-      .eq('user_id', userId)
-      .order('date_applied', { ascending: false });
+      .eq('user_id', currentUser.id)  // UUID comparison
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching jobs:', error);
@@ -63,7 +64,7 @@ export const getJobApplications = async (userId: string): Promise<JobApplication
       updated_at: new Date(job.updated_at || job.created_at)
     }));
     
-    console.log(`Retrieved ${jobs.length} job applications for user ${userId}`);
+    console.log(`Retrieved ${jobs.length} job applications for user ${currentUser.id}`);
     return jobs;
   } catch (error) {
     console.error('Error getting job applications:', error);

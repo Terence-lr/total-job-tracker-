@@ -53,7 +53,7 @@ const Dashboard: React.FC = () => {
     try {
       startLoading();
       setError(null);
-      const userJobs = await getJobApplications(user.id);
+      const userJobs = await getJobApplications();
       setJobs(userJobs);
       
       // Generate follow-ups for jobs
@@ -95,7 +95,7 @@ const Dashboard: React.FC = () => {
     try {
       setIsSubmitting(true);
       setError(null);
-      await createJobApplication(jobData, user.id);
+      await createJobApplication(jobData);
       await loadJobs(); // Reload jobs to get the updated list
       setShowJobForm(false);
     } catch (err) {

@@ -1,17 +1,20 @@
-import { supabase } from '../lib/supabase';
+import { supabase, getCurrentUser } from '../lib/supabase';
 import { JobApplication, JobFilters } from '../types/job';
 
-export const createJobApplication = async (job: Omit<JobApplication, 'id' | 'created_at' | 'updated_at'>) => {
+export const createJobApplication = async (jobData: Omit<JobApplication, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
+  const currentUser = await getCurrentUser();
+  if (!currentUser) throw new Error('User not authenticated');
+
   // Map the job data to match database column names
   const dbJob = {
-    company: job.company,
-    position: job.position,
-    date_applied: job.date_applied,
-    status: job.status,
-    salary: job.salary,
-    notes: job.notes,
-    job_url: job.job_url,
-    user_id: job.user_id
+    company: jobData.company,
+    position: jobData.position,
+    date_applied: jobData.date_applied,
+    status: jobData.status,
+    salary: jobData.salary,
+    notes: jobData.notes,
+    job_url: jobData.job_url,
+    user_id: currentUser.id
   };
 
   const { data, error } = await supabase

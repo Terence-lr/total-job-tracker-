@@ -116,7 +116,7 @@ const EnhancedDashboard: React.FC = () => {
     try {
       setIsSubmitting(true);
       setError(null);
-      await createJobApplication({ ...jobData, user_id: user.id });
+      await createJobApplication(jobData);
       await loadJobs();
       setShowJobForm(false);
     } catch (err: any) {

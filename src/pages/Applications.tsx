@@ -19,7 +19,7 @@ export function Applications() {
     
     try {
       setLoading(true);
-      const data = await getJobApplications(user.id);
+      const data = await getJobApplications();
       setJobs(data || []);
     } catch (error) {
       console.error('Error loading jobs:', error);
