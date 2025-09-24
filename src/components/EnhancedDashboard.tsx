@@ -9,7 +9,6 @@ import {
 } from '../services/enhancedJobService';
 import JobForm from './features/jobs/JobForm';
 import JobFilters from './features/jobs/JobFilters';
-import ProfessionalNavigation from './layouts/ProfessionalNavigation';
 import FollowUpsWidget from './FollowUpsWidget';
 import DashboardMetrics from './features/analytics/DashboardMetrics';
 import StatusDistribution from './features/analytics/StatusDistribution';
@@ -207,8 +206,6 @@ const EnhancedDashboard: React.FC = () => {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-black">
-        <div className="grid-overlay" />
-        <ProfessionalNavigation onAddJob={() => setShowJobForm(true)} />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Error Message */}
