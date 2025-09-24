@@ -9,6 +9,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// Helper to get current user
+export const getCurrentUser = async () => {
+  const { data: { user } } = await supabase.auth.getUser()
+  return user
+}
+
 // Database types
 export interface Profile {
   id: string
