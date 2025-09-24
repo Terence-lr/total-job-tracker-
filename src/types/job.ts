@@ -7,6 +7,7 @@ export interface JobApplication {
   salary?: string;
   notes?: string;
   job_url?: string;
+  job_description?: string;
   user_id: string;
   created_at: Date;
   updated_at: Date;
@@ -22,6 +23,7 @@ export interface CreateJobApplication {
   salary?: string;
   notes?: string;
   job_url?: string;
+  job_description?: string;
 }
 
 export interface UpdateJobApplication extends Partial<CreateJobApplication> {

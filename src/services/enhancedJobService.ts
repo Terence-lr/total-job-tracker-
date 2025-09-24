@@ -14,6 +14,7 @@ export const createJobApplication = async (jobData: Omit<JobApplication, 'id' | 
     salary: jobData.salary,
     notes: jobData.notes,
     job_url: jobData.job_url,
+    job_description: jobData.job_description,
     user_id: currentUser.id
   };
 

@@ -13,8 +13,15 @@ export const createJobApplication = async (
       .from('jobs')
       .insert([
         {
-          ...jobData,
-          user_id: currentUser.id  // Now this is a UUID
+          company: jobData.company,
+          position: jobData.position,
+          date_applied: jobData.date_applied || new Date().toISOString().split('T')[0],
+          status: jobData.status || 'Applied',
+          salary: jobData.salary || null,
+          job_url: jobData.job_url || null,
+          notes: jobData.notes || null,
+          job_description: jobData.job_description || null,
+          user_id: currentUser.id
         }
       ])
       .select()
@@ -59,6 +66,7 @@ export const getJobApplications = async (): Promise<JobApplication[]> => {
       salary: job.salary || '',
       notes: job.notes || '',
       job_url: job.job_url || '',
+      job_description: job.job_description || '',
       user_id: job.user_id,
       created_at: new Date(job.created_at),
       updated_at: new Date(job.updated_at || job.created_at)
