@@ -14,20 +14,20 @@ export function Layout() {
 
   return (
     <div className="min-h-screen bg-black">
-      <nav className="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+      <nav className="bg-blue-900 border-b border-blue-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <Link to="/dashboard" className="text-red-500 font-bold text-xl">
                 💼 JobTracker Pro
               </Link>
-              <Link to="/dashboard" className={`text-gray-300 hover:text-white ${location.pathname === '/dashboard' ? 'text-white' : ''}`}>
+              <Link to="/dashboard" className={`text-blue-200 hover:text-white ${location.pathname === '/dashboard' ? 'text-white' : ''}`}>
                 Dashboard
               </Link>
-              <Link to="/applications" className={`text-gray-300 hover:text-white ${location.pathname === '/applications' ? 'text-white' : ''}`}>
+              <Link to="/applications" className={`text-blue-200 hover:text-white ${location.pathname === '/applications' ? 'text-white' : ''}`}>
                 Applications
               </Link>
-              <Link to="/analytics" className={`text-gray-300 hover:text-white ${location.pathname === '/analytics' ? 'text-white' : ''}`}>
+              <Link to="/analytics" className={`text-blue-200 hover:text-white ${location.pathname === '/analytics' ? 'text-white' : ''}`}>
                 Analytics
               </Link>
             </div>
@@ -36,7 +36,7 @@ export function Layout() {
                 + Add Job
               </Link>
               <div className="relative">
-                <button onClick={() => setShowMenu(!showMenu)} className="text-gray-300 hover:text-white">
+                <button onClick={() => setShowMenu(!showMenu)} className="text-blue-200 hover:text-white">
                   ⚙️ Settings
                 </button>
                 {showMenu && (
