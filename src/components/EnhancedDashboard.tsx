@@ -3,7 +3,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { JobApplication, CreateJobApplication, JobFilters as JobFiltersType } from '../types/job';
 import { 
   createJobApplication, 
-  getJobsWithFilters
+  getJobsWithFilters,
+  updateJobApplication,
+  deleteJobApplication
 } from '../services/enhancedJobService';
 import JobForm from './features/jobs/JobForm';
 import JobFilters from './features/jobs/JobFilters';
@@ -42,7 +44,7 @@ const EnhancedDashboard: React.FC = () => {
   const { ref: jobsRef, isVisible: jobsVisible } = useScrollReveal();
 
   // Use optimistic updates
-  const { updateJob, deleteJob, bulkUpdateJobs, bulkDeleteJobs } = useOptimisticJobUpdate(jobs);
+  const { updateJob, bulkUpdateJobs, bulkDeleteJobs } = useOptimisticJobUpdate(jobs);
 
   const loadJobs = useCallback(async () => {
     if (!user) return;
@@ -131,7 +133,7 @@ const EnhancedDashboard: React.FC = () => {
     try {
       setIsSubmitting(true);
       setError(null);
-      await updateJob(editingJob.id, jobData, user.id);
+      await updateJobApplication(editingJob.id, jobData, user.id);
       await loadJobs();
       setEditingJob(null);
       setShowJobForm(false);
@@ -146,7 +148,7 @@ const EnhancedDashboard: React.FC = () => {
     if (!user) return;
     
     try {
-      await deleteJob(jobId, user.id);
+      await deleteJobApplication(jobId, user.id);
       await loadJobs();
     } catch (err: any) {
       setError(err.message || 'Failed to delete job application');

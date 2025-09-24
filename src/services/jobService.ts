@@ -11,10 +11,10 @@ export const createJobApplication = async (
       .from('jobs')
       .insert({
         user_id: userId,
-        position: jobData.position,
         company: jobData.company,
-        date_applied: jobData.date_applied,
-        status: jobData.status,
+        position: jobData.position,
+        date_applied: jobData.date_applied || new Date().toISOString(),
+        status: jobData.status || 'Applied',
         salary: jobData.salary || null,
         job_url: jobData.job_url || null,
         notes: jobData.notes || null,
@@ -22,7 +22,10 @@ export const createJobApplication = async (
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Database error:', error);
+      throw error;
+    }
     
     console.log('Job application created with ID:', data.id);
     return data.id;
@@ -39,11 +42,14 @@ export const getJobApplications = async (userId: string): Promise<JobApplication
       .from('jobs')
       .select('*')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .order('date_applied', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error fetching jobs:', error);
+      throw error;
+    }
     
-    const jobs: JobApplication[] = data.map(job => ({
+    const jobs: JobApplication[] = (data || []).map(job => ({
       id: job.id,
       company: job.company,
       position: job.position,
