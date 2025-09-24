@@ -14,7 +14,9 @@ import JobFilters from './features/jobs/JobFilters';
 import Navigation from './Navigation';
 import FollowUpsWidget from './FollowUpsWidget';
 import AnalyticsDashboard from './AnalyticsDashboard';
+import { LoadingSpinner } from './LoadingSpinner';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { useLoading } from '../hooks/useLoading';
 import { Briefcase, TrendingUp, Calendar, AlertCircle, FileText, Download } from 'lucide-react';
 import { FollowUp } from '../types/fitScore';
 import { generateFollowUps } from '../services/followUpService';
@@ -23,7 +25,7 @@ const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const [jobs, setJobs] = useState<JobApplication[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<JobApplication[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { isLoading, startLoading, stopLoading } = useLoading(true);
   const [showJobForm, setShowJobForm] = useState(false);
   const [editingJob, setEditingJob] = useState<JobApplication | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +51,7 @@ const Dashboard: React.FC = () => {
     if (!user) return;
     
     try {
-      setIsLoading(true);
+      startLoading();
       setError(null);
       const userJobs = await getJobApplications(user.id);
       setJobs(userJobs);
@@ -67,7 +69,7 @@ const Dashboard: React.FC = () => {
       setError('Failed to load job applications');
       console.error('Error loading jobs:', err);
     } finally {
-      setIsLoading(false);
+      stopLoading();
     }
   };
 
@@ -167,12 +169,11 @@ const Dashboard: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-var(--bg) flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-var(--accent) mx-auto"></div>
-          <p className="mt-4 text-var(--muted)">Loading your job applications...</p>
-        </div>
-      </div>
+      <LoadingSpinner 
+        fullScreen 
+        size="lg" 
+        text="Loading your job applications..." 
+      />
     );
   }
 
