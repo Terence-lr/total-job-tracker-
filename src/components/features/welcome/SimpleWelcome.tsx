@@ -24,3 +24,4 @@ const SimpleWelcome: React.FC = () => {
 
 export default SimpleWelcome;
 
+

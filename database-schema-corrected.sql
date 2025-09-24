@@ -100,3 +100,4 @@ CREATE TRIGGER update_jobs_updated_at BEFORE UPDATE ON jobs
 GRANT USAGE ON SCHEMA public TO authenticated;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated;
+

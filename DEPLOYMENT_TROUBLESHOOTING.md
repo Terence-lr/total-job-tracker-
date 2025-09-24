@@ -150,3 +150,4 @@ If deployment continues to fail:
 
 The build process is working perfectly locally, so the issue is likely with the deployment configuration or environment variables in Vercel.
 
+

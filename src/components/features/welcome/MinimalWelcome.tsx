@@ -50,3 +50,4 @@ const MinimalWelcome: React.FC = () => {
 
 export default MinimalWelcome;
 
+

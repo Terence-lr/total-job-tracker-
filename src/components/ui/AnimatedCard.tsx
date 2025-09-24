@@ -62,3 +62,4 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
 
 export default AnimatedCard;
 
+

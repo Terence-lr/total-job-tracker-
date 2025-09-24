@@ -125,3 +125,4 @@ export function getFollowUpTypeDisplayName(type: FollowUpType): string {
   return displayNames[type];
 }
 
+
