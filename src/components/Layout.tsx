@@ -9,7 +9,6 @@ import {
   Award, 
   Plus, 
   Settings, 
-  User, 
   LogOut,
   Menu,
   X,
@@ -39,76 +38,60 @@ export function Layout() {
   return (
     <div className="min-h-screen bg-black">
       {/* Enhanced Navigation */}
-      <nav className="relative bg-gradient-to-r from-gray-900/98 via-gray-900/95 to-gray-900/98 backdrop-blur-2xl border-b border-red-500/20 sticky top-0 z-50 shadow-2xl">
-        {/* Animated Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 via-transparent to-red-500/5 opacity-50"></div>
+      <nav className="relative bg-gradient-to-r from-gray-900/95 via-gray-900/90 to-gray-900/95 backdrop-blur-2xl border-b border-red-500/30 sticky top-0 z-50 shadow-2xl">
+        {/* Enhanced Glass Effect Background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-red-500/8 via-transparent to-red-500/8"></div>
         
         {/* Subtle Grid Pattern */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-15">
           <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(239, 68, 68, 0.3) 1px, transparent 0)`,
-            backgroundSize: '20px 20px'
+            backgroundImage: `radial-gradient(circle at 2px 2px, rgba(239, 68, 68, 0.4) 1px, transparent 0)`,
+            backgroundSize: '24px 24px'
           }}></div>
         </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-18">
+        <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
+          <div className="flex justify-between items-center h-20">
             {/* Enhanced Logo Section */}
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex items-center space-x-3"
+              className="flex items-center space-x-4"
             >
               <Link 
                 to="/dashboard" 
-                className="group relative flex items-center space-x-3 text-red-500 font-bold text-xl hover:text-red-400 transition-all duration-300 cursor-pointer p-2 rounded-xl hover:bg-red-500/10"
+                className="group relative flex items-center space-x-4 text-red-500 font-bold text-xl hover:text-red-400 transition-all duration-300 cursor-pointer p-3 rounded-xl hover:bg-red-500/10"
               >
                 {/* Enhanced Glow Effect */}
                 <motion.div
-                  whileHover={{ scale: 1.15, rotate: 8 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="relative"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative p-2"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-red-500/30 to-red-400/30 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                  <div className="absolute inset-0 bg-red-500/20 rounded-full blur-lg group-hover:bg-red-400/40 transition-all duration-300"></div>
-                  <Briefcase className="w-9 h-9 relative z-10 drop-shadow-lg" />
-                  
-                  {/* Pulsing Ring */}
-                  <motion.div
-                    className="absolute inset-0 border-2 border-red-500/30 rounded-full"
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-red-400/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-300"></div>
+                  <Briefcase className="w-8 h-8 relative z-10 drop-shadow-lg" />
                 </motion.div>
                 
-                <div className="flex flex-col">
+                <div className="flex flex-col space-y-1">
                   <motion.span 
-                    className="relative group-hover:text-red-400 transition-colors duration-300 text-2xl font-extrabold tracking-tight"
-                    whileHover={{ x: 3 }}
+                    className="relative group-hover:text-red-400 transition-colors duration-300 text-xl font-extrabold tracking-tight"
+                    whileHover={{ x: 2 }}
                   >
                     JobTracker
                   </motion.span>
                   <motion.span 
-                    className="relative text-red-400/80 text-sm font-medium tracking-wider"
-                    whileHover={{ x: 3 }}
+                    className="relative text-red-400/70 text-xs font-medium tracking-wider"
+                    whileHover={{ x: 2 }}
                   >
                     PROFESSIONAL
                   </motion.span>
                 </div>
-                
-                {/* Shimmer Effect */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 opacity-0 group-hover:opacity-100"
-                  initial={{ x: '-100%' }}
-                  whileHover={{ x: '100%' }}
-                  transition={{ duration: 0.8 }}
-                />
               </Link>
             </motion.div>
 
             {/* Enhanced Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-2">
+            <div className="hidden md:flex items-center space-x-3">
               {navigationItems.map((item, index) => {
                 const Icon = item.icon;
                 return (
@@ -120,15 +103,15 @@ export function Layout() {
                   >
                     <Link
                       to={item.path}
-                      className={`group relative px-5 py-3 rounded-xl transition-all duration-300 font-medium ${
+                      className={`group relative px-6 py-3 rounded-xl transition-all duration-300 font-medium ${
                         isActive(item.path)
-                          ? 'text-white bg-gradient-to-r from-red-600/30 to-red-500/20 border border-red-500/40 shadow-lg shadow-red-500/20'
-                          : 'text-gray-300 hover:text-white hover:bg-gray-800/60 hover:shadow-lg'
+                          ? 'text-white bg-gradient-to-r from-red-600/25 to-red-500/15 border border-red-500/30 shadow-lg shadow-red-500/15'
+                          : 'text-gray-300 hover:text-white hover:bg-gray-800/50 hover:shadow-lg'
                       }`}
                     >
                       <div className="flex items-center space-x-3">
                         <motion.div
-                          whileHover={{ scale: 1.2, rotate: 5 }}
+                          whileHover={{ scale: 1.1, rotate: 3 }}
                           transition={{ duration: 0.2 }}
                         >
                           <Icon className="w-5 h-5 group-hover:text-red-400 transition-colors duration-300" />
@@ -136,29 +119,15 @@ export function Layout() {
                         <span className="font-semibold tracking-wide">{item.label}</span>
                       </div>
                       
-                      {/* Enhanced Hover Effect */}
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-red-500/15 via-red-400/10 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        whileHover={{ scale: 1.05 }}
-                      />
-                      
-                      {/* Active Indicator with Glow */}
+                      {/* Active Indicator */}
                       {isActive(item.path) && (
                         <motion.div
-                          className="absolute -bottom-1 left-1/2 w-8 h-1 bg-gradient-to-r from-red-500 to-red-400 rounded-full shadow-lg shadow-red-500/50"
+                          className="absolute -bottom-1 left-1/2 w-6 h-1 bg-gradient-to-r from-red-500 to-red-400 rounded-full shadow-lg shadow-red-500/40"
                           initial={{ scale: 0, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
                           transition={{ duration: 0.4 }}
                         />
                       )}
-                      
-                      {/* Shimmer Effect */}
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 opacity-0 group-hover:opacity-100"
-                        initial={{ x: '-100%' }}
-                        whileHover={{ x: '100%' }}
-                        transition={{ duration: 0.6 }}
-                      />
                     </Link>
                   </motion.div>
                 );
@@ -175,38 +144,17 @@ export function Layout() {
               >
                 <Link 
                   to="/dashboard?addJob=true" 
-                  className="group relative bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white px-8 py-3 rounded-2xl font-bold hover:from-red-500 hover:via-red-600 hover:to-red-500 transition-all duration-300 shadow-2xl hover:shadow-red-500/40 cursor-pointer overflow-hidden border border-red-500/30"
+                  className="group relative bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-bold hover:from-red-500 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-red-500/30 cursor-pointer border border-red-500/20"
                 >
                   <div className="flex items-center space-x-3 relative z-10">
                     <motion.div
-                      whileHover={{ rotate: 180, scale: 1.2 }}
-                      transition={{ duration: 0.4 }}
-                      className="relative"
+                      whileHover={{ rotate: 90, scale: 1.1 }}
+                      transition={{ duration: 0.3 }}
                     >
                       <Plus className="w-5 h-5 drop-shadow-lg" />
-                      {/* Pulsing Ring */}
-                      <motion.div
-                        className="absolute inset-0 border-2 border-white/30 rounded-full"
-                        animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                      />
                     </motion.div>
-                    <span className="text-lg tracking-wide">Add Job</span>
+                    <span className="font-semibold tracking-wide">Add Job</span>
                   </div>
-                  
-                  {/* Enhanced Shimmer Effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12"
-                    initial={{ x: '-100%' }}
-                    whileHover={{ x: '100%' }}
-                    transition={{ duration: 0.8 }}
-                  />
-                  
-                  {/* Glow Effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-red-400/20 to-red-600/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    whileHover={{ scale: 1.05 }}
-                  />
                 </Link>
               </motion.div>
 
@@ -214,7 +162,7 @@ export function Layout() {
               <div className="relative">
                 <motion.button 
                   onClick={() => setShowMenu(!showMenu)}
-                  className="group flex items-center space-x-3 px-5 py-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/60 transition-all duration-300 font-medium border border-gray-700/50 hover:border-red-500/30"
+                  className="group flex items-center space-x-3 px-5 py-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/50 transition-all duration-300 font-medium border border-gray-700/50 hover:border-red-500/30"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -240,40 +188,16 @@ export function Layout() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-3 w-64 bg-gray-900/98 backdrop-blur-2xl border border-red-500/20 rounded-2xl shadow-2xl overflow-hidden"
+                      className="absolute right-0 mt-3 w-56 bg-gray-900/95 backdrop-blur-2xl border border-red-500/30 rounded-xl shadow-2xl overflow-hidden"
                     >
-                      {/* Header */}
-                      <div className="px-6 py-4 border-b border-gray-700/50">
-                        <h3 className="text-white font-bold text-lg">Account</h3>
-                        <p className="text-gray-400 text-sm">Manage your profile and settings</p>
-                      </div>
-                      
                       <div className="py-3">
-                        <Link 
-                          to="/profile" 
-                          className="group flex items-center space-x-4 px-6 py-4 text-gray-300 hover:bg-gradient-to-r hover:from-red-500/10 hover:to-transparent hover:text-white transition-all duration-300"
-                          onClick={() => setShowMenu(false)}
-                        >
-                          <motion.div
-                            whileHover={{ scale: 1.2, rotate: 5 }}
-                            transition={{ duration: 0.2 }}
-                            className="p-2 rounded-lg bg-gray-800/50 group-hover:bg-red-500/20 transition-colors duration-300"
-                          >
-                            <User className="w-5 h-5 group-hover:text-red-400 transition-colors duration-300" />
-                          </motion.div>
-                          <div>
-                            <span className="font-semibold">Profile</span>
-                            <p className="text-xs text-gray-500">Manage your information</p>
-                          </div>
-                        </Link>
-                        
                         <Link 
                           to="/settings" 
                           className="group flex items-center space-x-4 px-6 py-4 text-gray-300 hover:bg-gradient-to-r hover:from-red-500/10 hover:to-transparent hover:text-white transition-all duration-300"
                           onClick={() => setShowMenu(false)}
                         >
                           <motion.div
-                            whileHover={{ scale: 1.2, rotate: 5 }}
+                            whileHover={{ scale: 1.1, rotate: 3 }}
                             transition={{ duration: 0.2 }}
                             className="p-2 rounded-lg bg-gray-800/50 group-hover:bg-red-500/20 transition-colors duration-300"
                           >
@@ -295,7 +219,7 @@ export function Layout() {
                           className="group flex items-center space-x-4 px-6 py-4 text-gray-300 hover:bg-gradient-to-r hover:from-red-900/20 hover:to-transparent hover:text-red-400 transition-all duration-300 w-full text-left"
                         >
                           <motion.div
-                            whileHover={{ scale: 1.2, rotate: 5 }}
+                            whileHover={{ scale: 1.1, rotate: 3 }}
                             transition={{ duration: 0.2 }}
                             className="p-2 rounded-lg bg-gray-800/50 group-hover:bg-red-900/30 transition-colors duration-300"
                           >
@@ -338,9 +262,9 @@ export function Layout() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden bg-gradient-to-b from-gray-900/98 to-gray-900/95 backdrop-blur-2xl border-t border-red-500/20"
+              className="md:hidden bg-gradient-to-b from-gray-900/95 to-gray-900/90 backdrop-blur-2xl border-t border-red-500/30"
             >
-              <div className="px-6 py-6 space-y-3">
+              <div className="px-6 py-6 space-y-2">
                 {navigationItems.map((item, index) => {
                   const Icon = item.icon;
                   return (
@@ -352,20 +276,20 @@ export function Layout() {
                     >
                       <Link
                         to={item.path}
-                        className={`group flex items-center space-x-4 px-5 py-4 rounded-xl transition-all duration-300 font-medium ${
+                        className={`group flex items-center space-x-4 px-5 py-3 rounded-xl transition-all duration-300 font-medium ${
                           isActive(item.path)
-                            ? 'text-white bg-gradient-to-r from-red-600/30 to-red-500/20 border border-red-500/40 shadow-lg shadow-red-500/20'
-                            : 'text-gray-300 hover:text-white hover:bg-gray-800/60 hover:shadow-lg'
+                            ? 'text-white bg-gradient-to-r from-red-600/25 to-red-500/15 border border-red-500/30 shadow-lg shadow-red-500/15'
+                            : 'text-gray-300 hover:text-white hover:bg-gray-800/50 hover:shadow-lg'
                         }`}
                         onClick={() => setShowMobileMenu(false)}
                       >
                         <motion.div
-                          whileHover={{ scale: 1.2, rotate: 5 }}
+                          whileHover={{ scale: 1.1, rotate: 3 }}
                           transition={{ duration: 0.2 }}
                         >
-                          <Icon className="w-6 h-6 group-hover:text-red-400 transition-colors duration-300" />
+                          <Icon className="w-5 h-5 group-hover:text-red-400 transition-colors duration-300" />
                         </motion.div>
-                        <span className="font-semibold text-lg">{item.label}</span>
+                        <span className="font-semibold">{item.label}</span>
                         
                         {/* Active Indicator */}
                         {isActive(item.path) && (
