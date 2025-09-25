@@ -112,7 +112,7 @@ const Signup: React.FC = () => {
                   Full Name
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                     <User className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 flex-shrink-0" />
                   </div>
                   <input
@@ -123,7 +123,7 @@ const Signup: React.FC = () => {
                     required
                     value={formData.displayName}
                     onChange={handleChange}
-                    className="w-full px-3 py-2.5 sm:py-3 pl-9 sm:pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base leading-normal"
+                    className="w-full px-3 py-2.5 sm:py-3 pl-10 sm:pl-12 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base leading-normal"
                     placeholder="Enter your full name"
                   />
                 </div>
@@ -134,7 +134,7 @@ const Signup: React.FC = () => {
                   Email address
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                     <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 flex-shrink-0" />
                   </div>
                   <input
@@ -145,7 +145,7 @@ const Signup: React.FC = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-3 py-2.5 sm:py-3 pl-9 sm:pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base leading-normal"
+                    className="w-full px-3 py-2.5 sm:py-3 pl-10 sm:pl-12 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base leading-normal"
                     placeholder="Enter your email"
                   />
                 </div>
@@ -156,7 +156,7 @@ const Signup: React.FC = () => {
                   Password
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                     <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 flex-shrink-0" />
                   </div>
                   <input
@@ -167,12 +167,12 @@ const Signup: React.FC = () => {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-3 py-2.5 sm:py-3 pl-9 sm:pl-10 pr-9 sm:pr-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base leading-normal"
+                    className="w-full px-3 py-2.5 sm:py-3 pl-10 sm:pl-12 pr-10 sm:pr-12 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base leading-normal"
                     placeholder="Enter your password"
                   />
                   <button
                     type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-300 transition-colors duration-200 min-w-[44px] min-h-[44px]"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-300 transition-colors duration-200 min-w-[44px] min-h-[44px] z-20"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
@@ -193,7 +193,7 @@ const Signup: React.FC = () => {
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                     <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 flex-shrink-0" />
                   </div>
                   <input
@@ -204,12 +204,12 @@ const Signup: React.FC = () => {
                     required
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full px-3 py-2.5 sm:py-3 pl-9 sm:pl-10 pr-9 sm:pr-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base leading-normal"
+                    className="w-full px-3 py-2.5 sm:py-3 pl-10 sm:pl-12 pr-10 sm:pr-12 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base leading-normal"
                     placeholder="Confirm your password"
                   />
                   <button
                     type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-300 transition-colors duration-200 min-w-[44px] min-h-[44px]"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-300 transition-colors duration-200 min-w-[44px] min-h-[44px] z-20"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                   >

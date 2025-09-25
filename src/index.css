@@ -194,6 +194,33 @@
     padding: 0.75rem 0.5rem;
     min-height: 48px;
   }
+  
+  /* Mobile form icon positioning - prevent overlap */
+  .mobile-form-icon {
+    position: absolute;
+    top: 50%;
+    left: 0.75rem;
+    transform: translateY(-50%);
+    z-index: 10;
+    pointer-events: none;
+  }
+  
+  /* Mobile input padding to prevent icon overlap */
+  .mobile-form-input {
+    padding-left: 2.5rem !important;
+    padding-right: 2.5rem !important;
+  }
+  
+  /* Mobile password toggle positioning */
+  .mobile-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    z-index: 20;
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 /* Tablet optimizations */
