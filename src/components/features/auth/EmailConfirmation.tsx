@@ -18,14 +18,35 @@ const EmailConfirmation: React.FC = () => {
         const type = searchParams.get('type');
         const token_hash = searchParams.get('token_hash');
 
-        console.log('Email confirmation params:', { access_token, refresh_token, type, token_hash });
+        // Also check URL fragment (hash) for tokens
+        const hash = window.location.hash;
+        const hashParams = new URLSearchParams(hash.substring(1));
+        const hashAccessToken = hashParams.get('access_token');
+        const hashRefreshToken = hashParams.get('refresh_token');
+        const hashType = hashParams.get('type');
+
+        console.log('Email confirmation params:', { 
+          access_token, 
+          refresh_token, 
+          type, 
+          token_hash,
+          hashAccessToken,
+          hashRefreshToken,
+          hashType,
+          fullHash: hash
+        });
 
         // Handle different Supabase confirmation URL formats
-        if (access_token && refresh_token) {
-          // Modern Supabase format - tokens are already in URL
+        // Check both query params and hash params
+        const finalAccessToken = access_token || hashAccessToken;
+        const finalRefreshToken = refresh_token || hashRefreshToken;
+        const finalType = type || hashType;
+
+        if (finalAccessToken && finalRefreshToken) {
+          // Modern Supabase format - tokens are in URL (either query or hash)
           const { data, error } = await supabase.auth.setSession({
-            access_token,
-            refresh_token
+            access_token: finalAccessToken,
+            refresh_token: finalRefreshToken
           });
 
           if (error) {
@@ -45,7 +66,7 @@ const EmailConfirmation: React.FC = () => {
               navigate('/email-confirmed-success');
             }, 1000);
           }
-        } else if (token_hash && type === 'signup') {
+        } else if (token_hash && finalType === 'signup') {
           // Legacy format - verify OTP
           const { data, error } = await supabase.auth.verifyOtp({
             token_hash,
