@@ -60,13 +60,14 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
         isSelected && 'ring-2 ring-blue-500 border-blue-500'
       )}
     >
+      {/* Header with job title and company */}
       <div className="flex items-start justify-between mb-3">
-        <div className="flex items-start space-x-3 flex-1">
+        <div className="flex items-start space-x-3 flex-1 min-w-0">
           {onSelect && (
             <button
               onClick={() => onSelect(job.id)}
               className={clsx(
-                'w-5 h-5 rounded border-2 flex items-center justify-center transition-colors',
+                'w-5 h-5 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0',
                 isSelected 
                   ? 'bg-blue-600 border-blue-600 text-white' 
                   : 'border-gray-300 hover:border-blue-400'
@@ -76,12 +77,15 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
             </button>
           )}
           
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 truncate">{job.position}</h3>
-            <p className="text-sm text-gray-600 truncate">{job.company}</p>
+          <div className="flex-1 min-w-0 pr-2">
+            <h3 className="font-semibold text-gray-900 text-sm leading-tight break-words">{job.position}</h3>
+            <p className="text-sm text-gray-600 break-words mt-1">{job.company}</p>
           </div>
         </div>
-        
+      </div>
+
+      {/* Status and Actions Row */}
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
           {onStatusChange ? (
             <StatusDropdown
@@ -97,15 +101,16 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
               {job.status}
             </span>
           )}
-          <JobActionsMenu
-            job={job}
-            onUpdate={onUpdate}
-            onDelete={onDelete}
-            onEdit={onEdit}
-            onArchive={onArchive}
-            onUnarchive={onUnarchive}
-          />
         </div>
+        
+        <JobActionsMenu
+          job={job}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+          onEdit={onEdit}
+          onArchive={onArchive}
+          onUnarchive={onUnarchive}
+        />
       </div>
       
       <div className="space-y-2">
@@ -145,7 +150,7 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
       
       {job.notes && (
         <div className="mt-3 pt-3 border-t border-gray-100">
-          <p className="text-xs text-gray-600 line-clamp-2">{job.notes}</p>
+          <p className="text-xs text-gray-600 line-clamp-3 break-words">{job.notes}</p>
         </div>
       )}
     </motion.div>

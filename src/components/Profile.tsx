@@ -6,6 +6,7 @@ import { useNotification } from '../contexts/NotificationContext';
 const Profile: React.FC = () => {
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState('');
+  const [targetOfferRate, setTargetOfferRate] = useState<number>(20);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -46,6 +47,7 @@ const Profile: React.FC = () => {
       } else if (profile) {
         console.log('Profile loaded:', profile);
         setSkills(profile.skills || []);
+        setTargetOfferRate(profile.target_offer_rate || 20);
       }
     } catch (error) {
       console.error('Error in loadUserProfile:', error);
@@ -61,7 +63,8 @@ const Profile: React.FC = () => {
             id: user.id,
             user_id: user.id,
             email: user.email,
-            skills: []
+            skills: [],
+            target_offer_rate: 20
           }
         ])
         .select();
@@ -326,6 +329,34 @@ Cloud Services: ${analysis.extractedSkills.cloudServices.length}`;
     }
   };
 
+  const updateTargetOfferRate = async () => {
+    if (!user || targetOfferRate < 0 || targetOfferRate > 100) {
+      showError('Invalid Rate', 'Target offer rate must be between 0 and 100.');
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ target_offer_rate: targetOfferRate })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error updating target offer rate:', error);
+        showError('Update Failed', 'Failed to update target offer rate.');
+      } else {
+        showSuccess('Target Updated', `Target offer rate set to ${targetOfferRate}%.`);
+      }
+    } catch (error) {
+      console.error('Error in updateTargetOfferRate:', error);
+      showError('Unexpected Error', 'An unexpected error occurred while updating the target rate.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold text-white mb-8">Profile</h1>
@@ -365,6 +396,46 @@ Cloud Services: ${analysis.extractedSkills.cloudServices.length}`;
             <span className="text-sm">Extracting skills from resume...</span>
           </div>
         )}
+      </div>
+
+      {/* Target Offer Rate Section */}
+      <div className="bg-gray-800 rounded-lg p-6 mb-6">
+        <h2 className="text-xl font-semibold text-white mb-4">Target Job Offer Rate</h2>
+        <p className="text-gray-400 text-sm mb-4">
+          Set your target job offer rate percentage. This will be displayed on your dashboard to help you track your progress.
+        </p>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={targetOfferRate}
+              onChange={(e) => setTargetOfferRate(parseInt(e.target.value) || 0)}
+              className="w-20 px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              disabled={loading}
+            />
+            <span className="text-white font-medium">%</span>
+          </div>
+          <button 
+            onClick={updateTargetOfferRate}
+            disabled={loading || targetOfferRate < 0 || targetOfferRate > 100}
+            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Updating...' : 'Update Target'}
+          </button>
+        </div>
+        <div className="mt-4">
+          <div className="w-full bg-gray-700 rounded-full h-2">
+            <div 
+              className="bg-red-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${Math.min(targetOfferRate, 100)}%` }}
+            ></div>
+          </div>
+          <p className="text-gray-400 text-sm mt-2">
+            Target: {targetOfferRate}% offer rate
+          </p>
+        </div>
       </div>
 
       {/* Skills Section */}

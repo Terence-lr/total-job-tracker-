@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { JobApplication, CreateJobApplication, JobFilters as JobFiltersType } from '../types/job';
+import { supabase } from '../lib/supabase';
 import { 
   createJobApplication, 
   getJobsWithFilters,
@@ -42,6 +43,7 @@ const EnhancedDashboard: React.FC = () => {
   const [showArchived, setShowArchived] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationJob, setCelebrationJob] = useState<{company: string, position: string} | null>(null);
+  const [targetOfferRate, setTargetOfferRate] = useState<number>(20);
   const itemsPerPage = 12;
 
   const { ref: statsRef, isVisible: statsVisible } = useScrollReveal();
@@ -75,6 +77,26 @@ const EnhancedDashboard: React.FC = () => {
       setIsLoading(false);
     }
   }, [user, filters]);
+
+  const loadTargetOfferRate = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('target_offer_rate')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error loading target offer rate:', error);
+      } else if (profile) {
+        setTargetOfferRate(profile.target_offer_rate || 20);
+      }
+    } catch (err) {
+      console.error('Error loading target offer rate:', err);
+    }
+  }, [user]);
 
   const applyFilters = useCallback(() => {
     let filtered = [...jobs];
@@ -112,8 +134,9 @@ const EnhancedDashboard: React.FC = () => {
   useEffect(() => {
     if (user) {
       loadJobs();
+      loadTargetOfferRate();
     }
-  }, [user, loadJobs]);
+  }, [user, loadJobs, loadTargetOfferRate]);
 
   // Apply filters whenever jobs or filters change
   useEffect(() => {
@@ -338,7 +361,7 @@ const EnhancedDashboard: React.FC = () => {
             ref={statsRef}
             className={`mb-8 ${statsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} transition-all duration-500`}
           >
-            <QuickAnalyticsSummary jobs={jobs} />
+            <QuickAnalyticsSummary jobs={jobs} targetOfferRate={targetOfferRate} />
           </div>
 
           <h1 className="text-2xl font-bold text-white mb-6">Your Job Applications</h1>

@@ -5,11 +5,13 @@ import { JobApplication } from '../../../types/job';
 
 interface QuickAnalyticsSummaryProps {
   jobs: JobApplication[];
+  targetOfferRate?: number;
   className?: string;
 }
 
 const QuickAnalyticsSummary: React.FC<QuickAnalyticsSummaryProps> = ({ 
   jobs, 
+  targetOfferRate = 20,
   className = '' 
 }) => {
   // Calculate key metrics
@@ -35,14 +37,14 @@ const QuickAnalyticsSummary: React.FC<QuickAnalyticsSummaryProps> = ({
   // ).length;
 
   const getOfferRateColor = (rate: number) => {
-    if (rate >= 20) return 'text-green-400';
-    if (rate >= 10) return 'text-yellow-400';
+    if (rate >= targetOfferRate) return 'text-green-400';
+    if (rate >= targetOfferRate * 0.5) return 'text-yellow-400';
     return 'text-red-400';
   };
 
   const getOfferRateBg = (rate: number) => {
-    if (rate >= 20) return 'bg-green-500/20';
-    if (rate >= 10) return 'bg-yellow-500/20';
+    if (rate >= targetOfferRate) return 'bg-green-500/20';
+    if (rate >= targetOfferRate * 0.5) return 'bg-yellow-500/20';
     return 'bg-red-500/20';
   };
 
@@ -96,19 +98,19 @@ const QuickAnalyticsSummary: React.FC<QuickAnalyticsSummaryProps> = ({
       {/* Progress Bar */}
       <div className="mt-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-400">Progress to 20% offer rate</span>
+          <span className="text-sm text-gray-400">Progress to {targetOfferRate}% offer rate</span>
           <span className="text-sm text-gray-400">
-            {Math.min(offerRate, 20).toFixed(1)}% / 20%
+            {Math.min(offerRate, targetOfferRate).toFixed(1)}% / {targetOfferRate}%
           </span>
         </div>
         <div className="w-full bg-gray-700 rounded-full h-2">
           <motion.div
             initial={{ width: 0 }}
-            animate={{ width: `${Math.min(offerRate, 20) * 5}%` }}
+            animate={{ width: `${Math.min(offerRate, targetOfferRate) * (100 / targetOfferRate)}%` }}
             transition={{ duration: 1, delay: 0.5 }}
             className={`h-2 rounded-full ${
-              offerRate >= 20 ? 'bg-green-500' : 
-              offerRate >= 10 ? 'bg-yellow-500' : 'bg-red-500'
+              offerRate >= targetOfferRate ? 'bg-green-500' : 
+              offerRate >= targetOfferRate * 0.5 ? 'bg-yellow-500' : 'bg-red-500'
             }`}
           />
         </div>
@@ -117,11 +119,11 @@ const QuickAnalyticsSummary: React.FC<QuickAnalyticsSummaryProps> = ({
       {/* Motivational Message */}
       <div className="mt-4 p-3 bg-gray-700/50 rounded-lg">
         <p className="text-sm text-gray-300 text-center">
-          {offerRate >= 20 ? (
+          {offerRate >= targetOfferRate ? (
             <span className="text-green-400 font-semibold">
-              🎉 Excellent! You're crushing it!
+              🎉 Excellent! You've reached your target!
             </span>
-          ) : offerRate >= 10 ? (
+          ) : offerRate >= targetOfferRate * 0.5 ? (
             <span className="text-yellow-400 font-semibold">
               💪 Great progress! Keep it up!
             </span>
