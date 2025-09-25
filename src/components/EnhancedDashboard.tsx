@@ -11,9 +11,7 @@ import {
 import JobForm from './features/jobs/JobForm';
 import JobFilters from './features/jobs/JobFilters';
 import FollowUpsWidget from './FollowUpsWidget';
-import DashboardMetrics from './features/analytics/DashboardMetrics';
-import StatusDistribution from './features/analytics/StatusDistribution';
-import ApplicationTrends from './features/analytics/ApplicationTrends';
+import QuickAnalyticsSummary from './features/analytics/QuickAnalyticsSummary';
 import EnhancedJobCard from './features/jobs/EnhancedJobCard';
 import BulkActions from './features/jobs/BulkActions';
 import ResponsiveGrid from './features/responsive/ResponsiveGrid';
@@ -335,21 +333,12 @@ const EnhancedDashboard: React.FC = () => {
             </div>
           )}
 
-          {/* Analytics Dashboard */}
+          {/* Quick Analytics Summary */}
           <div 
             ref={statsRef}
             className={`mb-8 ${statsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} transition-all duration-500`}
           >
-            <DashboardMetrics applications={jobs} />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <div className="lg:col-span-2">
-              <StatusDistribution data={jobs} />
-            </div>
-            <div>
-              <ApplicationTrends data={jobs} />
-            </div>
+            <QuickAnalyticsSummary jobs={jobs} />
           </div>
 
           <h1 className="text-2xl font-bold text-white mb-6">Your Job Applications</h1>

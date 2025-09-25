@@ -12,6 +12,7 @@ import EmailConfirmation from './components/features/auth/EmailConfirmation';
 import EnhancedDashboard from './components/EnhancedDashboard';
 import Profile from './components/Profile';
 import { Applications } from './pages/Applications';
+import { Analytics } from './pages/Analytics';
 import { Settings } from './pages/Settings';
 import Footer from './components/layouts/Footer';
 
@@ -48,7 +49,7 @@ function App() {
                 path="/analytics" 
                 element={
                   <ProtectedRoute>
-                    <EnhancedDashboard />
+                    <Analytics />
                   </ProtectedRoute>
                 } 
               />
