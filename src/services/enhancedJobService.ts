@@ -160,33 +160,58 @@ export const bulkDeleteJobs = async (jobIds: string[], userId: string): Promise<
 };
 
 export const updateJobApplication = async (id: string, updates: Partial<JobApplication>, userId: string) => {
-  const { data, error } = await supabase
-    .from('jobs')
-    .update(updates)
-    .eq('id', id)
-    .eq('user_id', userId)
-    .select()
-    .single();
+  try {
+    // Prepare update data with proper column mapping
+    const updateData: any = {};
+    
+    if (updates.company !== undefined) updateData.company = updates.company;
+    if (updates.position !== undefined) updateData.position = updates.position;
+    if (updates.date_applied !== undefined) updateData.date_applied = updates.date_applied;
+    if (updates.status !== undefined) updateData.status = updates.status;
+    if (updates.salary !== undefined) updateData.salary = updates.salary;
+    if (updates.notes !== undefined) updateData.notes = updates.notes;
+    if (updates.job_url !== undefined) updateData.job_url = updates.job_url;
+    if (updates.job_description !== undefined) updateData.job_description = updates.job_description;
+    if (updates.offers !== undefined) updateData.offers = updates.offers;
+    if (updates.withdrawn !== undefined) updateData.withdrawn = updates.withdrawn;
+    
+    // Add updated_at timestamp
+    updateData.updated_at = new Date().toISOString();
 
-  if (error) throw error;
-  
-  // Map the returned data to match TypeScript interface
-  return {
-    id: data.id,
-    company: data.company,
-    position: data.position,
-    date_applied: data.date_applied,
-    status: data.status,
-    salary: data.salary || '',
-    notes: data.notes || '',
-    job_url: data.job_url || '',
-    job_description: data.job_description || '',
-    offers: data.offers || '',
-    withdrawn: data.withdrawn || false,
-    user_id: data.user_id,
-    created_at: new Date(data.created_at),
-    updated_at: new Date(data.updated_at || data.created_at)
-  };
+    const { data, error } = await supabase
+      .from('jobs')
+      .update(updateData)
+      .eq('id', id)
+      .eq('user_id', userId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase update error:', error);
+      throw new Error(`Failed to update job: ${error.message}`);
+    }
+    
+    // Map the returned data to match TypeScript interface
+    return {
+      id: data.id,
+      company: data.company,
+      position: data.position,
+      date_applied: data.date_applied,
+      status: data.status,
+      salary: data.salary || '',
+      notes: data.notes || '',
+      job_url: data.job_url || '',
+      job_description: data.job_description || '',
+      offers: data.offers || '',
+      withdrawn: data.withdrawn || false,
+      user_id: data.user_id,
+      created_at: new Date(data.created_at),
+      updated_at: new Date(data.updated_at || data.created_at)
+    };
+  } catch (error) {
+    console.error('Error in updateJobApplication:', error);
+    throw error;
+  }
 };
 
 export const deleteJobApplication = async (id: string, userId: string) => {

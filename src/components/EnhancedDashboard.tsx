@@ -20,6 +20,7 @@ import Pagination from './ui/Pagination';
 import ErrorBoundary from './ui/ErrorBoundary';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useOptimisticJobUpdate } from '../hooks/useOptimisticJobUpdate';
+import { useJobStatusUpdate } from '../hooks/useJobStatusUpdate';
 import { Briefcase, AlertCircle } from 'lucide-react';
 import { FollowUp } from '../types/fitScore';
 import { generateFollowUps } from '../services/followUpService';
@@ -77,6 +78,15 @@ const EnhancedDashboard: React.FC = () => {
       setIsLoading(false);
     }
   }, [user, filters]);
+
+  // Use shared status update hook
+  const { handleStatusChange } = useJobStatusUpdate({
+    onJobsReload: loadJobs,
+    onCelebration: (company, position) => {
+      setCelebrationJob({ company, position });
+      setShowCelebration(true);
+    }
+  });
 
   const loadTargetOfferRate = useCallback(async () => {
     if (!user) return;
@@ -290,28 +300,6 @@ const EnhancedDashboard: React.FC = () => {
     }
   };
 
-  const handleStatusChange = async (jobId: string, newStatus: string) => {
-    if (!user) return;
-    
-    try {
-      await updateJobApplication(jobId, { status: newStatus as any }, user.id);
-      
-      // Trigger celebration for job offers
-      if (newStatus === 'Offer') {
-        const job = jobs.find(j => j.id === jobId);
-        if (job) {
-          setCelebrationJob({ company: job.company, position: job.position });
-          setShowCelebration(true);
-        }
-      }
-      
-      await loadJobs();
-      console.log(`Job status updated to ${newStatus}`);
-    } catch (error) {
-      console.error('Error updating job status:', error);
-      setError('Failed to update job status');
-    }
-  };
 
 
   const handleJobSelect = (jobId: string) => {

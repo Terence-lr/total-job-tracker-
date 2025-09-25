@@ -6,6 +6,7 @@ import JobForm from '../components/features/jobs/JobForm';
 import EditJobModal from '../components/features/jobs/EditJobModal';
 import { updateJobApplication } from '../services/enhancedJobService';
 import { useNotification } from '../contexts/NotificationContext';
+import { useJobStatusUpdate } from '../hooks/useJobStatusUpdate';
 import { Archive, ArchiveRestore } from 'lucide-react';
 import StatusDropdown from '../components/features/jobs/StatusDropdown';
 import OfferCelebration from '../components/features/jobs/OfferCelebration';
@@ -43,6 +44,15 @@ export function Applications() {
       setLoading(false);
     }
   };
+
+  // Use shared status update hook
+  const { handleStatusChange } = useJobStatusUpdate({
+    onJobsReload: loadJobs,
+    onCelebration: (company, position) => {
+      setCelebrationJob({ company, position });
+      setShowCelebration(true);
+    }
+  });
 
   const handleEditJob = (job: JobApplication) => {
     setEditingJob(job);
@@ -136,28 +146,6 @@ export function Applications() {
     }
   };
 
-  const handleStatusChange = async (jobId: string, newStatus: string) => {
-    if (!user) return;
-    
-    try {
-      await updateJobApplication(jobId, { status: newStatus as any }, user.id);
-      
-      // Trigger celebration for job offers
-      if (newStatus === 'Offer') {
-        const job = jobs.find(j => j.id === jobId);
-        if (job) {
-          setCelebrationJob({ company: job.company, position: job.position });
-          setShowCelebration(true);
-        }
-      }
-      
-      await loadJobs();
-      showSuccess('Status Updated', `Job status updated to ${newStatus}.`);
-    } catch (error) {
-      console.error('Error updating job status:', error);
-      showError('Update Failed', 'Failed to update job status.');
-    }
-  };
 
 
   // Filter jobs based on archived status

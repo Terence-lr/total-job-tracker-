@@ -4,7 +4,7 @@ import Select from '../../ui/Select';
 
 interface StatusDropdownProps {
   job: JobApplication;
-  onStatusChange: (jobId: string, newStatus: JobStatus) => void;
+  onStatusChange: (jobId: string, newStatus: JobStatus, job?: JobApplication) => void;
   className?: string;
 }
 
@@ -24,7 +24,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({
 
   const handleStatusChange = (newStatus: string) => {
     if (newStatus !== job.status) {
-      onStatusChange(job.id, newStatus as JobStatus);
+      onStatusChange(job.id, newStatus as JobStatus, job);
     }
   };
 
