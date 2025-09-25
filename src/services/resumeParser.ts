@@ -145,43 +145,62 @@ export const calculateConfidence = (extractedSkills: ExtractedSkills, textLength
 // Main resume parsing function
 export const parseResume = async (file: File): Promise<ResumeAnalysis> => {
   try {
+    console.log('Starting PDF parsing for file:', file.name);
+    
     // Convert file to array buffer
     const arrayBuffer = await file.arrayBuffer();
+    console.log('Array buffer size:', arrayBuffer.byteLength);
     
-    // Validate PDF header
+    // More flexible PDF header validation
     const uint8Array = new Uint8Array(arrayBuffer);
-    const header = Array.from(uint8Array.slice(0, 4))
+    const header = Array.from(uint8Array.slice(0, 8))
       .map(byte => String.fromCharCode(byte))
       .join('');
     
-    if (!header.startsWith('%PDF')) {
+    console.log('PDF header:', header);
+    
+    // Check for PDF signature in first 8 bytes
+    if (!header.includes('%PDF')) {
       throw new Error('Invalid PDF: File does not have a valid PDF header');
     }
     
-    // Load PDF document with error handling
+    // Load PDF document with more permissive settings
+    console.log('Loading PDF document...');
     const pdf = await pdfjsLib.getDocument({
       data: arrayBuffer,
       useWorkerFetch: false,
       isEvalSupported: false,
-      useSystemFonts: false
+      useSystemFonts: false,
+      disableAutoFetch: false,
+      disableStream: false,
+      disableRange: false,
+      maxImageSize: 1024 * 1024, // 1MB
+      cMapUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/cmaps/',
+      cMapPacked: true
     }).promise;
+    
+    console.log('PDF loaded successfully, pages:', pdf.numPages);
     
     let fullText = '';
     
     // Extract text from all pages
     for (let i = 1; i <= pdf.numPages; i++) {
       try {
+        console.log(`Extracting text from page ${i}...`);
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
         const pageText = textContent.items
           .map((item: any) => item.str)
           .join(' ');
         fullText += pageText + ' ';
+        console.log(`Page ${i} text length:`, pageText.length);
       } catch (pageError) {
         console.warn(`Error extracting text from page ${i}:`, pageError);
         // Continue with other pages
       }
     }
+    
+    console.log('Total extracted text length:', fullText.length);
     
     // Check if we extracted any text
     if (!fullText.trim()) {
@@ -223,7 +242,15 @@ export const parseResume = async (file: File): Promise<ResumeAnalysis> => {
 
   } catch (error) {
     console.error('Error parsing resume:', error);
-    throw new Error('Failed to parse resume. Please ensure the file is a valid PDF.');
+    
+    // If PDF parsing fails, try a simple fallback approach
+    if (error instanceof Error && error.message.includes('Invalid PDF')) {
+      throw new Error('Invalid PDF: The file does not appear to be a valid PDF document.');
+    } else if (error instanceof Error && error.message.includes('Failed to parse')) {
+      throw new Error('PDF Parsing Failed: Could not extract text from the PDF. The file might be corrupted or password-protected.');
+    } else {
+      throw new Error(`PDF Processing Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+    }
   }
 };
 
