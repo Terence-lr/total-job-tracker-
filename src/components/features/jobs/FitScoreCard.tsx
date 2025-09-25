@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FitScoreResult } from '../../../types/fitScore';
-import { analyzeJobFitWithAI } from '../../../services/fitScoreService';
+import { analyzeJobFit } from '../../../services/fitScoreService';
 import SkillsCompare from '../SkillsCompare';
 import { FileText, Copy, Loader2, Target, AlertCircle, GitCompare } from 'lucide-react';
 
@@ -29,7 +29,7 @@ const FitScoreCard: React.FC<FitScoreCardProps> = ({ onCopyToNotes, profile }) =
     setError(null);
 
     try {
-      const analysis = await analyzeJobFitWithAI({
+      const analysis = await analyzeJobFit({
         jobDescription,
         profile
       });
