@@ -22,6 +22,7 @@ export const createJobApplication = async (
           notes: jobData.notes || null,
           job_description: jobData.job_description || null,
           offers: jobData.offers || null,
+          withdrawn: jobData.withdrawn || false,
           user_id: currentUser.id
         }
       ])
@@ -66,6 +67,7 @@ export const getJobApplications = async (): Promise<JobApplication[]> => {
       status: job.status as any,
       salary: job.salary || '',
       notes: job.notes || '',
+      withdrawn: job.withdrawn || false,
       job_url: job.job_url || '',
       job_description: job.job_description || '',
       offers: job.offers || '',

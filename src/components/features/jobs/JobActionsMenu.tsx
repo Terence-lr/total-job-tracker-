@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { MoreVertical, Edit, Trash2, ArrowRight, Archive, Copy } from 'lucide-react';
+import { MoreVertical, Edit, Trash2, ArrowRight, Archive, Copy, X } from 'lucide-react';
 import { JobApplication } from '../../../types/job';
 
 interface JobActionsMenuProps {
@@ -34,6 +34,14 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
       jobUrl: job.job_url
     };
     navigator.clipboard.writeText(JSON.stringify(jobData, null, 2));
+  };
+
+  const handleWithdraw = () => {
+    onUpdate(job.id, { withdrawn: true, status: 'Withdrawn' });
+  };
+
+  const handleUnwithdraw = () => {
+    onUpdate(job.id, { withdrawn: false, status: 'Applied' });
   };
 
   return (
@@ -95,6 +103,38 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
                   >
                     <ArrowRight className="w-4 h-4 mr-3" />
                     Move to Offer
+                  </button>
+                )}
+              </Menu.Item>
+            )}
+            
+            {!job.withdrawn && job.status !== 'Withdrawn' && (
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    onClick={handleWithdraw}
+                    className={`${
+                      active ? 'bg-orange-50' : ''
+                    } flex items-center w-full px-4 py-2 text-sm text-orange-600`}
+                  >
+                    <X className="w-4 h-4 mr-3" />
+                    Withdraw Application
+                  </button>
+                )}
+              </Menu.Item>
+            )}
+            
+            {job.withdrawn && (
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    onClick={handleUnwithdraw}
+                    className={`${
+                      active ? 'bg-green-50' : ''
+                    } flex items-center w-full px-4 py-2 text-sm text-green-600`}
+                  >
+                    <ArrowRight className="w-4 h-4 mr-3" />
+                    Reactivate Application
                   </button>
                 )}
               </Menu.Item>

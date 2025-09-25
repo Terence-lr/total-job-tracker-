@@ -16,6 +16,7 @@ export const createJobApplication = async (jobData: Omit<JobApplication, 'id' | 
     job_url: jobData.job_url,
     job_description: jobData.job_description,
     offers: jobData.offers,
+    withdrawn: jobData.withdrawn || false,
     user_id: currentUser.id
   };
 
@@ -39,6 +40,7 @@ export const createJobApplication = async (jobData: Omit<JobApplication, 'id' | 
     job_url: data.job_url || '',
     job_description: data.job_description || '',
     offers: data.offers || '',
+    withdrawn: data.withdrawn || false,
     user_id: data.user_id,
     created_at: new Date(data.created_at),
     updated_at: new Date(data.updated_at || data.created_at)
@@ -180,6 +182,7 @@ export const updateJobApplication = async (id: string, updates: Partial<JobAppli
     job_url: data.job_url || '',
     job_description: data.job_description || '',
     offers: data.offers || '',
+    withdrawn: data.withdrawn || false,
     user_id: data.user_id,
     created_at: new Date(data.created_at),
     updated_at: new Date(data.updated_at || data.created_at)

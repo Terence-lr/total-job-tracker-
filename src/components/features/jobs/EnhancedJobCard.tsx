@@ -29,13 +29,16 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
   onUnarchive,
   onStatusChange
 }) => {
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string, withdrawn?: boolean) => {
+    if (withdrawn) {
+      return 'bg-orange-100 text-orange-800';
+    }
     const colors: Record<string, string> = {
       'Applied': 'bg-blue-100 text-blue-800',
       'Interview': 'bg-green-100 text-green-800',
       'Offer': 'bg-yellow-100 text-yellow-800',
       'Rejected': 'bg-red-100 text-red-800',
-      'Withdrawn': 'bg-gray-100 text-gray-800',
+      'Withdrawn': 'bg-orange-100 text-orange-800',
       'Archived': 'bg-gray-100 text-gray-600'
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
@@ -96,9 +99,9 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
           ) : (
             <span className={clsx(
               'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-              getStatusColor(job.status)
+              getStatusColor(job.status, job.withdrawn)
             )}>
-              {job.status}
+              {job.withdrawn ? 'Withdrawn' : job.status}
             </span>
           )}
         </div>

@@ -9,6 +9,7 @@ export interface JobApplication {
   job_url?: string;
   job_description?: string;
   offers?: string;
+  withdrawn?: boolean;
   user_id: string;
   created_at: Date;
   updated_at: Date;
@@ -26,6 +27,7 @@ export interface CreateJobApplication {
   job_url?: string;
   job_description?: string;
   offers?: string;
+  withdrawn?: boolean;
 }
 
 export interface UpdateJobApplication extends Partial<CreateJobApplication> {
