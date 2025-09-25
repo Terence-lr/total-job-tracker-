@@ -181,15 +181,11 @@ export function Applications() {
                       job.status === 'Applied' ? 'bg-blue-600' :
                       job.status === 'Interview' ? 'bg-yellow-600' :
                       job.status === 'Offer' ? 'bg-green-600' :
+                      job.status === 'Archived' ? 'bg-gray-600' :
                       'bg-red-600'
                     }`}>
                       {job.status}
                     </span>
-                    {job.status === 'Archived' && (
-                      <span className="px-2 py-1 rounded text-xs bg-gray-600 text-gray-300">
-                        Archived
-                      </span>
-                    )}
                   </div>
                 </td>
                 <td className="p-4">
