@@ -41,6 +41,7 @@ const EmailConfirmation: React.FC = () => {
             
             // Redirect to success page after 1 second
             setTimeout(() => {
+              console.log('Redirecting to success page...');
               navigate('/email-confirmed-success');
             }, 1000);
           }
@@ -64,6 +65,7 @@ const EmailConfirmation: React.FC = () => {
             
             // Redirect to success page after 1 second
             setTimeout(() => {
+              console.log('Redirecting to success page...');
               navigate('/email-confirmed-success');
             }, 1000);
           }
