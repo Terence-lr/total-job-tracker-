@@ -9,6 +9,7 @@ import { useNotification } from '../contexts/NotificationContext';
 import { Archive, ArchiveRestore } from 'lucide-react';
 import StatusDropdown from '../components/features/jobs/StatusDropdown';
 import OfferCelebration from '../components/features/jobs/OfferCelebration';
+import Button from '../components/ui/Button';
 
 export function Applications() {
   const { user } = useAuth();
@@ -212,35 +213,39 @@ export function Applications() {
                 </td>
                 <td className="p-4">
                   <div className="flex space-x-2">
-                    <button 
+                    <Button 
                       onClick={() => handleEditJob(job)}
-                      className="text-blue-500 hover:text-blue-400 px-2 py-1 rounded hover:bg-gray-800 transition-colors"
+                      variant="ghost"
+                      size="sm"
                     >
                       ✏️ Edit
-                    </button>
+                    </Button>
                     {job.status === 'Archived' ? (
-                      <button 
+                      <Button 
                         onClick={() => handleUnarchiveJob(job.id)}
-                        className="text-green-500 hover:text-green-400 px-2 py-1 rounded hover:bg-gray-800 transition-colors flex items-center space-x-1"
+                        variant="success"
+                        size="sm"
+                        leftIcon={<ArchiveRestore className="w-3 h-3" />}
                       >
-                        <ArchiveRestore className="w-3 h-3" />
-                        <span>Unarchive</span>
-                      </button>
+                        Unarchive
+                      </Button>
                     ) : (
-                      <button 
+                      <Button 
                         onClick={() => handleArchiveJob(job.id)}
-                        className="text-yellow-500 hover:text-yellow-400 px-2 py-1 rounded hover:bg-gray-800 transition-colors flex items-center space-x-1"
+                        variant="outline"
+                        size="sm"
+                        leftIcon={<Archive className="w-3 h-3" />}
                       >
-                        <Archive className="w-3 h-3" />
-                        <span>Archive</span>
-                      </button>
+                        Archive
+                      </Button>
                     )}
-                    <button 
+                    <Button 
                       onClick={() => handleDeleteJob(job.id)}
-                      className="text-red-500 hover:text-red-400 px-2 py-1 rounded hover:bg-gray-800 transition-colors"
+                      variant="danger"
+                      size="sm"
                     >
                       🗑️ Delete
-                    </button>
+                    </Button>
                   </div>
                 </td>
               </tr>

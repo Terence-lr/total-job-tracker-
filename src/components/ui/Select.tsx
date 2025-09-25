@@ -1,72 +1,107 @@
 import React from 'react';
-import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 
-interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+interface SelectOption {
+  value: string;
   label: string;
-  icon?: React.ReactNode;
-  error?: string;
-  helperText?: string;
-  options: { value: string; label: string }[];
+  disabled?: boolean;
 }
 
-const Select: React.FC<SelectProps> = ({ 
-  label, 
-  icon, 
-  error, 
-  helperText, 
+interface SelectProps {
+  options: SelectOption[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'outline' | 'ghost';
+  fullWidth?: boolean;
+  name?: string;
+  id?: string;
+}
+
+const Select: React.FC<SelectProps> = ({
   options,
-  className,
+  value,
+  onChange,
+  placeholder = 'Select an option',
+  disabled = false,
+  className = '',
+  size = 'md',
+  variant = 'default',
+  fullWidth = false,
+  name,
   id,
-  ...props 
 }) => {
-  const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
+  const baseClasses = `
+    appearance-none relative inline-flex items-center justify-between
+    transition-all duration-200 ease-in-out
+    focus:outline-none focus:ring-2 focus:ring-red-500
+    ${fullWidth ? 'w-full' : ''}
+  `;
+
+  const variantClasses = {
+    default: `
+      bg-gray-800 hover:bg-gray-700 text-white
+      border border-gray-600 hover:border-gray-500
+    `,
+    outline: `
+      bg-transparent hover:bg-gray-800 text-white
+      border border-gray-600 hover:border-gray-500
+    `,
+    ghost: `
+      bg-transparent hover:bg-gray-800 text-gray-300 hover:text-white
+    `,
+  };
+
+  const sizeClasses = {
+    sm: 'px-3 py-1.5 text-sm rounded-md',
+    md: 'px-4 py-2 text-sm rounded-lg',
+    lg: 'px-6 py-3 text-base rounded-lg',
+  };
 
   return (
-    <div className="space-y-1">
-      <label 
-        htmlFor={selectId}
-        className="block text-sm font-medium text-gray-700"
+    <div className={`relative ${className}`}>
+      <motion.select
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        name={name}
+        id={id}
+        className={`
+          ${baseClasses}
+          ${variantClasses[variant]}
+          ${sizeClasses[size]}
+          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+          pr-8
+        `}
       >
-        {label}
-      </label>
-      <div className="relative">
-        {icon && (
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <div className="w-4 h-4 text-gray-400">
-              {icon}
-            </div>
-          </div>
+        {placeholder && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
         )}
-        <select
-          id={selectId}
-          className={clsx(
-            'block w-full rounded-md border-gray-300 shadow-sm',
-            'focus:border-blue-500 focus:ring-blue-500',
-            'disabled:bg-gray-50 disabled:text-gray-500',
-            icon ? 'pl-10' : 'pl-3',
-            'pr-3 py-2 text-sm',
-            error ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : '',
-            className
-          )}
-          {...props}
-        >
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+        {options.map((option) => (
+          <option
+            key={option.value}
+            value={option.value}
+            disabled={option.disabled}
+            className="bg-gray-800 text-white"
+          >
+            {option.label}
+          </option>
+        ))}
+      </motion.select>
+      
+      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+        <ChevronDown className="w-4 h-4 text-gray-400" />
       </div>
-      {error && (
-        <p className="text-sm text-red-600">{error}</p>
-      )}
-      {helperText && !error && (
-        <p className="text-sm text-gray-500">{helperText}</p>
-      )}
     </div>
   );
 };
 
 export default Select;
-
-

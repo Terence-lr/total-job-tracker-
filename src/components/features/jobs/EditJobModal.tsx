@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { JobApplication, JobStatus } from '../../../types/job';
 import { useNotification } from '../../../contexts/NotificationContext';
+import Button from '../../ui/Button';
+import Select from '../../ui/Select';
 
 interface EditJobModalProps {
   job: JobApplication;
@@ -141,18 +143,21 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ job, onClose, onJobUpdated 
               <label className="block text-sm font-medium text-gray-300">
                 Status
               </label>
-              <select
+              <Select
+                options={[
+                  { value: 'Applied', label: 'Applied' },
+                  { value: 'Interview', label: 'Interview' },
+                  { value: 'Offer', label: 'Offer' },
+                  { value: 'Rejected', label: 'Rejected' },
+                  { value: 'Withdrawn', label: 'Withdrawn' },
+                  { value: 'Archived', label: 'Archived' }
+                ]}
                 value={formData.status}
-                onChange={(e) => handleChange('status', e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              >
-                <option value="Applied">Applied</option>
-                <option value="Interview">Interview</option>
-                <option value="Offer">Offer</option>
-                <option value="Rejected">Rejected</option>
-                <option value="Withdrawn">Withdrawn</option>
-                <option value="Archived">Archived</option>
-              </select>
+                onChange={(value) => handleChange('status', value)}
+                size="md"
+                variant="default"
+                fullWidth
+              />
             </div>
           </div>
 
@@ -222,21 +227,23 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ job, onClose, onJobUpdated 
           </div>
 
           <div className="flex justify-end space-x-4 pt-6 border-t border-gray-700 mt-6">
-            <button 
+            <Button 
               type="button" 
+              variant="outline"
               onClick={onClose}
-              className="px-5 py-2 border border-gray-600 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors"
               disabled={loading}
+              size="md"
             >
               Cancel
-            </button>
-            <button 
+            </Button>
+            <Button 
               type="submit" 
-              disabled={loading}
-              className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+              variant="primary"
+              loading={loading}
+              size="md"
             >
-              {loading ? 'Updating...' : 'Update Job'}
-            </button>
+              Update Job
+            </Button>
           </div>
         </form>
       </div>

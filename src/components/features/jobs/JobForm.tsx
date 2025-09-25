@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { JobApplication, CreateJobApplication, JobStatus } from '../../../types/job';
 import { X, Calendar, DollarSign, Link as LinkIcon, FileText } from 'lucide-react';
 import FitScoreCard from './FitScoreCard';
+import Button from '../../ui/Button';
+import Select from '../../ui/Select';
 
 interface JobFormProps {
   job?: JobApplication;
@@ -204,19 +206,14 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                 <label htmlFor="status" className="block text-sm font-medium text-gray-300">
                   Status
                 </label>
-                <select
-                  id="status"
-                  name="status"
+                <Select
+                  options={statusOptions.map(status => ({ value: status, label: status }))}
                   value={formData.status}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                >
-                  {statusOptions.map(status => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => handleChange({ target: { name: 'status', value } } as any)}
+                  size="md"
+                  variant="default"
+                  fullWidth
+                />
               </div>
             </div>
 
@@ -340,27 +337,22 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
           />
 
             <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-6 border-t border-gray-700">
-              <button
+              <Button
                 type="button"
+                variant="secondary"
                 onClick={onCancel}
-                className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                size="md"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                disabled={isLoading}
-                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                variant="primary"
+                loading={isLoading}
+                size="md"
               >
-                {isLoading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    {job ? 'Updating...' : 'Adding...'}
-                  </div>
-                ) : (
-                  job ? 'Update Application' : 'Add Application'
-                )}
-              </button>
+                {job ? 'Update Application' : 'Add Application'}
+              </Button>
             </div>
           </form>
         </div>
