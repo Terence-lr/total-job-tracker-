@@ -10,6 +10,7 @@ import Signup from './components/features/auth/Signup';
 import ForgotPassword from './components/features/auth/ForgotPassword';
 import EmailConfirmation from './components/features/auth/EmailConfirmation';
 import EmailConfirmedSuccess from './components/features/auth/EmailConfirmedSuccess';
+import TestCallback from './components/features/auth/TestCallback';
 import EnhancedDashboard from './components/EnhancedDashboard';
 import Profile from './components/Profile';
 import { Applications } from './pages/Applications';
@@ -33,6 +34,8 @@ function App() {
             <Route path="/auth/confirm" element={<EmailConfirmation />} />
             <Route path="/confirm" element={<EmailConfirmation />} />
             <Route path="/email-confirmed-success" element={<EmailConfirmedSuccess />} />
+            <Route path="/test-callback" element={<TestCallback />} />
+            <Route path="/auth/callback/*" element={<EmailConfirmation />} />
             <Route element={<Layout />}>
               <Route 
                 path="/dashboard" 

@@ -12,6 +12,10 @@ const EmailConfirmation: React.FC = () => {
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
+        console.log('EmailConfirmation component loaded');
+        console.log('Current URL:', window.location.href);
+        console.log('Current hash:', window.location.hash);
+        
         // Get URL parameters - Supabase uses different parameter names
         const access_token = searchParams.get('access_token');
         const refresh_token = searchParams.get('refresh_token');
