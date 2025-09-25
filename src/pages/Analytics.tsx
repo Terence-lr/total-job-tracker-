@@ -56,28 +56,28 @@ export function Analytics() {
 
   return (
     <div className="min-h-screen bg-black">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <div className="flex items-center space-x-3 mb-2">
-            <div className="p-2 bg-red-500/20 rounded-lg">
-              <BarChart3 className="w-8 h-8 text-red-400" />
+          <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
+            <div className="p-1.5 sm:p-2 bg-red-500/20 rounded-lg">
+              <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-red-400" />
             </div>
-            <h1 className="text-3xl font-bold text-white">Analytics Dashboard</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Analytics Dashboard</h1>
           </div>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-400 text-sm sm:text-lg">
             Comprehensive insights into your job application performance
           </p>
         </motion.div>
 
 
         {/* Main Analytics Grid */}
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {/* Dashboard Metrics */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -88,19 +88,19 @@ export function Analytics() {
           </motion.div>
 
           {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             {/* Status Distribution */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <div className="flex items-center space-x-3 mb-6">
-                  <div className="p-2 bg-red-500/20 rounded-lg">
-                    <PieChart className="w-6 h-6 text-red-400" />
+              <div className="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                  <div className="p-1.5 sm:p-2 bg-red-500/20 rounded-lg">
+                    <PieChart className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />
                   </div>
-                  <h2 className="text-xl font-semibold text-white">Status Distribution</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold text-white">Status Distribution</h2>
                 </div>
                 <StatusDistribution data={jobs} />
               </div>
@@ -112,12 +112,12 @@ export function Analytics() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <div className="flex items-center space-x-3 mb-6">
-                  <div className="p-2 bg-blue-500/20 rounded-lg">
-                    <TrendingUp className="w-6 h-6 text-blue-400" />
+              <div className="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                  <div className="p-1.5 sm:p-2 bg-blue-500/20 rounded-lg">
+                    <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
                   </div>
-                  <h2 className="text-xl font-semibold text-white">Application Trends</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold text-white">Application Trends</h2>
                 </div>
                 <ApplicationTrends data={jobs} />
               </div>

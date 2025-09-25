@@ -159,11 +159,11 @@ export function Applications() {
   if (loading) return <div className="text-white p-8">Loading...</div>;
 
   return (
-    <div className="max-w-7xl mx-auto p-8">
-      <h1 className="text-3xl font-bold text-white mb-8">All Applications</h1>
+    <div className="max-w-7xl mx-auto p-3 sm:p-6 lg:p-8">
+      <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">All Applications</h1>
       
       {/* Show Archived Toggle */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <label className="flex items-center space-x-2 text-gray-300">
           <input
             type="checkbox"
@@ -171,40 +171,41 @@ export function Applications() {
             onChange={(e) => setShowArchived(e.target.checked)}
             className="w-4 h-4 text-red-600 bg-gray-800 border-gray-600 rounded focus:ring-red-500 focus:ring-2"
           />
-          <span className="text-sm">Show archived jobs</span>
+          <span className="text-xs sm:text-sm">Show archived jobs</span>
         </label>
       </div>
 
-      <div className="bg-gray-900 rounded-lg">
-        <table className="w-full">
+      <div className="bg-gray-900 rounded-lg overflow-x-auto">
+        <table className="w-full min-w-[600px]">
           <thead className="border-b border-gray-800">
             <tr>
-              <th className="text-left p-4 text-gray-400">Company</th>
-              <th className="text-left p-4 text-gray-400">Position</th>
-              <th className="text-left p-4 text-gray-400">Date Applied</th>
-              <th className="text-left p-4 text-gray-400">Status</th>
-              <th className="text-left p-4 text-gray-400">Actions</th>
+              <th className="text-left p-3 sm:p-4 text-gray-400 text-xs sm:text-sm">Company</th>
+              <th className="text-left p-3 sm:p-4 text-gray-400 text-xs sm:text-sm">Position</th>
+              <th className="text-left p-3 sm:p-4 text-gray-400 text-xs sm:text-sm hidden sm:table-cell">Date Applied</th>
+              <th className="text-left p-3 sm:p-4 text-gray-400 text-xs sm:text-sm">Status</th>
+              <th className="text-left p-3 sm:p-4 text-gray-400 text-xs sm:text-sm">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredJobs.map(job => (
               <tr key={job.id} className="border-b border-gray-800">
-                <td className="p-4 text-white">{job.company}</td>
-                <td className="p-4 text-gray-300">{job.position}</td>
-                <td className="p-4 text-gray-300">{new Date(job.date_applied).toLocaleDateString()}</td>
-                <td className="p-4">
+                <td className="p-3 sm:p-4 text-white text-sm sm:text-base font-medium">{job.company}</td>
+                <td className="p-3 sm:p-4 text-gray-300 text-sm sm:text-base">{job.position}</td>
+                <td className="p-3 sm:p-4 text-gray-300 text-sm sm:text-base hidden sm:table-cell">{new Date(job.date_applied).toLocaleDateString()}</td>
+                <td className="p-3 sm:p-4">
                   <StatusDropdown
                     job={job}
                     onStatusChange={handleStatusChange}
-                    className="w-32"
+                    className="w-24 sm:w-32"
                   />
                 </td>
-                <td className="p-4">
-                  <div className="flex space-x-2">
+                <td className="p-3 sm:p-4">
+                  <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2">
                     <Button 
                       onClick={() => handleEditJob(job)}
                       variant="ghost"
                       size="sm"
+                      className="text-xs px-2 py-1"
                     >
                       ✏️ Edit
                     </Button>
@@ -214,8 +215,10 @@ export function Applications() {
                         variant="success"
                         size="sm"
                         leftIcon={<ArchiveRestore className="w-3 h-3" />}
+                        className="text-xs px-2 py-1"
                       >
-                        Unarchive
+                        <span className="hidden sm:inline">Unarchive</span>
+                        <span className="sm:hidden">Unarch</span>
                       </Button>
                     ) : (
                       <Button 
@@ -223,14 +226,17 @@ export function Applications() {
                         variant="outline"
                         size="sm"
                         leftIcon={<Archive className="w-3 h-3" />}
+                        className="text-xs px-2 py-1"
                       >
-                        Archive
+                        <span className="hidden sm:inline">Archive</span>
+                        <span className="sm:hidden">Arch</span>
                       </Button>
                     )}
                     <Button 
                       onClick={() => handleDeleteJob(job.id)}
                       variant="danger"
                       size="sm"
+                      className="text-xs px-2 py-1"
                     >
                       🗑️ Delete
                     </Button>
@@ -241,8 +247,8 @@ export function Applications() {
           </tbody>
         </table>
         {jobs.length === 0 && (
-          <div className="p-8 text-center text-gray-400">
-            No applications yet. Add your first one!
+          <div className="p-6 sm:p-8 text-center text-gray-400">
+            <p className="text-sm sm:text-base">No applications yet. Add your first one!</p>
           </div>
         )}
       </div>

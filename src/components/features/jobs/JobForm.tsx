@@ -118,24 +118,24 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
   const statusOptions: JobStatus[] = ['Applied', 'Interview', 'Offer', 'Rejected', 'Withdrawn'];
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
-      <div className="relative bg-gray-900 border border-gray-700 rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-gray-900 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
-          <h3 className="text-xl font-semibold text-white">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="relative bg-gray-900 border border-gray-700 rounded-lg shadow-2xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-gray-900 border-b border-gray-700 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
+          <h3 className="text-lg sm:text-xl font-semibold text-white">
             {job ? 'Edit Job Application' : 'Add New Job Application'}
           </h3>
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-800 transition-colors"
+            className="text-gray-400 hover:text-white p-1.5 sm:p-2 rounded-lg hover:bg-gray-800 transition-colors"
             aria-label="Close form"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
         </div>
 
-        <div className="px-6 py-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="px-4 sm:px-6 py-4 sm:py-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <label htmlFor="company" className="block text-sm font-medium text-gray-300">
                   Company *
@@ -146,13 +146,13 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                   name="company"
                   value={formData.company}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 bg-gray-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 sm:py-2.5 bg-gray-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base ${
                     errors.company ? 'border-red-500' : 'border-gray-600'
                   }`}
                   placeholder="Enter company name"
                 />
                 {errors.company && (
-                  <p className="text-sm text-red-400">{errors.company}</p>
+                  <p className="text-xs sm:text-sm text-red-400">{errors.company}</p>
                 )}
             </div>
 
@@ -177,14 +177,14 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <label htmlFor="date_applied" className="block text-sm font-medium text-gray-300">
                   Date Applied *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Calendar className="h-5 w-5 text-gray-400" />
+                    <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                   </div>
                   <input
                     type="date"
@@ -192,13 +192,13 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                     name="date_applied"
                     value={formData.date_applied}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 pl-10 bg-gray-800 border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent ${
+                    className={`w-full px-3 py-2 sm:py-2.5 pl-9 sm:pl-10 bg-gray-800 border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base ${
                       errors.date_applied ? 'border-red-500' : 'border-gray-600'
                     }`}
                   />
                 </div>
                 {errors.date_applied && (
-                  <p className="text-sm text-red-400">{errors.date_applied}</p>
+                  <p className="text-xs sm:text-sm text-red-400">{errors.date_applied}</p>
                 )}
               </div>
 
@@ -223,7 +223,7 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <DollarSign className="h-5 w-5 text-gray-400" />
+                  <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                 </div>
                 <input
                   type="text"
@@ -231,7 +231,7 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                   name="salary"
                   value={formData.salary}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  className="w-full px-3 py-2 sm:py-2.5 pl-9 sm:pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base"
                   placeholder="e.g., $80,000 - $100,000"
                 />
               </div>
@@ -243,7 +243,7 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <LinkIcon className="h-5 w-5 text-gray-400" />
+                  <LinkIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                 </div>
                 <input
                   type="url"
@@ -251,14 +251,14 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                   name="job_url"
                   value={formData.job_url}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 pl-10 bg-gray-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 sm:py-2.5 pl-9 sm:pl-10 bg-gray-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base ${
                     errors.job_url ? 'border-red-500' : 'border-gray-600'
                   }`}
                   placeholder="https://company.com/job-posting"
                 />
               </div>
               {errors.job_url && (
-                <p className="text-sm text-red-400">{errors.job_url}</p>
+                <p className="text-xs sm:text-sm text-red-400">{errors.job_url}</p>
               )}
             </div>
 
@@ -268,15 +268,15 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
               </label>
               <div className="relative">
                 <div className="absolute top-3 left-3 pointer-events-none">
-                  <FileText className="h-5 w-5 text-gray-400" />
+                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                 </div>
                 <textarea
                   id="notes"
                   name="notes"
-                  rows={4}
+                  rows={3}
                   value={formData.notes}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent min-h-[100px] resize-none"
+                  className="w-full px-3 py-2 pl-9 sm:pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent min-h-[80px] sm:min-h-[100px] resize-none text-sm sm:text-base"
                   placeholder="Add any additional notes about this application..."
                 />
               </div>
@@ -288,15 +288,15 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
               </label>
               <div className="relative">
                 <div className="absolute top-3 left-3 pointer-events-none">
-                  <FileText className="h-5 w-5 text-gray-400" />
+                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                 </div>
                 <textarea
                   id="job_description"
                   name="job_description"
-                  rows={6}
+                  rows={4}
                   value={formData.job_description}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent min-h-[150px] resize-none"
+                  className="w-full px-3 py-2 pl-9 sm:pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent min-h-[120px] sm:min-h-[150px] resize-none text-sm sm:text-base"
                   placeholder="Paste the job description here to analyze how well your skills match..."
                 />
               </div>
@@ -308,15 +308,15 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
               </label>
               <div className="relative">
                 <div className="absolute top-3 left-3 pointer-events-none">
-                  <DollarSign className="h-5 w-5 text-gray-400" />
+                  <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                 </div>
                 <textarea
                   id="offers"
                   name="offers"
-                  rows={3}
+                  rows={2}
                   value={formData.offers}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent min-h-[100px] resize-none"
+                  className="w-full px-3 py-2 pl-9 sm:pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent min-h-[80px] sm:min-h-[100px] resize-none text-sm sm:text-base"
                   placeholder="Enter details about any job offers received..."
                 />
               </div>
@@ -336,7 +336,7 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
             }}
           />
 
-            <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-6 border-t border-gray-700">
+            <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-4 sm:pt-6 border-t border-gray-700">
               <Button
                 type="button"
                 variant="secondary"

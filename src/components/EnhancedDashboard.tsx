@@ -331,14 +331,14 @@ const EnhancedDashboard: React.FC = () => {
     <ErrorBoundary>
       <div className="min-h-screen bg-black">
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
           {/* Error Message */}
           {error && (
-            <div className="mb-6 bg-red-900/20 border border-red-500/30 rounded-md p-4">
+            <div className="mb-4 sm:mb-6 bg-red-900/20 border border-red-500/30 rounded-md p-3 sm:p-4">
               <div className="flex">
-                <AlertCircle className="h-5 w-5 text-red-400" />
-                <div className="ml-3">
-                  <p className="text-sm text-red-300">{error}</p>
+                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-400 flex-shrink-0" />
+                <div className="ml-2 sm:ml-3">
+                  <p className="text-xs sm:text-sm text-red-300">{error}</p>
                 </div>
               </div>
             </div>
@@ -347,15 +347,15 @@ const EnhancedDashboard: React.FC = () => {
           {/* Quick Analytics Summary */}
           <div 
             ref={statsRef}
-            className={`mb-8 ${statsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} transition-all duration-500`}
+            className={`mb-6 sm:mb-8 ${statsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} transition-all duration-500`}
           >
             <QuickAnalyticsSummary jobs={jobs} targetOfferRate={targetOfferRate} />
           </div>
 
-          <h1 className="text-2xl font-bold text-white mb-6">Your Job Applications</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">Your Job Applications</h1>
 
           {/* Filters */}
-          <div className="signature-card p-6 mb-6">
+          <div className="signature-card p-4 sm:p-6 mb-4 sm:mb-6">
             <JobFilters
               filters={filters}
               onFiltersChange={setFilters}
@@ -363,7 +363,7 @@ const EnhancedDashboard: React.FC = () => {
             />
             
             {/* Show Archived Toggle */}
-            <div className="mt-4 pt-4 border-t border-gray-700">
+            <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-700">
               <label className="flex items-center space-x-2 text-gray-300">
                 <input
                   type="checkbox"
@@ -371,7 +371,7 @@ const EnhancedDashboard: React.FC = () => {
                   onChange={(e) => setShowArchived(e.target.checked)}
                   className="w-4 h-4 text-red-600 bg-gray-800 border-gray-600 rounded focus:ring-red-500 focus:ring-2"
                 />
-                <span className="text-sm">Show archived jobs</span>
+                <span className="text-xs sm:text-sm">Show archived jobs</span>
               </label>
             </div>
           </div>
@@ -409,16 +409,16 @@ const EnhancedDashboard: React.FC = () => {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               </div>
             ) : paginatedJobs.length === 0 ? (
-              <div className="text-center py-12">
-                <Briefcase className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-white">No job applications</h3>
-                <p className="mt-1 text-sm text-gray-400">
+              <div className="text-center py-8 sm:py-12">
+                <Briefcase className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" />
+                <h3 className="mt-2 text-sm sm:text-base font-medium text-white">No job applications</h3>
+                <p className="mt-1 text-xs sm:text-sm text-gray-400 px-4">
                   Get started by adding your first job application.
                 </p>
-                <div className="mt-6">
+                <div className="mt-4 sm:mt-6">
                   <button
                     onClick={() => setShowJobForm(true)}
-                    className="signature-btn inline-flex items-center"
+                    className="signature-btn inline-flex items-center text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-3"
                   >
                     <Briefcase className="w-4 h-4 mr-2" />
                     Add Job Application
@@ -449,7 +449,7 @@ const EnhancedDashboard: React.FC = () => {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="mt-8">
+                  <div className="mt-6 sm:mt-8">
                     <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}

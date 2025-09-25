@@ -51,38 +51,38 @@ export function Layout() {
           }}></div>
         </div>
         
-        <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
-          <div className="flex justify-between items-center h-20">
+        <div className="relative max-w-7xl mx-auto px-3 sm:px-6 lg:px-10">
+          <div className="flex justify-between items-center h-16 sm:h-20">
             {/* Enhanced Logo Section */}
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex items-center space-x-4"
+              className="flex items-center space-x-2 sm:space-x-4"
             >
               <Link 
                 to="/dashboard" 
-                className="group relative flex items-center space-x-4 text-red-500 font-bold text-xl hover:text-red-400 transition-all duration-300 cursor-pointer p-3 rounded-xl hover:bg-red-500/10"
+                className="group relative flex items-center space-x-2 sm:space-x-4 text-red-500 font-bold text-lg sm:text-xl hover:text-red-400 transition-all duration-300 cursor-pointer p-2 sm:p-3 rounded-xl hover:bg-red-500/10"
               >
                 {/* Enhanced Glow Effect */}
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   whileTap={{ scale: 0.95 }}
-                  className="relative p-2"
+                  className="relative p-1 sm:p-2"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-red-400/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                  <Briefcase className="w-8 h-8 relative z-10 drop-shadow-lg" />
+                  <Briefcase className="w-6 h-6 sm:w-8 sm:h-8 relative z-10 drop-shadow-lg" />
                 </motion.div>
                 
-                <div className="flex flex-col space-y-1">
+                <div className="flex flex-col space-y-0.5 sm:space-y-1">
                   <motion.span 
-                    className="relative group-hover:text-red-400 transition-colors duration-300 text-xl font-extrabold tracking-tight"
+                    className="relative group-hover:text-red-400 transition-colors duration-300 text-lg sm:text-xl font-extrabold tracking-tight"
                     whileHover={{ x: 2 }}
                   >
                     JobTracker
                   </motion.span>
                   <motion.span 
-                    className="relative text-red-400/70 text-xs font-medium tracking-wider"
+                    className="relative text-red-400/70 text-xs font-medium tracking-wider hidden sm:block"
                     whileHover={{ x: 2 }}
                   >
                     PROFESSIONAL
@@ -119,7 +119,7 @@ export function Layout() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               {/* Crisp Add Job Button */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -128,10 +128,11 @@ export function Layout() {
               >
                 <Link 
                   to="/dashboard?addJob=true" 
-                  className="group flex items-center space-x-3 bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700 transition-all duration-200 shadow-lg border border-red-500"
+                  className="group flex items-center space-x-2 sm:space-x-3 bg-red-600 text-white px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold hover:bg-red-700 transition-all duration-200 shadow-lg border border-red-500 text-sm sm:text-base"
                 >
-                  <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-200" />
-                  <span className="font-semibold">Add Job</span>
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-200" />
+                  <span className="font-semibold hidden sm:inline">Add Job</span>
+                  <span className="font-semibold sm:hidden">Add</span>
                 </Link>
               </motion.div>
 
@@ -139,13 +140,13 @@ export function Layout() {
               <div className="relative">
                 <motion.button 
                   onClick={() => setShowMenu(!showMenu)}
-                  className="group flex items-center space-x-3 px-5 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all duration-200 font-medium border border-gray-700 hover:border-gray-600"
+                  className="group flex items-center space-x-2 sm:space-x-3 px-3 sm:px-5 py-2 sm:py-3 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all duration-200 font-medium border border-gray-700 hover:border-gray-600"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Settings className="w-5 h-5 group-hover:text-red-400 transition-colors duration-200" />
+                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 group-hover:text-red-400 transition-colors duration-200" />
                   <span className="hidden sm:block font-semibold">Settings</span>
-                  <ChevronDown className={`w-4 h-4 group-hover:text-red-400 transition-all duration-200 ${showMenu ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 group-hover:text-red-400 transition-all duration-200 ${showMenu ? 'rotate-180' : ''}`} />
                 </motion.button>
 
                 <AnimatePresence>
@@ -155,46 +156,46 @@ export function Layout() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-3 w-56 bg-gray-900/95 backdrop-blur-2xl border border-red-500/30 rounded-xl shadow-2xl overflow-hidden"
+                      className="absolute right-0 mt-2 sm:mt-3 w-48 sm:w-56 bg-gray-900/95 backdrop-blur-2xl border border-red-500/30 rounded-xl shadow-2xl overflow-hidden z-50"
                     >
-                      <div className="py-3">
+                      <div className="py-2 sm:py-3">
                         <Link 
                           to="/profile" 
-                          className="group flex items-center space-x-4 px-6 py-4 text-gray-300 hover:bg-gradient-to-r hover:from-red-500/10 hover:to-transparent hover:text-white transition-all duration-300"
+                          className="group flex items-center space-x-3 sm:space-x-4 px-4 sm:px-6 py-3 sm:py-4 text-gray-300 hover:bg-gradient-to-r hover:from-red-500/10 hover:to-transparent hover:text-white transition-all duration-300"
                           onClick={() => setShowMenu(false)}
                         >
                           <motion.div
                             whileHover={{ scale: 1.1, rotate: 3 }}
                             transition={{ duration: 0.2 }}
-                            className="p-2 rounded-lg bg-gray-800/50 group-hover:bg-red-500/20 transition-colors duration-300"
+                            className="p-1.5 sm:p-2 rounded-lg bg-gray-800/50 group-hover:bg-red-500/20 transition-colors duration-300"
                           >
-                            <User className="w-5 h-5 group-hover:text-red-400 transition-colors duration-300" />
+                            <User className="w-4 h-4 sm:w-5 sm:h-5 group-hover:text-red-400 transition-colors duration-300" />
                           </motion.div>
                           <div>
-                            <span className="font-semibold">Profile</span>
-                            <p className="text-xs text-gray-500">Manage your profile and target offer rate</p>
+                            <span className="font-semibold text-sm sm:text-base">Profile</span>
+                            <p className="text-xs text-gray-500 hidden sm:block">Manage your profile and target offer rate</p>
                           </div>
                         </Link>
                         
-                        <div className="border-t border-gray-700/50 my-2" />
+                        <div className="border-t border-gray-700/50 my-1 sm:my-2" />
                         
                         <button 
                           onClick={() => {
                             setShowMenu(false);
                             handleSignOut();
                           }}
-                          className="group flex items-center space-x-4 px-6 py-4 text-gray-300 hover:bg-gradient-to-r hover:from-red-900/20 hover:to-transparent hover:text-red-400 transition-all duration-300 w-full text-left"
+                          className="group flex items-center space-x-3 sm:space-x-4 px-4 sm:px-6 py-3 sm:py-4 text-gray-300 hover:bg-gradient-to-r hover:from-red-900/20 hover:to-transparent hover:text-red-400 transition-all duration-300 w-full text-left"
                         >
                           <motion.div
                             whileHover={{ scale: 1.1, rotate: 3 }}
                             transition={{ duration: 0.2 }}
-                            className="p-2 rounded-lg bg-gray-800/50 group-hover:bg-red-900/30 transition-colors duration-300"
+                            className="p-1.5 sm:p-2 rounded-lg bg-gray-800/50 group-hover:bg-red-900/30 transition-colors duration-300"
                           >
-                            <LogOut className="w-5 h-5 group-hover:text-red-400 transition-colors duration-300" />
+                            <LogOut className="w-4 h-4 sm:w-5 sm:h-5 group-hover:text-red-400 transition-colors duration-300" />
                           </motion.div>
                           <div>
-                            <span className="font-semibold">Sign Out</span>
-                            <p className="text-xs text-gray-500">End your session</p>
+                            <span className="font-semibold text-sm sm:text-base">Sign Out</span>
+                            <p className="text-xs text-gray-500 hidden sm:block">End your session</p>
                           </div>
                         </button>
                       </div>
@@ -205,12 +206,12 @@ export function Layout() {
 
               {/* Crisp Mobile Menu Button */}
               <motion.button
-                className="md:hidden p-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200 border border-gray-700 hover:border-gray-600"
+                className="md:hidden p-2 sm:p-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200 border border-gray-700 hover:border-gray-600"
                 onClick={() => setShowMobileMenu(!showMobileMenu)}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {showMobileMenu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {showMobileMenu ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
               </motion.button>
             </div>
           </div>
@@ -226,7 +227,7 @@ export function Layout() {
               transition={{ duration: 0.3 }}
               className="md:hidden bg-gray-900/95 backdrop-blur-xl border-t border-gray-700"
             >
-              <div className="px-6 py-6 space-y-2">
+              <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-2">
                 {navigationItems.map((item, index) => {
                   const Icon = item.icon;
                   return (
@@ -238,7 +239,7 @@ export function Layout() {
                     >
                       <Link
                         to={item.path}
-                        className={`group flex items-center space-x-4 px-5 py-3 rounded-lg transition-all duration-200 font-medium ${
+                        className={`group flex items-center space-x-3 sm:space-x-4 px-4 sm:px-5 py-3 rounded-lg transition-all duration-200 font-medium ${
                           isActive(item.path)
                             ? 'text-white bg-red-600 border border-red-500 shadow-lg'
                             : 'text-gray-300 hover:text-white hover:bg-gray-800 border border-transparent hover:border-gray-600'
@@ -246,7 +247,7 @@ export function Layout() {
                         onClick={() => setShowMobileMenu(false)}
                       >
                         <Icon className="w-5 h-5 group-hover:text-red-400 transition-colors duration-200" />
-                        <span className="font-semibold">{item.label}</span>
+                        <span className="font-semibold text-sm sm:text-base">{item.label}</span>
                         
                         {/* Active Indicator */}
                         {isActive(item.path) && (
