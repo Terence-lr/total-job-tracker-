@@ -160,7 +160,13 @@ const Profile: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (file.type !== 'application/pdf') {
+    // More robust PDF validation
+    const isValidPDF = file.type === 'application/pdf' || 
+                      file.type === 'application/x-pdf' ||
+                      file.name.toLowerCase().endsWith('.pdf') ||
+                      file.name.toLowerCase().includes('pdf');
+
+    if (!isValidPDF) {
       showError('Invalid File Type', 'Please upload a PDF file.');
       return;
     }
@@ -195,6 +201,18 @@ const Profile: React.FC = () => {
   const parseResumeForSkills = async (file: File) => {
     try {
       setLoading(true);
+      
+      // Additional PDF validation by checking file header
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      const header = Array.from(uint8Array.slice(0, 4))
+        .map(byte => String.fromCharCode(byte))
+        .join('');
+      
+      if (!header.startsWith('%PDF')) {
+        showError('Invalid PDF File', 'The file does not appear to be a valid PDF. Please check the file and try again.');
+        return;
+      }
       
       // Parse the resume using the real parser
       const analysis: ResumeAnalysis = await parseResume(file);
@@ -246,7 +264,19 @@ Cloud Services: ${analysis.extractedSkills.cloudServices.length}`;
       
     } catch (error) {
       console.error('Error parsing resume:', error);
-      showError('Resume Parsing Error', 'Error parsing resume. Please ensure the file is a valid PDF.');
+      
+      // More specific error messages
+      if (error instanceof Error) {
+        if (error.message.includes('Invalid PDF')) {
+          showError('Invalid PDF File', 'The file appears to be corrupted or not a valid PDF. Please try a different file.');
+        } else if (error.message.includes('Failed to parse')) {
+          showError('PDF Parsing Error', 'Could not extract text from the PDF. The file might be password-protected or corrupted.');
+        } else {
+          showError('Resume Parsing Error', `Error parsing resume: ${error.message}`);
+        }
+      } else {
+        showError('Resume Parsing Error', 'An unexpected error occurred while parsing the resume.');
+      }
     } finally {
       setLoading(false);
     }

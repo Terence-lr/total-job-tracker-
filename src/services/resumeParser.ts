@@ -148,19 +148,44 @@ export const parseResume = async (file: File): Promise<ResumeAnalysis> => {
     // Convert file to array buffer
     const arrayBuffer = await file.arrayBuffer();
     
-    // Load PDF document
-    const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+    // Validate PDF header
+    const uint8Array = new Uint8Array(arrayBuffer);
+    const header = Array.from(uint8Array.slice(0, 4))
+      .map(byte => String.fromCharCode(byte))
+      .join('');
+    
+    if (!header.startsWith('%PDF')) {
+      throw new Error('Invalid PDF: File does not have a valid PDF header');
+    }
+    
+    // Load PDF document with error handling
+    const pdf = await pdfjsLib.getDocument({
+      data: arrayBuffer,
+      useWorkerFetch: false,
+      isEvalSupported: false,
+      useSystemFonts: false
+    }).promise;
     
     let fullText = '';
     
     // Extract text from all pages
     for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      const pageText = textContent.items
-        .map((item: any) => item.str)
-        .join(' ');
-      fullText += pageText + ' ';
+      try {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(' ');
+        fullText += pageText + ' ';
+      } catch (pageError) {
+        console.warn(`Error extracting text from page ${i}:`, pageError);
+        // Continue with other pages
+      }
+    }
+    
+    // Check if we extracted any text
+    if (!fullText.trim()) {
+      throw new Error('Failed to parse: No text could be extracted from the PDF. The file might be image-based or password-protected.');
     }
 
     // Clean up the text
