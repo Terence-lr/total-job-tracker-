@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { parseResume, ResumeAnalysis } from '../services/resumeParser';
 
 const Profile: React.FC = () => {
   const [skills, setSkills] = useState<string[]>([]);
@@ -189,18 +190,17 @@ const Profile: React.FC = () => {
 
   const parseResumeForSkills = async (file: File) => {
     try {
-      // Simple PDF text extraction (you'll need a PDF parser library)
-      // For now, let's add some common skills as a demo
-      const commonSkills = [
-        'JavaScript', 'React', 'Node.js', 'Python', 'SQL', 
-        'HTML', 'CSS', 'Git', 'MongoDB', 'PostgreSQL'
-      ];
+      setLoading(true);
       
-      // In a real implementation, you'd parse the PDF and extract skills
-      // For now, let's just add a few common ones as an example
-      const detectedSkills = commonSkills.slice(0, 3); // Just add first 3 as demo
+      // Parse the resume using the real parser
+      const analysis: ResumeAnalysis = await parseResume(file);
       
-      // Add detected skills that aren't already in the list
+      console.log('Resume analysis:', analysis);
+      
+      // Get detected skills from the analysis
+      const detectedSkills = analysis.allSkills;
+      
+      // Filter out skills that are already in the user's skills list
       const newSkills = detectedSkills.filter(skill => 
         !skills.some(existingSkill => 
           existingSkill.toLowerCase() === skill.toLowerCase()
@@ -208,6 +208,7 @@ const Profile: React.FC = () => {
       );
       
       if (newSkills.length > 0) {
+        // Update the skills in the database
         const updatedSkills = [...skills, ...newSkills];
         
         const { error } = await supabase
@@ -217,17 +218,31 @@ const Profile: React.FC = () => {
 
         if (error) {
           console.error('Error updating skills from resume:', error);
+          alert('Failed to save skills to database');
         } else {
           setSkills(updatedSkills);
-          alert(`Added ${newSkills.length} skills from resume: ${newSkills.join(', ')}`);
+          
+          // Show detailed results
+          const skillBreakdown = `
+            Technical Skills: ${analysis.extractedSkills.technicalSkills.length}
+            Soft Skills: ${analysis.extractedSkills.softSkills.length}
+            Tools: ${analysis.extractedSkills.tools.length}
+            Frameworks: ${analysis.extractedSkills.frameworks.length}
+            Databases: ${analysis.extractedSkills.databases.length}
+            Cloud Services: ${analysis.extractedSkills.cloudServices.length}
+          `;
+          
+          alert(`✅ Resume parsed successfully!\n\nAdded ${newSkills.length} new skills:\n${newSkills.join(', ')}\n\nConfidence: ${Math.round(analysis.confidence)}%\n\n${skillBreakdown}`);
         }
       } else {
-        alert('No new skills detected in resume');
+        alert('No new skills detected in resume. All detected skills are already in your profile.');
       }
       
     } catch (error) {
       console.error('Error parsing resume:', error);
-      alert('Error parsing resume');
+      alert('Error parsing resume. Please ensure the file is a valid PDF.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -244,6 +259,9 @@ const Profile: React.FC = () => {
       {/* Resume Upload Section */}
       <div className="bg-gray-800 rounded-lg p-6 mb-6">
         <h2 className="text-xl font-semibold text-white mb-4">Import Resume (PDF)</h2>
+        <p className="text-gray-400 text-sm mb-4">
+          Upload your resume to automatically extract and add skills to your profile.
+        </p>
         <div className="flex items-center gap-4">
           <input
             type="file"
@@ -251,17 +269,28 @@ const Profile: React.FC = () => {
             onChange={handleResumeUpload}
             id="resume-upload"
             className="hidden"
+            disabled={loading}
           />
           <label 
             htmlFor="resume-upload" 
-            className="bg-red-600 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-red-700 transition-colors"
+            className={`px-4 py-2 rounded-lg cursor-pointer transition-colors ${
+              loading 
+                ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                : 'bg-red-600 text-white hover:bg-red-700'
+            }`}
           >
-            Choose File
+            {loading ? 'Processing...' : 'Choose File'}
           </label>
           <span className="text-gray-300">
             {resumeFile ? resumeFile.name : 'No file chosen'}
           </span>
         </div>
+        {loading && (
+          <div className="mt-4 flex items-center gap-2 text-blue-400">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
+            <span className="text-sm">Extracting skills from resume...</span>
+          </div>
+        )}
       </div>
 
       {/* Skills Section */}
