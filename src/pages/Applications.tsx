@@ -3,6 +3,7 @@ import { getJobApplications } from '../services/jobService';
 import { useAuth } from '../contexts/AuthContext';
 import { JobApplication } from '../types/job';
 import JobForm from '../components/features/jobs/JobForm';
+import EditJobModal from '../components/features/jobs/EditJobModal';
 import { updateJobApplication } from '../services/enhancedJobService';
 
 export function Applications() {
@@ -11,6 +12,7 @@ export function Applications() {
   const [loading, setLoading] = useState(true);
   const [editingJob, setEditingJob] = useState<JobApplication | null>(null);
   const [showJobForm, setShowJobForm] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -35,7 +37,34 @@ export function Applications() {
 
   const handleEditJob = (job: JobApplication) => {
     setEditingJob(job);
-    setShowJobForm(true);
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setEditingJob(null);
+    setShowEditModal(false);
+  };
+
+  const handleJobUpdated = () => {
+    loadJobs(); // Refresh the jobs list
+  };
+
+  const handleDeleteJob = async (jobId: string) => {
+    if (!user) return;
+    
+    if (window.confirm('Are you sure you want to delete this job application?')) {
+      try {
+        setLoading(true);
+        // You'll need to implement deleteJobApplication in your service
+        // await deleteJobApplication(jobId, user.id);
+        await loadJobs(); // Refresh the list
+      } catch (error) {
+        console.error('Error deleting job:', error);
+        alert('Failed to delete job application');
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   const handleUpdateJob = async (jobData: any) => {
@@ -105,12 +134,20 @@ export function Applications() {
                   </span>
                 </td>
                 <td className="p-4">
-                  <button 
-                    onClick={() => handleEditJob(job)}
-                    className="text-red-500 hover:text-red-400"
-                  >
-                    Edit
-                  </button>
+                  <div className="flex space-x-2">
+                    <button 
+                      onClick={() => handleEditJob(job)}
+                      className="text-blue-500 hover:text-blue-400 px-2 py-1 rounded hover:bg-gray-800 transition-colors"
+                    >
+                      ✏️ Edit
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteJob(job.id)}
+                      className="text-red-500 hover:text-red-400 px-2 py-1 rounded hover:bg-gray-800 transition-colors"
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -130,6 +167,15 @@ export function Applications() {
           onSubmit={handleUpdateJob}
           onCancel={handleCancelForm}
           isLoading={isSubmitting}
+        />
+      )}
+
+      {/* Edit Job Modal */}
+      {showEditModal && editingJob && (
+        <EditJobModal
+          job={editingJob}
+          onClose={closeEditModal}
+          onJobUpdated={handleJobUpdated}
         />
       )}
     </div>
