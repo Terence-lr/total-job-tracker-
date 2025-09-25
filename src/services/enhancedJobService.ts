@@ -2,49 +2,68 @@ import { supabase, getCurrentUser } from '../lib/supabase';
 import { JobApplication, JobFilters } from '../types/job';
 
 export const createJobApplication = async (jobData: Omit<JobApplication, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
-  const currentUser = await getCurrentUser();
-  if (!currentUser) throw new Error('User not authenticated');
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) throw new Error('User not authenticated');
 
-  // Map the job data to match database column names
-  const dbJob = {
-    company: jobData.company,
-    position: jobData.position,
-    date_applied: jobData.date_applied,
-    status: jobData.status,
-    salary: jobData.salary,
-    notes: jobData.notes,
-    job_url: jobData.job_url,
-    job_description: jobData.job_description,
-    offers: jobData.offers,
-    withdrawn: jobData.withdrawn || false,
-    user_id: currentUser.id
-  };
+    console.log('Creating new job application:', {
+      company: jobData.company,
+      position: jobData.position,
+      status: jobData.status,
+      userId: currentUser.id
+    });
 
-  const { data, error } = await supabase
-    .from('jobs')
-    .insert(dbJob)
-    .select()
-    .single();
+    // Map the job data to match database column names
+    const dbJob = {
+      company: jobData.company,
+      position: jobData.position,
+      date_applied: jobData.date_applied,
+      status: jobData.status,
+      salary: jobData.salary || null,
+      notes: jobData.notes || null,
+      job_url: jobData.job_url || null,
+      job_description: jobData.job_description || null,
+      offers: jobData.offers || null,
+      withdrawn: jobData.withdrawn || false,
+      user_id: currentUser.id
+    };
 
-  if (error) throw error;
-  
-  // Map the returned data to match TypeScript interface
-  return {
-    id: data.id,
-    company: data.company,
-    position: data.position,
-    date_applied: data.date_applied,
-    status: data.status,
-    salary: data.salary || '',
-    notes: data.notes || '',
-    job_url: data.job_url || '',
-    job_description: data.job_description || '',
-    offers: data.offers || '',
-    withdrawn: data.withdrawn || false,
-    user_id: data.user_id,
-    created_at: new Date(data.created_at),
-    updated_at: new Date(data.updated_at || data.created_at)
-  };
+    console.log('Database job data:', dbJob);
+
+    const { data, error } = await supabase
+      .from('jobs')
+      .insert(dbJob)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Database error creating job:', error);
+      throw new Error(`Failed to create job: ${error.message}`);
+    }
+
+    console.log('Job created successfully:', data);
+    
+    // Map the returned data to match TypeScript interface
+    return {
+      id: data.id,
+      company: data.company,
+      position: data.position,
+      date_applied: data.date_applied,
+      status: data.status,
+      salary: data.salary || '',
+      notes: data.notes || '',
+      job_url: data.job_url || '',
+      job_description: data.job_description || '',
+      offers: data.offers || '',
+      withdrawn: data.withdrawn || false,
+      user_id: data.user_id,
+      created_at: new Date(data.created_at),
+      updated_at: new Date(data.updated_at || data.created_at)
+    };
+  } catch (error) {
+    console.error('Error in createJobApplication:', error);
+    throw error;
+  }
 };
 
 export const getJobsWithFilters = async (
