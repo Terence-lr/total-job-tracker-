@@ -19,7 +19,8 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
     salary: '',
     notes: '',
     job_url: '',
-    job_description: ''
+    job_description: '',
+    offers: ''
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -44,7 +45,8 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
         salary: job.salary || '',
         notes: job.notes || '',
         job_url: job.job_url || '',
-        job_description: job.job_description || ''
+        job_description: job.job_description || '',
+        offers: job.offers || ''
       });
     }
   }, [job]);
@@ -299,6 +301,26 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                   onChange={handleChange}
                   className="w-full px-3 py-2 pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent min-h-[150px] resize-none"
                   placeholder="Paste the job description here to analyze how well your skills match..."
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="offers" className="block text-sm font-medium text-gray-300">
+                Job Offers
+              </label>
+              <div className="relative">
+                <div className="absolute top-3 left-3 pointer-events-none">
+                  <DollarSign className="h-5 w-5 text-gray-400" />
+                </div>
+                <textarea
+                  id="offers"
+                  name="offers"
+                  rows={3}
+                  value={formData.offers}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent min-h-[100px] resize-none"
+                  placeholder="Enter details about any job offers received..."
                 />
               </div>
             </div>

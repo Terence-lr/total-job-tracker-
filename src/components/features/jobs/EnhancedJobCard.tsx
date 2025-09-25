@@ -134,6 +134,13 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
             </a>
           </div>
         )}
+        
+        {job.offers && (
+          <div className="flex items-center text-xs text-green-500">
+            <Check className="w-3 h-3 mr-1" />
+            <span className="font-medium">Offer Details Available</span>
+          </div>
+        )}
       </div>
       
       {job.notes && (

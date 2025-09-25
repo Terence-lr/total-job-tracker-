@@ -24,6 +24,7 @@ import { useOptimisticJobUpdate } from '../hooks/useOptimisticJobUpdate';
 import { Briefcase, AlertCircle } from 'lucide-react';
 import { FollowUp } from '../types/fitScore';
 import { generateFollowUps } from '../services/followUpService';
+import OfferCelebration from './features/jobs/OfferCelebration';
 // import StatusDropdown from './features/jobs/StatusDropdown'; // Used in EnhancedJobCard
 
 const EnhancedDashboard: React.FC = () => {
@@ -41,6 +42,8 @@ const EnhancedDashboard: React.FC = () => {
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showArchived, setShowArchived] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationJob, setCelebrationJob] = useState<{company: string, position: string} | null>(null);
   const itemsPerPage = 12;
 
   const { ref: statsRef, isVisible: statsVisible } = useScrollReveal();
@@ -271,6 +274,16 @@ const EnhancedDashboard: React.FC = () => {
     
     try {
       await updateJobApplication(jobId, { status: newStatus as any }, user.id);
+      
+      // Trigger celebration for job offers
+      if (newStatus === 'Offer') {
+        const job = jobs.find(j => j.id === jobId);
+        if (job) {
+          setCelebrationJob({ company: job.company, position: job.position });
+          setShowCelebration(true);
+        }
+      }
+      
       await loadJobs();
       console.log(`Job status updated to ${newStatus}`);
     } catch (error) {
@@ -459,6 +472,19 @@ const EnhancedDashboard: React.FC = () => {
           )}
         </main>
       </div>
+
+      {/* Offer Celebration */}
+      {celebrationJob && (
+        <OfferCelebration
+          isVisible={showCelebration}
+          onClose={() => {
+            setShowCelebration(false);
+            setCelebrationJob(null);
+          }}
+          companyName={celebrationJob.company}
+          position={celebrationJob.position}
+        />
+      )}
     </ErrorBoundary>
   );
 };

@@ -2,6 +2,7 @@ import React from 'react';
 import { Briefcase, TrendingUp, Calendar, Target } from 'lucide-react';
 import { JobApplication } from '../../../types/job';
 import MetricCard from './MetricCard';
+import OfferRateCard from './OfferRateCard';
 
 interface DashboardMetricsProps {
   applications: JobApplication[];
@@ -77,10 +78,16 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ applications }) => 
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      {metrics.map((metric) => (
-        <MetricCard key={metric.label} {...metric} />
-      ))}
+    <div className="space-y-6 mb-8">
+      {/* Standard Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {metrics.map((metric) => (
+          <MetricCard key={metric.label} {...metric} />
+        ))}
+      </div>
+      
+      {/* Offer Rate Card */}
+      <OfferRateCard jobs={applications} />
     </div>
   );
 };

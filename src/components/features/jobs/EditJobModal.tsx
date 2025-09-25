@@ -18,7 +18,8 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ job, onClose, onJobUpdated 
     salary: '',
     job_url: '',
     notes: '',
-    job_description: ''
+    job_description: '',
+    offers: ''
   });
   const [loading, setLoading] = useState(false);
   const { showSuccess, showError } = useNotification();
@@ -34,7 +35,8 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ job, onClose, onJobUpdated 
         salary: job.salary || '',
         job_url: job.job_url || '',
         notes: job.notes || '',
-        job_description: job.job_description || ''
+        job_description: job.job_description || '',
+        offers: job.offers || ''
       });
     }
   }, [job]);
@@ -54,7 +56,8 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ job, onClose, onJobUpdated 
           salary: formData.salary,
           job_url: formData.job_url,
           notes: formData.notes,
-          job_description: formData.job_description
+          job_description: formData.job_description,
+          offers: formData.offers
         })
         .eq('id', job.id);
 
@@ -201,6 +204,19 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ job, onClose, onJobUpdated 
               value={formData.job_description}
               onChange={(e) => handleChange('job_description', e.target.value)}
               rows={4}
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+            />
+          </div>
+
+          <div className="mt-6 space-y-2">
+            <label className="block text-sm font-medium text-gray-300">
+              Job Offers
+            </label>
+            <textarea
+              placeholder="Enter details about any job offers received..."
+              value={formData.offers}
+              onChange={(e) => handleChange('offers', e.target.value)}
+              rows={3}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
             />
           </div>

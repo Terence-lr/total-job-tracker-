@@ -8,6 +8,7 @@ import { updateJobApplication } from '../services/enhancedJobService';
 import { useNotification } from '../contexts/NotificationContext';
 import { Archive, ArchiveRestore } from 'lucide-react';
 import StatusDropdown from '../components/features/jobs/StatusDropdown';
+import OfferCelebration from '../components/features/jobs/OfferCelebration';
 
 export function Applications() {
   const { user } = useAuth();
@@ -18,6 +19,8 @@ export function Applications() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationJob, setCelebrationJob] = useState<{company: string, position: string} | null>(null);
   const { showError, showSuccess } = useNotification();
 
   useEffect(() => {
@@ -137,6 +140,16 @@ export function Applications() {
     
     try {
       await updateJobApplication(jobId, { status: newStatus as any }, user.id);
+      
+      // Trigger celebration for job offers
+      if (newStatus === 'Offer') {
+        const job = jobs.find(j => j.id === jobId);
+        if (job) {
+          setCelebrationJob({ company: job.company, position: job.position });
+          setShowCelebration(true);
+        }
+      }
+      
       await loadJobs();
       showSuccess('Status Updated', `Job status updated to ${newStatus}.`);
     } catch (error) {
@@ -257,6 +270,19 @@ export function Applications() {
           job={editingJob}
           onClose={closeEditModal}
           onJobUpdated={handleJobUpdated}
+        />
+      )}
+
+      {/* Offer Celebration */}
+      {celebrationJob && (
+        <OfferCelebration
+          isVisible={showCelebration}
+          onClose={() => {
+            setShowCelebration(false);
+            setCelebrationJob(null);
+          }}
+          companyName={celebrationJob.company}
+          position={celebrationJob.position}
         />
       )}
     </div>
