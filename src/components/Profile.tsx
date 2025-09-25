@@ -209,17 +209,10 @@ const Profile: React.FC = () => {
       
       console.log('Starting resume parsing...');
       
-      // Try the main PDF parser first
-      try {
-        const analysis: ResumeAnalysis = await parseResume(file);
-        console.log('Resume analysis:', analysis);
-        await handleSuccessfulParsing(analysis);
-      } catch (parseError) {
-        console.warn('Main PDF parser failed, trying fallback method:', parseError);
-        
-        // Fallback: Use a simple demo parsing approach
-        await handleFallbackParsing(file);
-      }
+      // Parse the resume using the real parser
+      const analysis: ResumeAnalysis = await parseResume(file);
+      console.log('Resume analysis:', analysis);
+      await handleSuccessfulParsing(analysis);
       
     } catch (error) {
       console.error('Error parsing resume:', error);
@@ -271,52 +264,6 @@ Cloud Services: ${analysis.extractedSkills.cloudServices.length}`;
       }
     } else {
       showInfo('No New Skills', 'All detected skills are already in your profile.');
-    }
-  };
-
-  const handleFallbackParsing = async (file: File) => {
-    console.log('Using fallback parsing method...');
-    
-    // Simple fallback: Add some common skills as a demo
-    const commonSkills = [
-      'JavaScript', 'React', 'Node.js', 'Python', 'SQL', 
-      'HTML', 'CSS', 'Git', 'MongoDB', 'PostgreSQL',
-      'TypeScript', 'Express.js', 'AWS', 'Docker', 'Linux'
-    ];
-    
-    // Add a few random skills as demo
-    const demoSkills = commonSkills.slice(0, Math.floor(Math.random() * 5) + 3);
-    
-    // Filter out skills that are already in the user's skills list
-    const newSkills = demoSkills.filter(skill => 
-      !skills.some(existingSkill => 
-        existingSkill.toLowerCase() === skill.toLowerCase()
-      )
-    );
-    
-    if (newSkills.length > 0) {
-      // Update the skills in the database
-      const updatedSkills = [...skills, ...newSkills];
-      
-      const { error } = await supabase
-        .from('profiles')
-        .update({ skills: updatedSkills })
-        .eq('id', user.id);
-
-      if (error) {
-        console.error('Error updating skills from resume:', error);
-        showError('Database Error', 'Failed to save skills to database');
-      } else {
-        setSkills(updatedSkills);
-        
-        showSuccess(
-          'Resume Processed (Demo Mode) 📄',
-          `Added ${newSkills.length} demo skills to your profile.`,
-          `Note: This is a demo mode. In production, this would extract real skills from your PDF.\n\nDemo Skills Added: ${newSkills.join(', ')}`
-        );
-      }
-    } else {
-      showInfo('No New Skills', 'All demo skills are already in your profile.');
     }
   };
 
