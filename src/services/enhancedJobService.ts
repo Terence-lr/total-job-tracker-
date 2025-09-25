@@ -15,6 +15,7 @@ export const createJobApplication = async (jobData: Omit<JobApplication, 'id' | 
     notes: jobData.notes,
     job_url: jobData.job_url,
     job_description: jobData.job_description,
+    archived: jobData.archived || false,
     user_id: currentUser.id
   };
 
@@ -36,6 +37,8 @@ export const createJobApplication = async (jobData: Omit<JobApplication, 'id' | 
     salary: data.salary || '',
     notes: data.notes || '',
     job_url: data.job_url || '',
+    job_description: data.job_description || '',
+    archived: data.archived || false,
     user_id: data.user_id,
     created_at: new Date(data.created_at),
     updated_at: new Date(data.updated_at || data.created_at)
@@ -100,6 +103,8 @@ export const getJobsWithFilters = async (
     salary: job.salary || '',
     notes: job.notes || '',
     job_url: job.job_url || '',
+    job_description: job.job_description || '',
+    archived: job.archived || false,
     user_id: job.user_id,
     created_at: new Date(job.created_at),
     updated_at: new Date(job.updated_at || job.created_at)
@@ -174,6 +179,8 @@ export const updateJobApplication = async (id: string, updates: Partial<JobAppli
     salary: data.salary || '',
     notes: data.notes || '',
     job_url: data.job_url || '',
+    job_description: data.job_description || '',
+    archived: data.archived || false,
     user_id: data.user_id,
     created_at: new Date(data.created_at),
     updated_at: new Date(data.updated_at || data.created_at)

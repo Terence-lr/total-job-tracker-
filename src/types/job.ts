@@ -25,6 +25,7 @@ export interface CreateJobApplication {
   notes?: string;
   job_url?: string;
   job_description?: string;
+  archived?: boolean;
 }
 
 export interface UpdateJobApplication extends Partial<CreateJobApplication> {
