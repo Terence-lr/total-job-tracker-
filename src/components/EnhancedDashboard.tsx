@@ -100,7 +100,7 @@ const EnhancedDashboard: React.FC = () => {
 
     // Filter by archived status
     if (!showArchived) {
-      filtered = filtered.filter(job => !job.archived);
+      filtered = filtered.filter(job => job.status !== 'Archived');
     }
 
     setFilteredJobs(filtered);
@@ -213,9 +213,9 @@ const EnhancedDashboard: React.FC = () => {
     if (!user) return;
     
     try {
-      // Update all selected jobs to archived: true
+      // Update all selected jobs to status: 'Archived'
       for (const jobId of selectedJobs) {
-        await updateJobApplication(jobId, { archived: true }, user.id);
+        await updateJobApplication(jobId, { status: 'Archived' }, user.id);
       }
       setSelectedJobs([]);
       await loadJobs();
@@ -228,9 +228,9 @@ const EnhancedDashboard: React.FC = () => {
     if (!user) return;
     
     try {
-      // Update all selected jobs to archived: false
+      // Update all selected jobs to status: 'Applied'
       for (const jobId of selectedJobs) {
-        await updateJobApplication(jobId, { archived: false }, user.id);
+        await updateJobApplication(jobId, { status: 'Applied' }, user.id);
       }
       setSelectedJobs([]);
       await loadJobs();
@@ -243,7 +243,7 @@ const EnhancedDashboard: React.FC = () => {
     if (!user) return;
     
     try {
-      await updateJobApplication(jobId, { archived: true }, user.id);
+      await updateJobApplication(jobId, { status: 'Archived' }, user.id);
       await loadJobs();
       console.log('Job archived successfully');
     } catch (error) {
@@ -256,7 +256,7 @@ const EnhancedDashboard: React.FC = () => {
     if (!user) return;
     
     try {
-      await updateJobApplication(jobId, { archived: false }, user.id);
+      await updateJobApplication(jobId, { status: 'Applied' }, user.id);
       await loadJobs();
       console.log('Job unarchived successfully');
     } catch (error) {

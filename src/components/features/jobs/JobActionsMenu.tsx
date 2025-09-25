@@ -130,7 +130,7 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
             
             <div className="border-t border-gray-100 my-1" />
             
-            {job.archived ? (
+            {job.status === 'Archived' ? (
               <Menu.Item>
                 {({ active }) => (
                   <button

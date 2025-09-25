@@ -21,7 +21,6 @@ export const createJobApplication = async (
           job_url: jobData.job_url || null,
           notes: jobData.notes || null,
           job_description: jobData.job_description || null,
-          archived: jobData.archived || false,
           user_id: currentUser.id
         }
       ])
@@ -68,7 +67,6 @@ export const getJobApplications = async (): Promise<JobApplication[]> => {
       notes: job.notes || '',
       job_url: job.job_url || '',
       job_description: job.job_description || '',
-      archived: job.archived || false,
       user_id: job.user_id,
       created_at: new Date(job.created_at),
       updated_at: new Date(job.updated_at || job.created_at)
@@ -109,7 +107,6 @@ export const getJobApplication = async (jobId: string, userId: string): Promise<
       notes: data.notes || '',
       job_url: data.job_url || '',
       job_description: data.job_description || '',
-      archived: data.archived || false,
       user_id: data.user_id,
       created_at: new Date(data.created_at),
       updated_at: new Date(data.updated_at || data.created_at)

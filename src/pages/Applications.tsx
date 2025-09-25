@@ -109,7 +109,7 @@ export function Applications() {
     if (!user) return;
     
     try {
-      await updateJobApplication(jobId, { archived: true }, user.id);
+      await updateJobApplication(jobId, { status: 'Archived' }, user.id);
       await loadJobs();
       showSuccess('Job Archived', 'Job application has been archived successfully.');
     } catch (error) {
@@ -122,7 +122,7 @@ export function Applications() {
     if (!user) return;
     
     try {
-      await updateJobApplication(jobId, { archived: false }, user.id);
+      await updateJobApplication(jobId, { status: 'Applied' }, user.id);
       await loadJobs();
       showSuccess('Job Unarchived', 'Job application has been unarchived successfully.');
     } catch (error) {
@@ -133,7 +133,7 @@ export function Applications() {
 
   // Filter jobs based on archived status
   const filteredJobs = jobs.filter(job => {
-    if (!showArchived && job.archived) {
+    if (!showArchived && job.status === 'Archived') {
       return false; // Don't show archived jobs if checkbox is unchecked
     }
     return true;
@@ -185,7 +185,7 @@ export function Applications() {
                     }`}>
                       {job.status}
                     </span>
-                    {job.archived && (
+                    {job.status === 'Archived' && (
                       <span className="px-2 py-1 rounded text-xs bg-gray-600 text-gray-300">
                         Archived
                       </span>
@@ -200,7 +200,7 @@ export function Applications() {
                     >
                       ✏️ Edit
                     </button>
-                    {job.archived ? (
+                    {job.status === 'Archived' ? (
                       <button 
                         onClick={() => handleUnarchiveJob(job.id)}
                         className="text-green-500 hover:text-green-400 px-2 py-1 rounded hover:bg-gray-800 transition-colors flex items-center space-x-1"
