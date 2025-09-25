@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNotification } from '../../../contexts/NotificationContext';
 
 interface AnalyzeJobFitProps {
   jobDescription: string;
@@ -14,6 +15,7 @@ const AnalyzeJobFit: React.FC<AnalyzeJobFitProps> = ({
   const [analysis, setAnalysis] = useState<any>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [jobDescInput, setJobDescInput] = useState(jobDescription || '');
+  const { showError, showSuccess } = useNotification();
 
   const handleJobDescChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     e.stopPropagation(); // Prevent event bubbling
@@ -25,7 +27,7 @@ const AnalyzeJobFit: React.FC<AnalyzeJobFitProps> = ({
     e.stopPropagation(); // Prevent modal closing
     
     if (!jobDescInput.trim()) {
-      alert('Please paste the job description');
+      showError('Job Description Required', 'Please paste the job description to analyze.');
       return;
     }
 
@@ -37,7 +39,7 @@ const AnalyzeJobFit: React.FC<AnalyzeJobFitProps> = ({
       onAnalysisComplete(result);
     } catch (error) {
       console.error('Analysis error:', error);
-      alert('Failed to analyze job fit');
+      showError('Analysis Failed', 'Failed to analyze job fit. Please try again.');
     } finally {
       setAnalyzing(false);
     }

@@ -5,6 +5,7 @@ import { JobApplication } from '../types/job';
 import JobForm from '../components/features/jobs/JobForm';
 import EditJobModal from '../components/features/jobs/EditJobModal';
 import { updateJobApplication } from '../services/enhancedJobService';
+import { useNotification } from '../contexts/NotificationContext';
 
 export function Applications() {
   const { user } = useAuth();
@@ -14,6 +15,7 @@ export function Applications() {
   const [showJobForm, setShowJobForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showError } = useNotification();
 
   useEffect(() => {
     if (user) {
@@ -60,7 +62,7 @@ export function Applications() {
         await loadJobs(); // Refresh the list
       } catch (error) {
         console.error('Error deleting job:', error);
-        alert('Failed to delete job application');
+        showError('Delete Failed', 'Failed to delete job application. Please try again.');
       } finally {
         setLoading(false);
       }

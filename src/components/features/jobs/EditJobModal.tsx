@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { JobApplication, JobStatus } from '../../../types/job';
+import { useNotification } from '../../../contexts/NotificationContext';
 
 interface EditJobModalProps {
   job: JobApplication;
@@ -20,6 +21,7 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ job, onClose, onJobUpdated 
     job_description: ''
   });
   const [loading, setLoading] = useState(false);
+  const { showSuccess, showError } = useNotification();
 
   // Populate form with existing job data when modal opens
   useEffect(() => {
@@ -58,11 +60,12 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ job, onClose, onJobUpdated 
 
       if (error) throw error;
 
+      showSuccess('Job Updated', `Successfully updated ${formData.company} - ${formData.position}`);
       onJobUpdated(); // Refresh the jobs list
       onClose(); // Close modal
     } catch (error) {
       console.error('Error updating job:', error);
-      alert('Error updating job application');
+      showError('Update Failed', 'Error updating job application. Please try again.');
     } finally {
       setLoading(false);
     }

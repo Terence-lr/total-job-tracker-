@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNotification } from '../contexts/NotificationContext';
 
 interface ResumeImportProps {
   onAccept: (skills: string[]) => void;
@@ -7,6 +8,7 @@ interface ResumeImportProps {
 const ResumeImport: React.FC<ResumeImportProps> = ({ onAccept }) => {
   const [suggested, setSuggested] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const { showError } = useNotification();
 
   // Simple keyword extraction for demo
   const KNOWN_SKILLS = [
@@ -34,7 +36,7 @@ const ResumeImport: React.FC<ResumeImportProps> = ({ onAccept }) => {
       setSuggested(suggestedSkills);
     } catch (error) {
       console.error('Error processing file:', error);
-      alert('Error processing file. Please try again.');
+      showError('Processing Error', 'Error processing file. Please try again.');
     } finally {
       setLoading(false);
     }

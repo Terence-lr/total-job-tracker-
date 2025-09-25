@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import type { Skill, Profile } from '../types/profile';
+import { useNotification } from '../contexts/NotificationContext';
 
 interface SkillsEditorProps {
   userId: string;
@@ -8,6 +9,7 @@ interface SkillsEditorProps {
 const SkillsEditor: React.FC<SkillsEditorProps> = ({ userId }) => {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [newSkill, setNewSkill] = useState('');
+  const { showSuccess } = useNotification();
 
   useEffect(() => {
     // For now, use localStorage as a simple storage
@@ -27,7 +29,7 @@ const SkillsEditor: React.FC<SkillsEditorProps> = ({ userId }) => {
   async function save() {
     const profile: Profile = { userId, skills };
     localStorage.setItem(`profile_${userId}`, JSON.stringify(profile));
-    alert('Skills saved');
+    showSuccess('Skills Saved', 'Your skills have been saved successfully!');
   }
 
   return (
