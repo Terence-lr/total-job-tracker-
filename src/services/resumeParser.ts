@@ -204,7 +204,6 @@ export const parseResume = async (file: File): Promise<ResumeAnalysis> => {
 
 // Enhanced skill detection with context awareness
 export const detectSkillsWithContext = (text: string): string[] => {
-  const lowerText = text.toLowerCase();
   const detectedSkills: string[] = [];
 
   // Look for skill sections

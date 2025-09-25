@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Layout } from './components/Layout';
 import Welcome from './pages/Welcome';
@@ -17,8 +18,9 @@ import Footer from './components/layouts/Footer';
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="App min-h-screen bg-black flex flex-col">
+      <NotificationProvider>
+        <Router>
+          <div className="App min-h-screen bg-black flex flex-col">
           <Routes>
             <Route path="/welcome" element={<Welcome />} />
             <Route path="/login" element={<Login />} />
@@ -71,7 +73,8 @@ function App() {
           </Routes>
           <Footer />
         </div>
-      </Router>
+        </Router>
+      </NotificationProvider>
     </AuthProvider>
   );
 }

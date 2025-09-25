@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { parseResume, ResumeAnalysis } from '../services/resumeParser';
+import { useNotification } from '../contexts/NotificationContext';
 
 const Profile: React.FC = () => {
   const [skills, setSkills] = useState<string[]>([]);
@@ -8,6 +9,7 @@ const Profile: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const { showSuccess, showError, showInfo } = useNotification();
 
   useEffect(() => {
     loadUserProfile();
@@ -82,7 +84,7 @@ const Profile: React.FC = () => {
     
     // Avoid duplicate skills
     if (skills.includes(newSkill.trim())) {
-      alert('Skill already exists!');
+      showError('Duplicate Skill', 'This skill already exists in your profile!');
       return;
     }
 
@@ -101,24 +103,25 @@ const Profile: React.FC = () => {
         
         // Handle specific policy errors
         if (error.code === '42501') {
-          alert('Permission denied. Please make sure you are logged in.');
+          showError('Permission Denied', 'Please make sure you are logged in.');
         } else if (error.code === 'PGRST116') {
-          alert('Profile not found. Creating profile...');
+          showInfo('Creating Profile', 'Profile not found. Creating profile...');
           await createProfile(user);
           // Retry after creating profile
           await addSkill();
           return;
         } else {
-          alert('Failed to add skill: ' + error.message);
+          showError('Failed to Add Skill', error.message);
         }
       } else {
         console.log('Skills updated successfully:', data);
         setSkills(updatedSkills);
         setNewSkill('');
+        showSuccess('Skill Added', `"${newSkill.trim()}" has been added to your profile!`);
       }
     } catch (error) {
       console.error('Unexpected error:', error);
-      alert('An unexpected error occurred');
+      showError('Unexpected Error', 'An unexpected error occurred while adding the skill.');
     } finally {
       setLoading(false);
     }
@@ -139,14 +142,15 @@ const Profile: React.FC = () => {
 
       if (error) {
         console.error('Error removing skill:', error);
-        alert('Failed to remove skill');
+        showError('Failed to Remove Skill', 'Could not remove the skill from your profile.');
       } else {
         console.log('Skill removed successfully:', data);
         setSkills(updatedSkills);
+        showSuccess('Skill Removed', `"${skillToRemove}" has been removed from your profile.`);
       }
     } catch (error) {
       console.error('Error in removeSkill:', error);
-      alert('Failed to remove skill');
+      showError('Unexpected Error', 'An unexpected error occurred while removing the skill.');
     } finally {
       setLoading(false);
     }
@@ -157,7 +161,7 @@ const Profile: React.FC = () => {
     if (!file) return;
 
     if (file.type !== 'application/pdf') {
-      alert('Please upload a PDF file');
+      showError('Invalid File Type', 'Please upload a PDF file.');
       return;
     }
 
@@ -182,7 +186,7 @@ const Profile: React.FC = () => {
       
     } catch (error) {
       console.error('Error handling resume:', error);
-      alert('Error processing resume');
+      showError('Resume Processing Error', 'Error processing the resume file.');
     } finally {
       setLoading(false);
     }
@@ -218,29 +222,31 @@ const Profile: React.FC = () => {
 
         if (error) {
           console.error('Error updating skills from resume:', error);
-          alert('Failed to save skills to database');
+          showError('Database Error', 'Failed to save skills to database');
         } else {
           setSkills(updatedSkills);
           
-          // Show detailed results
-          const skillBreakdown = `
-            Technical Skills: ${analysis.extractedSkills.technicalSkills.length}
-            Soft Skills: ${analysis.extractedSkills.softSkills.length}
-            Tools: ${analysis.extractedSkills.tools.length}
-            Frameworks: ${analysis.extractedSkills.frameworks.length}
-            Databases: ${analysis.extractedSkills.databases.length}
-            Cloud Services: ${analysis.extractedSkills.cloudServices.length}
-          `;
+          // Show detailed results with beautiful notification
+          const skillBreakdown = `Technical Skills: ${analysis.extractedSkills.technicalSkills.length}
+Soft Skills: ${analysis.extractedSkills.softSkills.length}
+Tools: ${analysis.extractedSkills.tools.length}
+Frameworks: ${analysis.extractedSkills.frameworks.length}
+Databases: ${analysis.extractedSkills.databases.length}
+Cloud Services: ${analysis.extractedSkills.cloudServices.length}`;
           
-          alert(`✅ Resume parsed successfully!\n\nAdded ${newSkills.length} new skills:\n${newSkills.join(', ')}\n\nConfidence: ${Math.round(analysis.confidence)}%\n\n${skillBreakdown}`);
+          showSuccess(
+            'Resume Parsed Successfully! 🎉',
+            `Added ${newSkills.length} new skills to your profile.`,
+            `Skills Added: ${newSkills.join(', ')}\n\nConfidence: ${Math.round(analysis.confidence)}%\n\nSkill Breakdown:\n${skillBreakdown}`
+          );
         }
       } else {
-        alert('No new skills detected in resume. All detected skills are already in your profile.');
+        showInfo('No New Skills', 'All detected skills are already in your profile.');
       }
       
     } catch (error) {
       console.error('Error parsing resume:', error);
-      alert('Error parsing resume. Please ensure the file is a valid PDF.');
+      showError('Resume Parsing Error', 'Error parsing resume. Please ensure the file is a valid PDF.');
     } finally {
       setLoading(false);
     }
