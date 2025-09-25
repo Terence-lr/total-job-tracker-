@@ -12,40 +12,72 @@ const EmailConfirmation: React.FC = () => {
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
-        const token = searchParams.get('token');
+        // Get URL parameters - Supabase uses different parameter names
+        const access_token = searchParams.get('access_token');
+        const refresh_token = searchParams.get('refresh_token');
         const type = searchParams.get('type');
+        const token_hash = searchParams.get('token_hash');
 
-        if (!token || type !== 'signup') {
+        console.log('Email confirmation params:', { access_token, refresh_token, type, token_hash });
+
+        // Handle different Supabase confirmation URL formats
+        if (access_token && refresh_token) {
+          // Modern Supabase format - tokens are already in URL
+          const { data, error } = await supabase.auth.setSession({
+            access_token,
+            refresh_token
+          });
+
+          if (error) {
+            console.error('Session error:', error);
+            setStatus('error');
+            setMessage('Email confirmation failed. The link may have expired or already been used.');
+            return;
+          }
+
+          if (data.user) {
+            setStatus('success');
+            setMessage('Email confirmed successfully! You can now sign in to your account.');
+            
+            // Redirect to login page after 3 seconds
+            setTimeout(() => {
+              navigate('/login', { 
+                state: { 
+                  message: 'Email confirmed successfully! You can now sign in.' 
+                } 
+              });
+            }, 3000);
+          }
+        } else if (token_hash && type === 'signup') {
+          // Legacy format - verify OTP
+          const { data, error } = await supabase.auth.verifyOtp({
+            token_hash,
+            type: 'signup'
+          });
+
+          if (error) {
+            console.error('OTP verification error:', error);
+            setStatus('error');
+            setMessage('Email confirmation failed. The link may have expired or already been used.');
+            return;
+          }
+
+          if (data.user) {
+            setStatus('success');
+            setMessage('Email confirmed successfully! You can now sign in to your account.');
+            
+            // Redirect to login page after 3 seconds
+            setTimeout(() => {
+              navigate('/login', { 
+                state: { 
+                  message: 'Email confirmed successfully! You can now sign in.' 
+                } 
+              });
+            }, 3000);
+          }
+        } else {
           setStatus('error');
           setMessage('Invalid confirmation link. Please try signing up again.');
-          return;
-        }
-
-        // Verify the email confirmation token
-        const { data, error } = await supabase.auth.verifyOtp({
-          token_hash: token,
-          type: 'signup'
-        });
-
-        if (error) {
-          console.error('Email confirmation error:', error);
-          setStatus('error');
-          setMessage('Email confirmation failed. The link may have expired or already been used.');
-          return;
-        }
-
-        if (data.user) {
-          setStatus('success');
-          setMessage('Email confirmed successfully! You can now sign in to your account.');
-          
-          // Redirect to login page after 3 seconds
-          setTimeout(() => {
-            navigate('/login', { 
-              state: { 
-                message: 'Email confirmed successfully! You can now sign in.' 
-              } 
-            });
-          }, 3000);
         }
       } catch (error) {
         console.error('Email confirmation error:', error);
@@ -80,59 +112,61 @@ const EmailConfirmation: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <div className="flex justify-center mb-4">
-            {getStatusIcon()}
+    <div className="min-h-screen flex items-center justify-center bg-black py-6 sm:py-12 px-3 sm:px-4 lg:px-8">
+      <div className="max-w-md w-full space-y-6 sm:space-y-8">
+        <div className="bg-gray-900 rounded-xl p-4 sm:p-6 lg:p-8 border border-gray-700 shadow-2xl">
+          <div className="text-center">
+            <div className="flex justify-center mb-4">
+              {getStatusIcon()}
+            </div>
+            
+            <h2 className={`text-2xl sm:text-3xl font-extrabold ${getStatusColor()}`}>
+              {status === 'loading' && 'Confirming your email...'}
+              {status === 'success' && 'Email Confirmed!'}
+              {status === 'error' && 'Confirmation Failed'}
+            </h2>
+            
+            <p className="mt-4 text-sm sm:text-base text-gray-400 leading-relaxed">
+              {message}
+            </p>
+
+            {status === 'success' && (
+              <div className="mt-6 space-y-4">
+                <p className="text-xs sm:text-sm text-gray-500">
+                  Redirecting to sign in page in 3 seconds...
+                </p>
+                
+                <button
+                  onClick={() => navigate('/login', { 
+                    state: { 
+                      message: 'Email confirmed successfully! You can now sign in.' 
+                    } 
+                  })}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 min-h-[48px] text-sm sm:text-base"
+                >
+                  Continue to Sign In
+                </button>
+              </div>
+            )}
+
+            {status === 'error' && (
+              <div className="mt-6 space-y-3">
+                <button
+                  onClick={() => navigate('/signup')}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 min-h-[48px] text-sm sm:text-base"
+                >
+                  Try Signing Up Again
+                </button>
+                
+                <button
+                  onClick={() => navigate('/login')}
+                  className="w-full bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 min-h-[48px] text-sm sm:text-base"
+                >
+                  Go to Sign In
+                </button>
+              </div>
+            )}
           </div>
-          
-          <h2 className={`text-2xl font-bold ${getStatusColor()}`}>
-            {status === 'loading' && 'Confirming your email...'}
-            {status === 'success' && 'Email Confirmed!'}
-            {status === 'error' && 'Confirmation Failed'}
-          </h2>
-          
-          <p className="mt-4 text-gray-600">
-            {message}
-          </p>
-
-          {status === 'success' && (
-            <div className="mt-6 space-y-4">
-              <p className="text-sm text-gray-500">
-                Redirecting to sign in page in 3 seconds...
-              </p>
-              
-              <button
-                onClick={() => navigate('/login', { 
-                  state: { 
-                    message: 'Email confirmed successfully! You can now sign in.' 
-                  } 
-                })}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 min-h-[44px]"
-              >
-                Continue to Sign In
-              </button>
-            </div>
-          )}
-
-          {status === 'error' && (
-            <div className="mt-6 space-y-3">
-              <button
-                onClick={() => navigate('/signup')}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 min-h-[44px]"
-              >
-                Try Signing Up Again
-              </button>
-              
-              <button
-                onClick={() => navigate('/login')}
-                className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 min-h-[44px]"
-              >
-                Go to Sign In
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>

@@ -29,6 +29,8 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/callback" element={<EmailConfirmation />} />
+            <Route path="/auth/confirm" element={<EmailConfirmation />} />
+            <Route path="/confirm" element={<EmailConfirmation />} />
             <Route element={<Layout />}>
               <Route 
                 path="/dashboard" 
