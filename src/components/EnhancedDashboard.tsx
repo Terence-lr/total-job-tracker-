@@ -144,7 +144,20 @@ const EnhancedDashboard: React.FC = () => {
     try {
       setIsSubmitting(true);
       setError(null);
-      await updateJobApplication(editingJob.id, jobData, user.id);
+      
+      // Map the jobData to the format expected by updateJobApplication
+      const updates: Partial<JobApplication> = {
+        company: jobData.company,
+        position: jobData.position,
+        date_applied: jobData.date_applied,
+        status: jobData.status,
+        salary: jobData.salary,
+        notes: jobData.notes,
+        job_url: jobData.job_url,
+        job_description: jobData.job_description
+      };
+      
+      await updateJobApplication(editingJob.id, updates, user.id);
       await loadJobs();
       setEditingJob(null);
       setShowJobForm(false);

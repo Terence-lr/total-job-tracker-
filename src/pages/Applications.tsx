@@ -2,11 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { getJobApplications } from '../services/jobService';
 import { useAuth } from '../contexts/AuthContext';
 import { JobApplication } from '../types/job';
+import JobForm from '../components/features/jobs/JobForm';
+import { updateJobApplication } from '../services/enhancedJobService';
 
 export function Applications() {
   const { user } = useAuth();
   const [jobs, setJobs] = useState<JobApplication[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingJob, setEditingJob] = useState<JobApplication | null>(null);
+  const [showJobForm, setShowJobForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -26,6 +31,45 @@ export function Applications() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEditJob = (job: JobApplication) => {
+    setEditingJob(job);
+    setShowJobForm(true);
+  };
+
+  const handleUpdateJob = async (jobData: any) => {
+    if (!user || !editingJob) return;
+    
+    try {
+      setIsSubmitting(true);
+      
+      // Map the jobData to the format expected by updateJobApplication
+      const updates: Partial<JobApplication> = {
+        company: jobData.company,
+        position: jobData.position,
+        date_applied: jobData.date_applied,
+        status: jobData.status,
+        salary: jobData.salary,
+        notes: jobData.notes,
+        job_url: jobData.job_url,
+        job_description: jobData.job_description
+      };
+      
+      await updateJobApplication(editingJob.id, updates, user.id);
+      await loadJobs();
+      setEditingJob(null);
+      setShowJobForm(false);
+    } catch (error) {
+      console.error('Error updating job:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancelForm = () => {
+    setShowJobForm(false);
+    setEditingJob(null);
   };
 
   if (loading) return <div className="text-white p-8">Loading...</div>;
@@ -61,7 +105,12 @@ export function Applications() {
                   </span>
                 </td>
                 <td className="p-4">
-                  <button className="text-red-500 hover:text-red-400">Edit</button>
+                  <button 
+                    onClick={() => handleEditJob(job)}
+                    className="text-red-500 hover:text-red-400"
+                  >
+                    Edit
+                  </button>
                 </td>
               </tr>
             ))}
@@ -73,6 +122,16 @@ export function Applications() {
           </div>
         )}
       </div>
+
+      {/* Job Form Modal */}
+      {showJobForm && editingJob && (
+        <JobForm
+          job={editingJob}
+          onSubmit={handleUpdateJob}
+          onCancel={handleCancelForm}
+          isLoading={isSubmitting}
+        />
+      )}
     </div>
   );
 }
