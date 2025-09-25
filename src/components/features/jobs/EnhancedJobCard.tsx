@@ -12,6 +12,8 @@ interface EnhancedJobCardProps {
   onUpdate: (id: string, updates: Partial<JobApplication>) => void;
   onDelete: (id: string) => void;
   onEdit: (job: JobApplication) => void;
+  onArchive?: (id: string) => void;
+  onUnarchive?: (id: string) => void;
 }
 
 const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
@@ -20,7 +22,9 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
   onSelect,
   onUpdate,
   onDelete,
-  onEdit
+  onEdit,
+  onArchive,
+  onUnarchive
 }) => {
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -87,6 +91,8 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
             onUpdate={onUpdate}
             onDelete={onDelete}
             onEdit={onEdit}
+            onArchive={onArchive}
+            onUnarchive={onUnarchive}
           />
         </div>
       </div>

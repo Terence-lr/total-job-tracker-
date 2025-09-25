@@ -9,13 +9,17 @@ interface JobActionsMenuProps {
   onUpdate: (id: string, updates: Partial<JobApplication>) => void;
   onDelete: (id: string) => void;
   onEdit: (job: JobApplication) => void;
+  onArchive?: (id: string) => void;
+  onUnarchive?: (id: string) => void;
 }
 
 const JobActionsMenu: React.FC<JobActionsMenuProps> = ({ 
   job, 
   onUpdate, 
   onDelete, 
-  onEdit 
+  onEdit,
+  onArchive,
+  onUnarchive
 }) => {
   const handleStatusUpdate = (newStatus: string) => {
     onUpdate(job.id, { status: newStatus as any });
@@ -125,6 +129,36 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
             </Menu.Item>
             
             <div className="border-t border-gray-100 my-1" />
+            
+            {job.archived ? (
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    onClick={() => onUnarchive?.(job.id)}
+                    className={`${
+                      active ? 'bg-green-50' : ''
+                    } flex items-center w-full px-4 py-2 text-sm text-green-600`}
+                  >
+                    <Archive className="w-4 h-4 mr-3" />
+                    Unarchive
+                  </button>
+                )}
+              </Menu.Item>
+            ) : (
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    onClick={() => onArchive?.(job.id)}
+                    className={`${
+                      active ? 'bg-yellow-50' : ''
+                    } flex items-center w-full px-4 py-2 text-sm text-yellow-600`}
+                  >
+                    <Archive className="w-4 h-4 mr-3" />
+                    Archive
+                  </button>
+                )}
+              </Menu.Item>
+            )}
             
             <Menu.Item>
               {({ active }) => (

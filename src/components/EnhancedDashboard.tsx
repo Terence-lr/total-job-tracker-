@@ -39,6 +39,7 @@ const EnhancedDashboard: React.FC = () => {
   const [followUps, setFollowUps] = useState<FollowUp[]>([]);
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showArchived, setShowArchived] = useState(false);
   const itemsPerPage = 12;
 
   const { ref: statsRef, isVisible: statsVisible } = useScrollReveal();
@@ -97,8 +98,13 @@ const EnhancedDashboard: React.FC = () => {
       filtered = filtered.filter(job => new Date(job.date_applied) <= new Date(filters.dateTo!));
     }
 
+    // Filter by archived status
+    if (!showArchived) {
+      filtered = filtered.filter(job => !job.archived);
+    }
+
     setFilteredJobs(filtered);
-  }, [jobs, filters]);
+  }, [jobs, filters, showArchived]);
 
   // Load jobs on component mount
   useEffect(() => {
@@ -203,6 +209,32 @@ const EnhancedDashboard: React.FC = () => {
     }
   };
 
+  const handleArchiveJob = async (jobId: string) => {
+    if (!user) return;
+    
+    try {
+      await updateJobApplication(jobId, { archived: true }, user.id);
+      await loadJobs();
+      console.log('Job archived successfully');
+    } catch (error) {
+      console.error('Error archiving job:', error);
+      setError('Failed to archive job');
+    }
+  };
+
+  const handleUnarchiveJob = async (jobId: string) => {
+    if (!user) return;
+    
+    try {
+      await updateJobApplication(jobId, { archived: false }, user.id);
+      await loadJobs();
+      console.log('Job unarchived successfully');
+    } catch (error) {
+      console.error('Error unarchiving job:', error);
+      setError('Failed to unarchive job');
+    }
+  };
+
   const handleJobSelect = (jobId: string) => {
     setSelectedJobs(prev => 
       prev.includes(jobId) 
@@ -271,6 +303,19 @@ const EnhancedDashboard: React.FC = () => {
               onFiltersChange={setFilters}
               onClearFilters={() => setFilters({})}
             />
+            
+            {/* Show Archived Toggle */}
+            <div className="mt-4 pt-4 border-t border-gray-700">
+              <label className="flex items-center space-x-2 text-gray-300">
+                <input
+                  type="checkbox"
+                  checked={showArchived}
+                  onChange={(e) => setShowArchived(e.target.checked)}
+                  className="w-4 h-4 text-red-600 bg-gray-800 border-gray-600 rounded focus:ring-red-500 focus:ring-2"
+                />
+                <span className="text-sm">Show archived jobs</span>
+              </label>
+            </div>
           </div>
 
           {/* Bulk Actions */}
@@ -334,6 +379,8 @@ const EnhancedDashboard: React.FC = () => {
                         setEditingJob(job);
                         setShowJobForm(true);
                       }}
+                      onArchive={handleArchiveJob}
+                      onUnarchive={handleUnarchiveJob}
                     />
                   ))}
                 </ResponsiveGrid>

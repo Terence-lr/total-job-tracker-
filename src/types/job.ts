@@ -8,6 +8,7 @@ export interface JobApplication {
   notes?: string;
   job_url?: string;
   job_description?: string;
+  archived?: boolean;
   user_id: string;
   created_at: Date;
   updated_at: Date;
