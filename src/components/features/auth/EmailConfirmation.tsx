@@ -39,14 +39,10 @@ const EmailConfirmation: React.FC = () => {
             setStatus('success');
             setMessage('Email confirmed successfully! You can now sign in to your account.');
             
-            // Redirect to login page after 3 seconds
+            // Redirect to success page after 1 second
             setTimeout(() => {
-              navigate('/login', { 
-                state: { 
-                  message: 'Email confirmed successfully! You can now sign in.' 
-                } 
-              });
-            }, 3000);
+              navigate('/email-confirmed-success');
+            }, 1000);
           }
         } else if (token_hash && type === 'signup') {
           // Legacy format - verify OTP
@@ -66,14 +62,10 @@ const EmailConfirmation: React.FC = () => {
             setStatus('success');
             setMessage('Email confirmed successfully! You can now sign in to your account.');
             
-            // Redirect to login page after 3 seconds
+            // Redirect to success page after 1 second
             setTimeout(() => {
-              navigate('/login', { 
-                state: { 
-                  message: 'Email confirmed successfully! You can now sign in.' 
-                } 
-              });
-            }, 3000);
+              navigate('/email-confirmed-success');
+            }, 1000);
           }
         } else {
           setStatus('error');
