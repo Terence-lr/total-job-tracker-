@@ -90,8 +90,8 @@ export function Layout() {
               </Link>
             </motion.div>
 
-            {/* Enhanced Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-3">
+            {/* Crisp Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-2">
               {navigationItems.map((item, index) => {
                 const Icon = item.icon;
                 return (
@@ -103,31 +103,14 @@ export function Layout() {
                   >
                     <Link
                       to={item.path}
-                      className={`group relative px-6 py-3 rounded-xl transition-all duration-300 font-medium ${
+                      className={`group flex items-center space-x-3 px-5 py-3 rounded-lg transition-all duration-200 font-medium ${
                         isActive(item.path)
-                          ? 'text-white bg-gradient-to-r from-red-600/25 to-red-500/15 border border-red-500/30 shadow-lg shadow-red-500/15'
-                          : 'text-gray-300 hover:text-white hover:bg-gray-800/50 hover:shadow-lg'
+                          ? 'text-white bg-red-600 border border-red-500 shadow-lg'
+                          : 'text-gray-300 hover:text-white hover:bg-gray-800 border border-transparent hover:border-gray-600'
                       }`}
                     >
-                      <div className="flex items-center space-x-3">
-                        <motion.div
-                          whileHover={{ scale: 1.1, rotate: 3 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <Icon className="w-5 h-5 group-hover:text-red-400 transition-colors duration-300" />
-                        </motion.div>
-                        <span className="font-semibold tracking-wide">{item.label}</span>
-                      </div>
-                      
-                      {/* Active Indicator */}
-                      {isActive(item.path) && (
-                        <motion.div
-                          className="absolute -bottom-1 left-1/2 w-6 h-1 bg-gradient-to-r from-red-500 to-red-400 rounded-full shadow-lg shadow-red-500/40"
-                          initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ duration: 0.4 }}
-                        />
-                      )}
+                      <Icon className="w-5 h-5 group-hover:text-red-400 transition-colors duration-200" />
+                      <span className="font-semibold">{item.label}</span>
                     </Link>
                   </motion.div>
                 );
@@ -136,7 +119,7 @@ export function Layout() {
 
             {/* Action Buttons */}
             <div className="flex items-center space-x-4">
-              {/* Enhanced Add Job Button */}
+              {/* Crisp Add Job Button */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -144,41 +127,24 @@ export function Layout() {
               >
                 <Link 
                   to="/dashboard?addJob=true" 
-                  className="group relative bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-bold hover:from-red-500 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-red-500/30 cursor-pointer border border-red-500/20"
+                  className="group flex items-center space-x-3 bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700 transition-all duration-200 shadow-lg border border-red-500"
                 >
-                  <div className="flex items-center space-x-3 relative z-10">
-                    <motion.div
-                      whileHover={{ rotate: 90, scale: 1.1 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <Plus className="w-5 h-5 drop-shadow-lg" />
-                    </motion.div>
-                    <span className="font-semibold tracking-wide">Add Job</span>
-                  </div>
+                  <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-200" />
+                  <span className="font-semibold">Add Job</span>
                 </Link>
               </motion.div>
 
-              {/* Enhanced Settings Dropdown */}
+              {/* Crisp Settings Dropdown */}
               <div className="relative">
                 <motion.button 
                   onClick={() => setShowMenu(!showMenu)}
-                  className="group flex items-center space-x-3 px-5 py-3 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800/50 transition-all duration-300 font-medium border border-gray-700/50 hover:border-red-500/30"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="group flex items-center space-x-3 px-5 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all duration-200 font-medium border border-gray-700 hover:border-gray-600"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <motion.div
-                    whileHover={{ rotate: 90, scale: 1.1 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Settings className="w-5 h-5 group-hover:text-red-400 transition-colors duration-300" />
-                  </motion.div>
-                  <span className="hidden sm:block font-semibold tracking-wide">Settings</span>
-                  <motion.div
-                    animate={{ rotate: showMenu ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <ChevronDown className="w-4 h-4 group-hover:text-red-400 transition-colors duration-300" />
-                  </motion.div>
+                  <Settings className="w-5 h-5 group-hover:text-red-400 transition-colors duration-200" />
+                  <span className="hidden sm:block font-semibold">Settings</span>
+                  <ChevronDown className={`w-4 h-4 group-hover:text-red-400 transition-all duration-200 ${showMenu ? 'rotate-180' : ''}`} />
                 </motion.button>
 
                 <AnimatePresence>
@@ -236,25 +202,20 @@ export function Layout() {
                 </AnimatePresence>
               </div>
 
-              {/* Enhanced Mobile Menu Button */}
+              {/* Crisp Mobile Menu Button */}
               <motion.button
-                className="md:hidden p-3 text-gray-300 hover:text-white hover:bg-gray-800/60 rounded-xl transition-all duration-300 border border-gray-700/50 hover:border-red-500/30"
+                className="md:hidden p-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-all duration-200 border border-gray-700 hover:border-gray-600"
                 onClick={() => setShowMobileMenu(!showMobileMenu)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <motion.div
-                  animate={{ rotate: showMobileMenu ? 90 : 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {showMobileMenu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                </motion.div>
+                {showMobileMenu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </motion.button>
             </div>
           </div>
         </div>
 
-        {/* Enhanced Mobile Navigation */}
+        {/* Crisp Mobile Navigation */}
         <AnimatePresence>
           {showMobileMenu && (
             <motion.div
@@ -262,7 +223,7 @@ export function Layout() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden bg-gradient-to-b from-gray-900/95 to-gray-900/90 backdrop-blur-2xl border-t border-red-500/30"
+              className="md:hidden bg-gray-900/95 backdrop-blur-xl border-t border-gray-700"
             >
               <div className="px-6 py-6 space-y-2">
                 {navigationItems.map((item, index) => {
@@ -276,25 +237,20 @@ export function Layout() {
                     >
                       <Link
                         to={item.path}
-                        className={`group flex items-center space-x-4 px-5 py-3 rounded-xl transition-all duration-300 font-medium ${
+                        className={`group flex items-center space-x-4 px-5 py-3 rounded-lg transition-all duration-200 font-medium ${
                           isActive(item.path)
-                            ? 'text-white bg-gradient-to-r from-red-600/25 to-red-500/15 border border-red-500/30 shadow-lg shadow-red-500/15'
-                            : 'text-gray-300 hover:text-white hover:bg-gray-800/50 hover:shadow-lg'
+                            ? 'text-white bg-red-600 border border-red-500 shadow-lg'
+                            : 'text-gray-300 hover:text-white hover:bg-gray-800 border border-transparent hover:border-gray-600'
                         }`}
                         onClick={() => setShowMobileMenu(false)}
                       >
-                        <motion.div
-                          whileHover={{ scale: 1.1, rotate: 3 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <Icon className="w-5 h-5 group-hover:text-red-400 transition-colors duration-300" />
-                        </motion.div>
+                        <Icon className="w-5 h-5 group-hover:text-red-400 transition-colors duration-200" />
                         <span className="font-semibold">{item.label}</span>
                         
                         {/* Active Indicator */}
                         {isActive(item.path) && (
                           <motion.div
-                            className="ml-auto w-2 h-2 bg-red-500 rounded-full"
+                            className="ml-auto w-2 h-2 bg-white rounded-full"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ duration: 0.3 }}
