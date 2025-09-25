@@ -5,9 +5,8 @@ import { getJobApplications } from '../services/jobService';
 import DashboardMetrics from '../components/features/analytics/DashboardMetrics';
 import StatusDistribution from '../components/features/analytics/StatusDistribution';
 import ApplicationTrends from '../components/features/analytics/ApplicationTrends';
-import OfferRateCard from '../components/features/analytics/OfferRateCard';
 import { motion } from 'framer-motion';
-import { TrendingUp, BarChart3, PieChart, Target, Calendar, Award } from 'lucide-react';
+import { BarChart3, PieChart, TrendingUp } from 'lucide-react';
 
 export function Analytics() {
   const { user } = useAuth();
@@ -76,72 +75,6 @@ export function Analytics() {
           </p>
         </motion.div>
 
-        {/* Quick Stats Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
-        >
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Total Applications</p>
-                <p className="text-2xl font-bold text-white">{jobs.length}</p>
-              </div>
-              <div className="p-2 bg-blue-500/20 rounded-lg">
-                <TrendingUp className="w-6 h-6 text-blue-400" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Job Offers</p>
-                <p className="text-2xl font-bold text-white">
-                  {jobs.filter(job => job.status === 'Offer').length}
-                </p>
-              </div>
-              <div className="p-2 bg-green-500/20 rounded-lg">
-                <Award className="w-6 h-6 text-green-400" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Interviews</p>
-                <p className="text-2xl font-bold text-white">
-                  {jobs.filter(job => job.status === 'Interview').length}
-                </p>
-              </div>
-              <div className="p-2 bg-yellow-500/20 rounded-lg">
-                <Target className="w-6 h-6 text-yellow-400" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">This Month</p>
-                <p className="text-2xl font-bold text-white">
-                  {jobs.filter(job => {
-                    const jobDate = new Date(job.date_applied);
-                    const now = new Date();
-                    return jobDate.getMonth() === now.getMonth() && 
-                           jobDate.getFullYear() === now.getFullYear();
-                  }).length}
-                </p>
-              </div>
-              <div className="p-2 bg-purple-500/20 rounded-lg">
-                <Calendar className="w-6 h-6 text-purple-400" />
-              </div>
-            </div>
-          </div>
-        </motion.div>
 
         {/* Main Analytics Grid */}
         <div className="space-y-8">
@@ -191,14 +124,6 @@ export function Analytics() {
             </motion.div>
           </div>
 
-          {/* Offer Rate Analytics */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <OfferRateCard jobs={jobs} />
-          </motion.div>
         </div>
       </div>
     </div>
