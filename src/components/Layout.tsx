@@ -9,6 +9,7 @@ import {
   Award, 
   Plus, 
   Settings, 
+  User,
   LogOut,
   Menu,
   X,
@@ -158,7 +159,7 @@ export function Layout() {
                     >
                       <div className="py-3">
                         <Link 
-                          to="/settings" 
+                          to="/profile" 
                           className="group flex items-center space-x-4 px-6 py-4 text-gray-300 hover:bg-gradient-to-r hover:from-red-500/10 hover:to-transparent hover:text-white transition-all duration-300"
                           onClick={() => setShowMenu(false)}
                         >
@@ -167,11 +168,11 @@ export function Layout() {
                             transition={{ duration: 0.2 }}
                             className="p-2 rounded-lg bg-gray-800/50 group-hover:bg-red-500/20 transition-colors duration-300"
                           >
-                            <Settings className="w-5 h-5 group-hover:text-red-400 transition-colors duration-300" />
+                            <User className="w-5 h-5 group-hover:text-red-400 transition-colors duration-300" />
                           </motion.div>
                           <div>
-                            <span className="font-semibold">Settings</span>
-                            <p className="text-xs text-gray-500">App preferences</p>
+                            <span className="font-semibold">Profile</span>
+                            <p className="text-xs text-gray-500">Manage your profile and target offer rate</p>
                           </div>
                         </Link>
                         
