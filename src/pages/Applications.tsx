@@ -131,6 +131,19 @@ export function Applications() {
     }
   };
 
+  const handleMoveToInterview = async (jobId: string) => {
+    if (!user) return;
+    
+    try {
+      await updateJobApplication(jobId, { status: 'Interview' }, user.id);
+      await loadJobs();
+      showSuccess('Status Updated', 'Job application moved to interview stage.');
+    } catch (error) {
+      console.error('Error updating job status:', error);
+      showError('Update Failed', 'Failed to update job status.');
+    }
+  };
+
   // Filter jobs based on archived status
   const filteredJobs = jobs.filter(job => {
     if (!showArchived && job.status === 'Archived') {
@@ -196,6 +209,14 @@ export function Applications() {
                     >
                       ✏️ Edit
                     </button>
+                    {job.status === 'Applied' && (
+                      <button 
+                        onClick={() => handleMoveToInterview(job.id)}
+                        className="text-purple-500 hover:text-purple-400 px-2 py-1 rounded hover:bg-gray-800 transition-colors"
+                      >
+                        📞 Interview
+                      </button>
+                    )}
                     {job.status === 'Archived' ? (
                       <button 
                         onClick={() => handleUnarchiveJob(job.id)}

@@ -11,6 +11,7 @@ interface JobActionsMenuProps {
   onEdit: (job: JobApplication) => void;
   onArchive?: (id: string) => void;
   onUnarchive?: (id: string) => void;
+  onMoveToInterview?: (id: string) => void;
 }
 
 const JobActionsMenu: React.FC<JobActionsMenuProps> = ({ 
@@ -19,7 +20,8 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
   onDelete, 
   onEdit,
   onArchive,
-  onUnarchive
+  onUnarchive,
+  onMoveToInterview
 }) => {
   const handleStatusUpdate = (newStatus: string) => {
     onUpdate(job.id, { status: newStatus as any });
@@ -68,11 +70,11 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
               )}
             </Menu.Item>
             
-            {job.status === 'Applied' && (
+            {job.status === 'Applied' && onMoveToInterview && (
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onClick={() => handleStatusUpdate('Interview')}
+                    onClick={() => onMoveToInterview(job.id)}
                     className={`${
                       active ? 'bg-gray-100' : ''
                     } flex items-center w-full px-4 py-2 text-sm text-gray-700`}

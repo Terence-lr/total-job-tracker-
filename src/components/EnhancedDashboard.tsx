@@ -265,6 +265,19 @@ const EnhancedDashboard: React.FC = () => {
     }
   };
 
+  const handleMoveToInterview = async (jobId: string) => {
+    if (!user) return;
+    
+    try {
+      await updateJobApplication(jobId, { status: 'Interview' }, user.id);
+      await loadJobs();
+      console.log('Job moved to interview successfully');
+    } catch (error) {
+      console.error('Error updating job status:', error);
+      setError('Failed to update job status');
+    }
+  };
+
   const handleJobSelect = (jobId: string) => {
     setSelectedJobs(prev => 
       prev.includes(jobId) 
@@ -414,6 +427,7 @@ const EnhancedDashboard: React.FC = () => {
                       }}
                       onArchive={handleArchiveJob}
                       onUnarchive={handleUnarchiveJob}
+                      onMoveToInterview={handleMoveToInterview}
                     />
                   ))}
                 </ResponsiveGrid>

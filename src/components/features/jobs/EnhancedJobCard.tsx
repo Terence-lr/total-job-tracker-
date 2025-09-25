@@ -14,6 +14,7 @@ interface EnhancedJobCardProps {
   onEdit: (job: JobApplication) => void;
   onArchive?: (id: string) => void;
   onUnarchive?: (id: string) => void;
+  onMoveToInterview?: (id: string) => void;
 }
 
 const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
@@ -24,7 +25,8 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
   onDelete,
   onEdit,
   onArchive,
-  onUnarchive
+  onUnarchive,
+  onMoveToInterview
 }) => {
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -93,6 +95,7 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
             onEdit={onEdit}
             onArchive={onArchive}
             onUnarchive={onUnarchive}
+            onMoveToInterview={onMoveToInterview}
           />
         </div>
       </div>
