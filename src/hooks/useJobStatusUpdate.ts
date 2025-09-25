@@ -19,23 +19,36 @@ export const useJobStatusUpdate = ({
     if (!user) return;
     
     try {
+      console.log(`Attempting to update job ${jobId} status to ${newStatus}`);
+      
       // Update the job status
       await updateJobApplication(jobId, { status: newStatus as any }, user.id);
+      console.log(`Successfully updated job ${jobId} status to ${newStatus}`);
       
       // Trigger celebration for job offers
       if (newStatus === 'Offer' && job && onCelebration) {
+        console.log(`Triggering celebration for job offer: ${job.company} - ${job.position}`);
         onCelebration(job.company, job.position);
       }
       
       // Reload jobs to reflect the change
       await onJobsReload();
+      console.log(`Jobs reloaded after status update`);
       
       // Show success notification
       showSuccess('Status Updated', `Job status updated to ${newStatus}.`);
       
-      console.log(`Job status updated to ${newStatus}`);
+      console.log(`Job status updated to ${newStatus} - Complete`);
     } catch (error: any) {
       console.error('Error updating job status:', error);
+      console.error('Error details:', {
+        jobId,
+        newStatus,
+        userId: user.id,
+        errorMessage: error.message,
+        errorCode: error.code,
+        errorDetails: error.details
+      });
       showError('Update Failed', `Failed to update job status: ${error.message || 'Unknown error'}`);
     }
   }, [user, onJobsReload, onCelebration, showSuccess, showError]);
