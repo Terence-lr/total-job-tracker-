@@ -1,6 +1,6 @@
 export interface JobOffer {
   id: string;
-  original_job_id: string;
+  original_job_id: number;
   company: string;
   position: string;
   offer_date: string;
@@ -23,7 +23,7 @@ export interface JobOffer {
 export type JobOfferStatus = 'pending' | 'accepted' | 'declined' | 'expired';
 
 export interface CreateJobOffer {
-  original_job_id: string;
+  original_job_id: number;
   company: string;
   position: string;
   offer_date: string;

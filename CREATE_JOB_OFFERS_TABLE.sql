@@ -4,7 +4,7 @@
 -- Step 1: Create the job_offers table
 CREATE TABLE IF NOT EXISTS job_offers (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  original_job_id UUID REFERENCES jobs(id) ON DELETE CASCADE,
+  original_job_id INTEGER REFERENCES jobs(id) ON DELETE CASCADE,
   company VARCHAR(255) NOT NULL,
   position VARCHAR(255) NOT NULL,
   offer_date DATE NOT NULL,
