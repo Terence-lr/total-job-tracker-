@@ -330,7 +330,10 @@ const EnhancedDashboard: React.FC = () => {
                       onSelect={handleJobSelect}
                       onUpdate={(id, updates) => updateJob(id, updates, user!.id)}
                       onDelete={(id) => handleDeleteJob(id)}
-                      onEdit={setEditingJob}
+                      onEdit={(job) => {
+                        setEditingJob(job);
+                        setShowJobForm(true);
+                      }}
                     />
                   ))}
                 </ResponsiveGrid>
