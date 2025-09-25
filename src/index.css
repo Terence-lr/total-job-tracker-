@@ -222,6 +222,316 @@
   }
 }
 
+/* Text and Symbol Optimization */
+.text-optimized {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.5;
+}
+
+.symbol-optimized {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Prevent text overlap and cut-off */
+.no-overlap {
+  position: relative;
+  z-index: 1;
+}
+
+.no-cutoff {
+  overflow: visible;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Form-specific optimizations */
+.form-text-optimized {
+  line-height: 1.4;
+  letter-spacing: 0.025em;
+}
+
+.form-symbol-optimized {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Button text optimization */
+.button-text-optimized {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+/* Icon optimization */
+.icon-optimized {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Error message optimization */
+.error-text-optimized {
+  word-break: break-word;
+  line-height: 1.4;
+  max-width: 100%;
+}
+
+/* Success message optimization */
+.success-text-optimized {
+  word-break: break-word;
+  line-height: 1.4;
+  max-width: 100%;
+}
+
+/* Symbol and icon optimization */
+.symbol-optimized {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* Prevent text cut-off */
+.text-no-cutoff {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Multi-line text optimization */
+.text-multiline {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.4;
+}
+
+/* Icon and symbol spacing */
+.icon-spacing {
+  margin: 0 0.25rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Responsive text sizing */
+@media (max-width: 640px) {
+  .text-responsive {
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  
+  .text-responsive-lg {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .text-responsive-xl {
+    font-size: 1.125rem;
+    line-height: 1.4;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .text-responsive {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .text-responsive-lg {
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+  
+  .text-responsive-xl {
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
+}
+
+@media (min-width: 1025px) {
+  .text-responsive {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .text-responsive-lg {
+    font-size: 1.25rem;
+    line-height: 1.5;
+  }
+  
+  .text-responsive-xl {
+    font-size: 1.5rem;
+    line-height: 1.4;
+  }
+}
+
+/* Symbol and emoji optimization */
+.symbol-safe {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* Prevent symbol overlap */
+.symbol-no-overlap {
+  margin: 0 0.125rem;
+  padding: 0.125rem;
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+/* Long text handling */
+.long-text {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.5;
+  max-width: 100%;
+}
+
+/* Button text optimization */
+.btn-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: inline-block;
+}
+
+/* Form text optimization */
+.form-text {
+  font-size: 16px; /* Prevents zoom on iOS */
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+/* Navigation text optimization */
+.nav-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Card text optimization */
+.card-text {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+  hyphens: auto;
+}
+
+/* Table text optimization */
+.table-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* Modal text optimization */
+.modal-text {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+  max-width: 100%;
+}
+
+/* Error text optimization */
+.error-text {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+  max-width: 100%;
+}
+
+/* Success text optimization */
+.success-text {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+  max-width: 100%;
+}
+
+/* Loading text optimization */
+.loading-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Tooltip text optimization */
+.tooltip-text {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+  max-width: 200px;
+}
+
+/* Prevent text from breaking layout */
+.text-container {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Ensure proper spacing for all text elements */
+.text-spacing {
+  margin: 0.25rem 0;
+  padding: 0.125rem 0;
+}
+
+/* Symbol and icon container optimization */
+.symbol-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+}
+
+/* Prevent symbol cut-off */
+.symbol-no-cutoff {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+  margin: 0 0.125rem;
+}
+
+/* Responsive symbol sizing */
+@media (max-width: 640px) {
+  .symbol-responsive {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .symbol-responsive-lg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+@media (min-width: 641px) {
+  .symbol-responsive {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  
+  .symbol-responsive-lg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
 /* Enhanced Header Effects */
 .header-glow {
   position: relative;
