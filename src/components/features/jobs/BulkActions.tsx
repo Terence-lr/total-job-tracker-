@@ -7,14 +7,20 @@ interface BulkActionsProps {
   selectedJobs: string[];
   onBulkUpdate: (updates: Partial<JobApplication>) => void;
   onBulkDelete: () => void;
+  onBulkArchive: () => void;
+  onBulkUnarchive: () => void;
   onClearSelection: () => void;
+  hasArchivedJobs?: boolean;
 }
 
 const BulkActions: React.FC<BulkActionsProps> = ({ 
   selectedJobs, 
   onBulkUpdate, 
   onBulkDelete, 
-  onClearSelection 
+  onBulkArchive,
+  onBulkUnarchive,
+  onClearSelection,
+  hasArchivedJobs = false
 }) => {
   if (selectedJobs.length === 0) return null;
 
@@ -35,13 +41,23 @@ const BulkActions: React.FC<BulkActionsProps> = ({
           </div>
           
           <div className="flex items-center space-x-2">
-            <button
-              onClick={() => onBulkUpdate({ status: 'Archived' })}
-              className="flex items-center space-x-1 text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
-            >
-              <Archive className="w-4 h-4" />
-              <span>Archive</span>
-            </button>
+            {hasArchivedJobs ? (
+              <button
+                onClick={onBulkUnarchive}
+                className="flex items-center space-x-1 text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition-colors"
+              >
+                <Archive className="w-4 h-4" />
+                <span>Unarchive</span>
+              </button>
+            ) : (
+              <button
+                onClick={onBulkArchive}
+                className="flex items-center space-x-1 text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
+              >
+                <Archive className="w-4 h-4" />
+                <span>Archive</span>
+              </button>
+            )}
             
             <button
               onClick={() => onBulkUpdate({ status: 'Rejected' })}

@@ -6,6 +6,7 @@ import JobForm from '../components/features/jobs/JobForm';
 import EditJobModal from '../components/features/jobs/EditJobModal';
 import { updateJobApplication } from '../services/enhancedJobService';
 import { useNotification } from '../contexts/NotificationContext';
+import { Archive, ArchiveRestore } from 'lucide-react';
 
 export function Applications() {
   const { user } = useAuth();
@@ -15,7 +16,8 @@ export function Applications() {
   const [showJobForm, setShowJobForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { showError } = useNotification();
+  const [showArchived, setShowArchived] = useState(false);
+  const { showError, showSuccess } = useNotification();
 
   useEffect(() => {
     if (user) {
@@ -103,11 +105,59 @@ export function Applications() {
     setEditingJob(null);
   };
 
+  const handleArchiveJob = async (jobId: string) => {
+    if (!user) return;
+    
+    try {
+      await updateJobApplication(jobId, { archived: true }, user.id);
+      await loadJobs();
+      showSuccess('Job Archived', 'Job application has been archived successfully.');
+    } catch (error) {
+      console.error('Error archiving job:', error);
+      showError('Archive Failed', 'Failed to archive job application.');
+    }
+  };
+
+  const handleUnarchiveJob = async (jobId: string) => {
+    if (!user) return;
+    
+    try {
+      await updateJobApplication(jobId, { archived: false }, user.id);
+      await loadJobs();
+      showSuccess('Job Unarchived', 'Job application has been unarchived successfully.');
+    } catch (error) {
+      console.error('Error unarchiving job:', error);
+      showError('Unarchive Failed', 'Failed to unarchive job application.');
+    }
+  };
+
+  // Filter jobs based on archived status
+  const filteredJobs = jobs.filter(job => {
+    if (!showArchived && job.archived) {
+      return false; // Don't show archived jobs if checkbox is unchecked
+    }
+    return true;
+  });
+
   if (loading) return <div className="text-white p-8">Loading...</div>;
 
   return (
     <div className="max-w-7xl mx-auto p-8">
       <h1 className="text-3xl font-bold text-white mb-8">All Applications</h1>
+      
+      {/* Show Archived Toggle */}
+      <div className="mb-6">
+        <label className="flex items-center space-x-2 text-gray-300">
+          <input
+            type="checkbox"
+            checked={showArchived}
+            onChange={(e) => setShowArchived(e.target.checked)}
+            className="w-4 h-4 text-red-600 bg-gray-800 border-gray-600 rounded focus:ring-red-500 focus:ring-2"
+          />
+          <span className="text-sm">Show archived jobs</span>
+        </label>
+      </div>
+
       <div className="bg-gray-900 rounded-lg">
         <table className="w-full">
           <thead className="border-b border-gray-800">
@@ -120,20 +170,27 @@ export function Applications() {
             </tr>
           </thead>
           <tbody>
-            {jobs.map(job => (
+            {filteredJobs.map(job => (
               <tr key={job.id} className="border-b border-gray-800">
                 <td className="p-4 text-white">{job.company}</td>
                 <td className="p-4 text-gray-300">{job.position}</td>
                 <td className="p-4 text-gray-300">{new Date(job.date_applied).toLocaleDateString()}</td>
                 <td className="p-4">
-                  <span className={`px-2 py-1 rounded text-xs ${
-                    job.status === 'Applied' ? 'bg-blue-600' :
-                    job.status === 'Interview' ? 'bg-yellow-600' :
-                    job.status === 'Offer' ? 'bg-green-600' :
-                    'bg-red-600'
-                  }`}>
-                    {job.status}
-                  </span>
+                  <div className="flex items-center space-x-2">
+                    <span className={`px-2 py-1 rounded text-xs ${
+                      job.status === 'Applied' ? 'bg-blue-600' :
+                      job.status === 'Interview' ? 'bg-yellow-600' :
+                      job.status === 'Offer' ? 'bg-green-600' :
+                      'bg-red-600'
+                    }`}>
+                      {job.status}
+                    </span>
+                    {job.archived && (
+                      <span className="px-2 py-1 rounded text-xs bg-gray-600 text-gray-300">
+                        Archived
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="p-4">
                   <div className="flex space-x-2">
@@ -143,6 +200,23 @@ export function Applications() {
                     >
                       ✏️ Edit
                     </button>
+                    {job.archived ? (
+                      <button 
+                        onClick={() => handleUnarchiveJob(job.id)}
+                        className="text-green-500 hover:text-green-400 px-2 py-1 rounded hover:bg-gray-800 transition-colors flex items-center space-x-1"
+                      >
+                        <ArchiveRestore className="w-3 h-3" />
+                        <span>Unarchive</span>
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => handleArchiveJob(job.id)}
+                        className="text-yellow-500 hover:text-yellow-400 px-2 py-1 rounded hover:bg-gray-800 transition-colors flex items-center space-x-1"
+                      >
+                        <Archive className="w-3 h-3" />
+                        <span>Archive</span>
+                      </button>
+                    )}
                     <button 
                       onClick={() => handleDeleteJob(job.id)}
                       className="text-red-500 hover:text-red-400 px-2 py-1 rounded hover:bg-gray-800 transition-colors"

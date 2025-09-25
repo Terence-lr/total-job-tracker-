@@ -209,6 +209,36 @@ const EnhancedDashboard: React.FC = () => {
     }
   };
 
+  const handleBulkArchive = async () => {
+    if (!user) return;
+    
+    try {
+      // Update all selected jobs to archived: true
+      for (const jobId of selectedJobs) {
+        await updateJobApplication(jobId, { archived: true }, user.id);
+      }
+      setSelectedJobs([]);
+      await loadJobs();
+    } catch (err: any) {
+      setError(err.message || 'Failed to archive jobs');
+    }
+  };
+
+  const handleBulkUnarchive = async () => {
+    if (!user) return;
+    
+    try {
+      // Update all selected jobs to archived: false
+      for (const jobId of selectedJobs) {
+        await updateJobApplication(jobId, { archived: false }, user.id);
+      }
+      setSelectedJobs([]);
+      await loadJobs();
+    } catch (err: any) {
+      setError(err.message || 'Failed to unarchive jobs');
+    }
+  };
+
   const handleArchiveJob = async (jobId: string) => {
     if (!user) return;
     
@@ -323,7 +353,10 @@ const EnhancedDashboard: React.FC = () => {
             selectedJobs={selectedJobs}
             onBulkUpdate={handleBulkUpdate}
             onBulkDelete={handleBulkDelete}
+            onBulkArchive={handleBulkArchive}
+            onBulkUnarchive={handleBulkUnarchive}
             onClearSelection={handleClearSelection}
+            hasArchivedJobs={showArchived}
           />
 
           {/* Follow-up Reminders */}
