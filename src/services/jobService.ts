@@ -102,7 +102,7 @@ export const getJobApplication = async (jobId: string, userId: string): Promise<
     }
     
     return {
-      id: String(data.id), // Convert INTEGER to STRING for frontend
+      id: data.id,
       company: data.company,
       position: data.position,
       date_applied: data.date_applied || new Date(data.created_at).toISOString().split('T')[0],

@@ -30,7 +30,7 @@ export const createJobApplication = async (jobData: Omit<JobApplication, 'id' | 
   
   // Map the returned data to match TypeScript interface
   return {
-    id: String(data.id), // Convert INTEGER to STRING for frontend
+    id: data.id,
     company: data.company,
     position: data.position,
     date_applied: data.date_applied,
@@ -97,7 +97,7 @@ export const getJobsWithFilters = async (
   
   // Map database columns to TypeScript interface
   return (data || []).map(job => ({
-    id: String(job.id), // Convert INTEGER to STRING for frontend
+    id: job.id,
     company: job.company,
     position: job.position,
     date_applied: job.date_applied,
@@ -193,7 +193,7 @@ export const updateJobApplication = async (id: string, updates: Partial<JobAppli
     
     // Map the returned data to match TypeScript interface
     return {
-      id: String(data.id), // Convert INTEGER to STRING for frontend
+      id: data.id,
       company: data.company,
       position: data.position,
       date_applied: data.date_applied,
