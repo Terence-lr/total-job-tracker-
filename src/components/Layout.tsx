@@ -33,7 +33,10 @@ export function Layout() {
               </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <Link to="/jobs/new" className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium">
+              <Link 
+                to="/dashboard?addJob=true" 
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
                 + Add Job
               </Link>
               <div className="relative">

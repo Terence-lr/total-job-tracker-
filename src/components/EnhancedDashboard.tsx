@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { JobApplication, CreateJobApplication, JobFilters as JobFiltersType } from '../types/job';
 import { 
@@ -26,6 +27,7 @@ import { generateFollowUps } from '../services/followUpService';
 
 const EnhancedDashboard: React.FC = () => {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [jobs, setJobs] = useState<JobApplication[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<JobApplication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -109,6 +111,16 @@ const EnhancedDashboard: React.FC = () => {
   useEffect(() => {
     applyFilters();
   }, [jobs, filters, applyFilters]);
+
+  // Check for addJob URL parameter and open job form
+  useEffect(() => {
+    const addJob = searchParams.get('addJob');
+    if (addJob === 'true') {
+      setShowJobForm(true);
+      // Remove the parameter from URL to clean it up
+      setSearchParams({});
+    }
+  }, [searchParams, setSearchParams]);
 
   const handleCreateJob = async (jobData: CreateJobApplication) => {
     if (!user) return;
