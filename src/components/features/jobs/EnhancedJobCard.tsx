@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Calendar, DollarSign, ExternalLink, Check } from 'lucide-react';
 import { JobApplication } from '../../../types/job';
 import JobActionsMenu from './JobActionsMenu';
+import StatusDropdown from './StatusDropdown';
 import clsx from 'clsx';
 
 interface EnhancedJobCardProps {
@@ -14,7 +15,7 @@ interface EnhancedJobCardProps {
   onEdit: (job: JobApplication) => void;
   onArchive?: (id: string) => void;
   onUnarchive?: (id: string) => void;
-  onMoveToInterview?: (id: string) => void;
+  onStatusChange?: (id: string, newStatus: string) => void;
 }
 
 const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
@@ -26,7 +27,7 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
   onEdit,
   onArchive,
   onUnarchive,
-  onMoveToInterview
+  onStatusChange
 }) => {
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -82,12 +83,20 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
         </div>
         
         <div className="flex items-center space-x-2">
-          <span className={clsx(
-            'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-            getStatusColor(job.status)
-          )}>
-            {job.status}
-          </span>
+          {onStatusChange ? (
+            <StatusDropdown
+              job={job}
+              onStatusChange={onStatusChange}
+              className="w-28"
+            />
+          ) : (
+            <span className={clsx(
+              'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+              getStatusColor(job.status)
+            )}>
+              {job.status}
+            </span>
+          )}
           <JobActionsMenu
             job={job}
             onUpdate={onUpdate}
@@ -95,7 +104,6 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
             onEdit={onEdit}
             onArchive={onArchive}
             onUnarchive={onUnarchive}
-            onMoveToInterview={onMoveToInterview}
           />
         </div>
       </div>

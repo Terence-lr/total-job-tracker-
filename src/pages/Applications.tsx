@@ -7,6 +7,7 @@ import EditJobModal from '../components/features/jobs/EditJobModal';
 import { updateJobApplication } from '../services/enhancedJobService';
 import { useNotification } from '../contexts/NotificationContext';
 import { Archive, ArchiveRestore } from 'lucide-react';
+import StatusDropdown from '../components/features/jobs/StatusDropdown';
 
 export function Applications() {
   const { user } = useAuth();
@@ -131,18 +132,19 @@ export function Applications() {
     }
   };
 
-  const handleMoveToInterview = async (jobId: string) => {
+  const handleStatusChange = async (jobId: string, newStatus: string) => {
     if (!user) return;
     
     try {
-      await updateJobApplication(jobId, { status: 'Interview' }, user.id);
+      await updateJobApplication(jobId, { status: newStatus as any }, user.id);
       await loadJobs();
-      showSuccess('Status Updated', 'Job application moved to interview stage.');
+      showSuccess('Status Updated', `Job status updated to ${newStatus}.`);
     } catch (error) {
       console.error('Error updating job status:', error);
       showError('Update Failed', 'Failed to update job status.');
     }
   };
+
 
   // Filter jobs based on archived status
   const filteredJobs = jobs.filter(job => {
@@ -189,17 +191,11 @@ export function Applications() {
                 <td className="p-4 text-gray-300">{job.position}</td>
                 <td className="p-4 text-gray-300">{new Date(job.date_applied).toLocaleDateString()}</td>
                 <td className="p-4">
-                  <div className="flex items-center space-x-2">
-                    <span className={`px-2 py-1 rounded text-xs ${
-                      job.status === 'Applied' ? 'bg-blue-600' :
-                      job.status === 'Interview' ? 'bg-yellow-600' :
-                      job.status === 'Offer' ? 'bg-green-600' :
-                      job.status === 'Archived' ? 'bg-gray-600' :
-                      'bg-red-600'
-                    }`}>
-                      {job.status}
-                    </span>
-                  </div>
+                  <StatusDropdown
+                    job={job}
+                    onStatusChange={handleStatusChange}
+                    className="w-32"
+                  />
                 </td>
                 <td className="p-4">
                   <div className="flex space-x-2">
@@ -209,14 +205,6 @@ export function Applications() {
                     >
                       ✏️ Edit
                     </button>
-                    {job.status === 'Applied' && (
-                      <button 
-                        onClick={() => handleMoveToInterview(job.id)}
-                        className="text-purple-500 hover:text-purple-400 px-2 py-1 rounded hover:bg-gray-800 transition-colors"
-                      >
-                        📞 Interview
-                      </button>
-                    )}
                     {job.status === 'Archived' ? (
                       <button 
                         onClick={() => handleUnarchiveJob(job.id)}

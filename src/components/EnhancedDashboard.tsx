@@ -24,6 +24,7 @@ import { useOptimisticJobUpdate } from '../hooks/useOptimisticJobUpdate';
 import { Briefcase, AlertCircle } from 'lucide-react';
 import { FollowUp } from '../types/fitScore';
 import { generateFollowUps } from '../services/followUpService';
+// import StatusDropdown from './features/jobs/StatusDropdown'; // Used in EnhancedJobCard
 
 const EnhancedDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -265,18 +266,19 @@ const EnhancedDashboard: React.FC = () => {
     }
   };
 
-  const handleMoveToInterview = async (jobId: string) => {
+  const handleStatusChange = async (jobId: string, newStatus: string) => {
     if (!user) return;
     
     try {
-      await updateJobApplication(jobId, { status: 'Interview' }, user.id);
+      await updateJobApplication(jobId, { status: newStatus as any }, user.id);
       await loadJobs();
-      console.log('Job moved to interview successfully');
+      console.log(`Job status updated to ${newStatus}`);
     } catch (error) {
       console.error('Error updating job status:', error);
       setError('Failed to update job status');
     }
   };
+
 
   const handleJobSelect = (jobId: string) => {
     setSelectedJobs(prev => 
@@ -427,7 +429,7 @@ const EnhancedDashboard: React.FC = () => {
                       }}
                       onArchive={handleArchiveJob}
                       onUnarchive={handleUnarchiveJob}
-                      onMoveToInterview={handleMoveToInterview}
+                      onStatusChange={handleStatusChange}
                     />
                   ))}
                 </ResponsiveGrid>
