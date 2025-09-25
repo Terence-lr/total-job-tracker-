@@ -31,6 +31,9 @@ export function Layout() {
               <Link to="/analytics" className={`text-gray-300 hover:text-white transition-colors ${location.pathname === '/analytics' ? 'text-white font-semibold' : ''}`}>
                 Analytics
               </Link>
+              <Link to="/job-offers" className={`text-gray-300 hover:text-white transition-colors ${location.pathname === '/job-offers' ? 'text-white font-semibold' : ''}`}>
+                Job Offers
+              </Link>
             </div>
             <div className="flex items-center space-x-4">
               <Link 
