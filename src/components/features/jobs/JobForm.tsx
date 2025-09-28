@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { JobApplication, CreateJobApplication, JobStatus } from '../../../types/job';
-import { X, Calendar, DollarSign, Link as LinkIcon, FileText, Zap, Globe, Loader2, CheckCircle } from 'lucide-react';
+import { X, Calendar, DollarSign, Link as LinkIcon, FileText, Zap, Loader2, CheckCircle } from 'lucide-react';
 import Button from '../../ui/Button';
 import Select from '../../ui/Select';
-import { automationBackendService } from '../../../services/automationBackendService';
 import { creativeExtractionService } from '../../../services/creativeExtractionService';
 import { useNotification } from '../../../contexts/NotificationContext';
 

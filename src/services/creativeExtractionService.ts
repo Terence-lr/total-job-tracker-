@@ -58,7 +58,7 @@ export class CreativeExtractionService {
 
       // If RapidAPI fails, try automation service as fallback
       const automationResult = await enhancedExtractionService.extractJobData(url);
-      if (automationResult.success && automationResult.data) {
+      if (automationResult.data && Object.keys(automationResult.data).length > 0) {
         console.log('✅ Automation service fallback successful:', automationResult);
         return {
           success: true,
