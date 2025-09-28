@@ -113,6 +113,7 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
           onEdit={onEdit}
           onArchive={onArchive}
           onUnarchive={onUnarchive}
+          onStatusChange={onStatusChange}
         />
       </div>
       

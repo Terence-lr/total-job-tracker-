@@ -11,6 +11,7 @@ interface JobActionsMenuProps {
   onEdit: (job: JobApplication) => void;
   onArchive?: (id: string) => void;
   onUnarchive?: (id: string) => void;
+  onStatusChange?: (id: string, newStatus: string, job?: { company: string; position: string }) => void;
 }
 
 const JobActionsMenu: React.FC<JobActionsMenuProps> = ({ 
@@ -19,10 +20,17 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
   onDelete, 
   onEdit,
   onArchive,
-  onUnarchive
+  onUnarchive,
+  onStatusChange
 }) => {
   const handleStatusUpdate = (newStatus: string) => {
-    onUpdate(job.id, { status: newStatus as any });
+    if (onStatusChange) {
+      // Use the proper status change handler that connects to backend and updates across all pages
+      onStatusChange(job.id, newStatus, { company: job.company, position: job.position });
+    } else {
+      // Fallback to the old method if onStatusChange is not provided
+      onUpdate(job.id, { status: newStatus as any });
+    }
   };
 
   const handleCopyJob = () => {
