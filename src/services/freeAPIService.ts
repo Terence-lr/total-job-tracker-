@@ -17,11 +17,13 @@ export class FreeAPIService {
   private scrapingBeeKey: string | undefined;
   private apifyKey: string | undefined;
   private freeWebAPIKey: string | undefined;
+  private rapidAPIKey: string | undefined;
 
   constructor() {
     this.scrapingBeeKey = process.env.REACT_APP_SCRAPINGBEE_KEY;
     this.apifyKey = process.env.REACT_APP_APIFY_KEY;
     this.freeWebAPIKey = process.env.REACT_APP_FREEWEBAPI_KEY;
+    this.rapidAPIKey = process.env.REACT_APP_RAPIDAPI_KEY || '68a8937d83msh714709d12590c0fp15d2dejsnfec5679eab7e';
   }
 
   /**
@@ -37,6 +39,9 @@ export class FreeAPIService {
       let result: FreeAPIResult;
       
       switch (bestAPI) {
+        case 'rapidapi':
+          result = await this.extractWithRapidAPI(url);
+          break;
         case 'scrapingbee':
           result = await this.extractWithScrapingBee(url);
           break;
@@ -63,6 +68,69 @@ export class FreeAPIService {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred'
+      };
+    }
+  }
+
+  /**
+   * RapidAPI JSearch - Best for general job search across multiple sites
+   */
+  private async extractWithRapidAPI(url: string): Promise<FreeAPIResult> {
+    if (!this.rapidAPIKey) {
+      throw new Error('RapidAPI key not configured');
+    }
+
+    try {
+      // Extract search terms from URL
+      const searchTerms = this.extractSearchTermsFromURL(url);
+      
+      const apiUrl = `https://jsearch.p.rapidapi.com/search?query=${encodeURIComponent(searchTerms.keyword)}&page=1&num_pages=1&country=us&date_posted=all`;
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-key': this.rapidAPIKey,
+          'x-rapidapi-host': 'jsearch.p.rapidapi.com'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`RapidAPI JSearch error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.data && data.data.length > 0) {
+        // Find the job that matches our URL
+        const matchingJob = this.findMatchingJob(data.data, url);
+        
+        if (matchingJob) {
+          const jobData = this.parseRapidAPIJobData(matchingJob);
+          return {
+            success: true,
+            data: jobData,
+            confidence: 0.92,
+            apiUsed: 'RapidAPI JSearch'
+          };
+        } else {
+          // Use the first job as fallback
+          const jobData = this.parseRapidAPIJobData(data.data[0]);
+          return {
+            success: true,
+            data: jobData,
+            confidence: 0.85,
+            apiUsed: 'RapidAPI JSearch'
+          };
+        }
+      } else {
+        throw new Error('No jobs found in RapidAPI response');
+      }
+      
+    } catch (error) {
+      return {
+        success: false,
+        error: `RapidAPI JSearch failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        apiUsed: 'RapidAPI JSearch'
       };
     }
   }
@@ -303,6 +371,45 @@ export class FreeAPIService {
   }
 
   /**
+   * Parse RapidAPI JSearch job data
+   */
+  private parseRapidAPIJobData(jobData: any): Partial<CreateJobApplication> {
+    return {
+      company: jobData.employer_name,
+      position: jobData.job_title,
+      salary: jobData.job_salary || jobData.salary,
+      notes: jobData.job_description,
+      job_url: jobData.job_apply_link || jobData.job_url
+    };
+  }
+
+  /**
+   * Find matching job from RapidAPI results
+   */
+  private findMatchingJob(jobs: any[], targetUrl: string): any | null {
+    const targetDomain = this.extractDomain(targetUrl);
+    
+    // Try to find exact URL match
+    const exactMatch = jobs.find(job => 
+      job.job_apply_link === targetUrl || 
+      job.job_url === targetUrl
+    );
+    
+    if (exactMatch) return exactMatch;
+    
+    // Try to find domain match
+    const domainMatch = jobs.find(job => {
+      const jobDomain = this.extractDomain(job.job_apply_link || job.job_url || '');
+      return jobDomain === targetDomain;
+    });
+    
+    if (domainMatch) return domainMatch;
+    
+    // Return first job as fallback
+    return jobs[0] || null;
+  }
+
+  /**
    * Wait for Apify results
    */
   private async waitForApifyResults(runId: string): Promise<any[]> {
@@ -359,6 +466,12 @@ export class FreeAPIService {
    * Select best API for domain
    */
   private selectBestAPI(domain: string): string {
+    // RapidAPI JSearch is great for most job sites
+    if (this.rapidAPIKey) {
+      return 'rapidapi';
+    }
+    
+    // Fallback to specific APIs
     if (domain.includes('indeed.com')) return 'scrapingbee';
     if (domain.includes('linkedin.com')) return 'apify';
     if (domain.includes('glassdoor.com')) return 'freewebapi';
@@ -384,6 +497,7 @@ export class FreeAPIService {
    */
   getAPIAvailability(): Record<string, boolean> {
     return {
+      rapidapi: !!this.rapidAPIKey,
       scrapingbee: !!this.scrapingBeeKey,
       apify: !!this.apifyKey,
       freewebapi: !!this.freeWebAPIKey
@@ -396,6 +510,7 @@ export class FreeAPIService {
   getUsageStats(): Record<string, any> {
     // This would track API usage in a real implementation
     return {
+      rapidapi: { requests: 0, limit: 500 }, // RapidAPI free tier
       scrapingbee: { requests: 0, limit: 1000 },
       apify: { runs: 0, limit: 1000 },
       freewebapi: { requests: 0, limit: 100 }

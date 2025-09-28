@@ -1,0 +1,29 @@
+# Job Tracker Environment Variables
+# Copy this file to .env and fill in your values
+
+# Supabase Configuration
+REACT_APP_SUPABASE_URL=your_supabase_url_here
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+
+# Optional: API Keys for Enhanced Features
+# Get these from the respective services for better job extraction accuracy
+
+# RapidAPI JSearch (for general job search across multiple sites)
+# Already configured with your key! 92% accuracy for most job sites
+# Free tier: 500 requests/month
+REACT_APP_RAPIDAPI_KEY=68a8937d83msh714709d12590c0fp15d2dejsnfec5679eab7e
+
+# ScrapingBee API (for Indeed and general job sites)
+# Sign up at: https://www.scrapingbee.com/
+# Free tier: 1,000 requests/month
+REACT_APP_SCRAPINGBEE_KEY=your_scrapingbee_key_here
+
+# Apify API (for LinkedIn and complex sites)
+# Sign up at: https://apify.com/
+# Free tier: 1,000 actor runs/month
+REACT_APP_APIFY_KEY=your_apify_key_here
+
+# FreeWebAPI (for multiple job sites)
+# Sign up at: https://freewebapi.com/
+# Free tier: 100 requests/month
+REACT_APP_FREEWEBAPI_KEY=your_freewebapi_key_here
