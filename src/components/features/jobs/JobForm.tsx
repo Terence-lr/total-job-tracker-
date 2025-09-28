@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { JobApplication, CreateJobApplication, JobStatus } from '../../../types/job';
 import { X, Calendar, DollarSign, Link as LinkIcon, FileText } from 'lucide-react';
-import FitScoreCard from './FitScoreCard';
 import Button from '../../ui/Button';
 import Select from '../../ui/Select';
 
@@ -27,15 +26,6 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Get profile skills from localStorage
-  const getProfileSkills = (): string[] => {
-    const saved = localStorage.getItem('profile_demo');
-    if (saved) {
-      const profile = JSON.parse(saved);
-      return profile.skills?.map((s: any) => s.name) || [];
-    }
-    return [];
-  };
 
   useEffect(() => {
     if (job) {
@@ -322,19 +312,6 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
               </div>
             </div>
 
-          {/* Fit Score Analysis */}
-          <FitScoreCard
-            onCopyToNotes={(text) => {
-              setFormData(prev => ({
-                ...prev,
-                notes: prev.notes ? `${prev.notes}\n\n${text}` : text
-              }));
-            }}
-            profile={{
-              skills: getProfileSkills(), // Get from localStorage
-              summary: 'Full-stack developer with experience in modern web technologies'
-            }}
-          />
 
             <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-4 sm:pt-6 border-t border-gray-700">
               <Button

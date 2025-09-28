@@ -27,7 +27,6 @@ export { default as JobCard } from './jobs/JobCard';
 export { default as EnhancedJobCard } from './jobs/EnhancedJobCard';
 export { default as JobActionsMenu } from './jobs/JobActionsMenu';
 export { default as BulkActions } from './jobs/BulkActions';
-export { default as FitScoreCard } from './jobs/FitScoreCard';
 
 // Auth Components
 export { default as Login } from './auth/Login';

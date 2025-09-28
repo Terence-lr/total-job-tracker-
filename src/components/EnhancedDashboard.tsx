@@ -25,6 +25,7 @@ import { Briefcase, AlertCircle } from 'lucide-react';
 import { FollowUp } from '../types/fitScore';
 import { generateFollowUps } from '../services/followUpService';
 import OfferCelebration from './features/jobs/OfferCelebration';
+import JobAutomationDashboard from './features/jobs/JobAutomationDashboard';
 // import StatusDropdown from './features/jobs/StatusDropdown'; // Used in EnhancedJobCard
 
 const EnhancedDashboard: React.FC = () => {
@@ -46,6 +47,7 @@ const EnhancedDashboard: React.FC = () => {
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationJob, setCelebrationJob] = useState<{company: string, position: string} | null>(null);
   const [targetOfferRate, setTargetOfferRate] = useState<number>(20);
+  const [showAutomation, setShowAutomation] = useState(false);
   const itemsPerPage = 12;
 
   const { ref: statsRef, isVisible: statsVisible } = useScrollReveal();
@@ -416,13 +418,22 @@ const EnhancedDashboard: React.FC = () => {
                 <p className="mt-1 text-xs sm:text-sm text-gray-400 px-4">
                   Get started by adding your first job application.
                 </p>
-                <div className="mt-4 sm:mt-6">
+                <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={() => setShowJobForm(true)}
                     className="signature-btn inline-flex items-center text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-3"
                   >
                     <Briefcase className="w-4 h-4 mr-2" />
                     Add Job Application
+                  </button>
+                  <button
+                    onClick={() => setShowAutomation(true)}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white inline-flex items-center text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Auto-Extract Job
                   </button>
                 </div>
               </div>
@@ -469,6 +480,14 @@ const EnhancedDashboard: React.FC = () => {
               onSubmit={editingJob ? handleUpdateJob : handleCreateJob}
               onCancel={handleCancelForm}
               isLoading={isSubmitting}
+            />
+          )}
+
+          {/* Job Automation Dashboard */}
+          {showAutomation && (
+            <JobAutomationDashboard
+              onJobExtracted={handleCreateJob}
+              onClose={() => setShowAutomation(false)}
             />
           )}
         </main>
