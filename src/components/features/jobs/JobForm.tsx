@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { JobApplication, CreateJobApplication, JobStatus } from '../../../types/job';
-import { X, Calendar, DollarSign, Link as LinkIcon, FileText } from 'lucide-react';
+import { X, Calendar, DollarSign, Link as LinkIcon, FileText, Zap, Globe, Mail, Loader2 } from 'lucide-react';
 import Button from '../../ui/Button';
 import Select from '../../ui/Select';
+import { automationBackendService } from '../../../services/automationBackendService';
+import { useNotification } from '../../../contexts/NotificationContext';
 
 interface JobFormProps {
   job?: JobApplication;
@@ -25,6 +27,11 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [automationType, setAutomationType] = useState<'url' | 'email' | null>(null);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [urlInput, setUrlInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const { showSuccess, showError } = useNotification();
 
 
   useEffect(() => {
@@ -105,6 +112,54 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
     }
   };
 
+  const handleUrlExtraction = async () => {
+    if (!urlInput.trim()) {
+      showError('URL Required', 'Please enter a job posting URL');
+      return;
+    }
+
+    setIsExtracting(true);
+    try {
+      const result = await automationBackendService.extractAndSaveJobFromUrl(urlInput);
+      
+      if (result.success) {
+        showSuccess('Job Extracted!', `Job extracted and saved successfully with ID: ${result.jobId}`);
+        onCancel(); // Close the form since job is already saved
+      } else {
+        showError('Extraction Failed', result.error || 'Failed to extract job data');
+      }
+    } catch (error) {
+      console.error('Error extracting job:', error);
+      showError('Extraction Error', 'An error occurred while extracting job data');
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const handleEmailExtraction = async () => {
+    if (!emailInput.trim()) {
+      showError('Email Content Required', 'Please enter email content');
+      return;
+    }
+
+    setIsExtracting(true);
+    try {
+      const result = await automationBackendService.extractAndSaveJobFromEmail(emailInput);
+      
+      if (result.success) {
+        showSuccess('Job Extracted!', `Job extracted from email and saved successfully with ID: ${result.jobId}`);
+        onCancel(); // Close the form since job is already saved
+      } else {
+        showError('Extraction Failed', result.error || 'Failed to extract job data from email');
+      }
+    } catch (error) {
+      console.error('Error extracting job from email:', error);
+      showError('Extraction Error', 'An error occurred while extracting job data');
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
   const statusOptions: JobStatus[] = ['Applied', 'Interview', 'Offer', 'Rejected', 'Withdrawn'];
 
   return (
@@ -124,6 +179,110 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
         </div>
 
         <div className="px-4 sm:px-6 py-4 sm:py-6">
+          {/* Automation Section */}
+          {!job && (
+            <div className="mb-6 p-4 bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-xl border border-blue-500/30">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="p-2 bg-blue-500/20 rounded-lg">
+                  <Zap className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-white">Auto-Extract Job Data</h4>
+                  <p className="text-sm text-gray-400">Automatically fill the form from URL or email</p>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  type="button"
+                  onClick={() => setAutomationType('url')}
+                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                >
+                  <Globe className="w-4 h-4" />
+                  <span>Extract from URL</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAutomationType('email')}
+                  className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                >
+                  <Mail className="w-4 h-4" />
+                  <span>Extract from Email</span>
+                </button>
+              </div>
+
+              {/* URL Extraction */}
+              {automationType === 'url' && (
+                <div className="mt-4 space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Job Posting URL
+                    </label>
+                    <div className="flex space-x-2">
+                      <input
+                        type="url"
+                        value={urlInput}
+                        onChange={(e) => setUrlInput(e.target.value)}
+                        placeholder="https://linkedin.com/jobs/view/..."
+                        className="flex-1 px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleUrlExtraction}
+                        disabled={isExtracting || !urlInput.trim()}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                      >
+                        {isExtracting ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Globe className="w-4 h-4" />
+                        )}
+                        <span>{isExtracting ? 'Extracting...' : 'Extract'}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Email Extraction */}
+              {automationType === 'email' && (
+                <div className="mt-4 space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Email Content
+                    </label>
+                    <textarea
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                      placeholder="Paste job application email content here..."
+                      rows={4}
+                      className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleEmailExtraction}
+                      disabled={isExtracting || !emailInput.trim()}
+                      className="w-full mt-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+                    >
+                      {isExtracting ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Mail className="w-4 h-4" />
+                      )}
+                      <span>{isExtracting ? 'Extracting...' : 'Extract from Email'}</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-4 pt-4 border-t border-gray-700">
+                <p className="text-xs text-gray-400">
+                  Supported platforms: LinkedIn, Indeed, Glassdoor, AngelList, Remote.co
+                </p>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
