@@ -666,7 +666,9 @@ export class JobAutomationService {
     jobData.position = this.extractJobTitle(html, url);
     
     // 3. SALARY/PAY EXTRACTION
-    jobData.salary = this.extractSalary(html, url);
+    const salaryInfo = this.extractSalaryAndHourlyRate(html, url);
+    jobData.salary = salaryInfo.salary;
+    jobData.hourly_rate = salaryInfo.hourly_rate;
     
     // 4. DESCRIPTION/NOTES EXTRACTION
     jobData.notes = this.extractDescription(html, url);
@@ -950,6 +952,83 @@ export class JobAutomationService {
     
     // Check if it looks like a job title (has job keywords and reasonable length)
     return hasJobKeyword && cleanTitle.length >= 3 && cleanTitle.length <= 80;
+  }
+
+  /**
+   * Extract both salary and hourly rate information
+   */
+  private extractSalaryAndHourlyRate(html: string, url: string): { salary: string; hourly_rate?: number } {
+    console.log('🔍 Extracting salary and hourly rate information...');
+    
+    const salary = this.extractSalary(html, url);
+    const hourlyRate = this.extractHourlyRate(html, url);
+    
+    return {
+      salary,
+      hourly_rate: hourlyRate
+    };
+  }
+
+  /**
+   * Extract hourly rate information
+   */
+  private extractHourlyRate(html: string, url: string): number | undefined {
+    console.log('🔍 Extracting hourly rate...');
+    
+    // Strategy 1: Look for hourly rate patterns
+    const hourlyPatterns = [
+      /\$[\d,]+(?:\.\d{2})?\s*per\s+hour/gi,
+      /\$[\d,]+(?:\.\d{2})?\s*hourly/gi,
+      /\$[\d,]+(?:\.\d{2})?\s*\/hr/gi,
+      /\$[\d,]+(?:\.\d{2})?\s*\/hour/gi,
+      /[\d,]+(?:\.\d{2})?\s*per\s+hour/gi,
+      /[\d,]+(?:\.\d{2})?\s*hourly/gi
+    ];
+    
+    for (const pattern of hourlyPatterns) {
+      const matches = html.match(pattern);
+      if (matches && matches.length > 0) {
+        for (const match of matches) {
+          const rate = this.extractNumericValue(match);
+          if (rate > 0 && rate < 1000) { // Reasonable hourly rate range
+            console.log('✅ Hourly rate found in patterns:', rate);
+            return rate;
+          }
+        }
+      }
+    }
+    
+    // Strategy 2: Look in specific elements
+    const hourlyElements = [
+      /<[^>]*class="[^"]*hourly[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*rate[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*wage[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi
+    ];
+    
+    for (const pattern of hourlyElements) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        const rate = this.extractNumericValue(match[1]);
+        if (rate > 0 && rate < 1000) {
+          console.log('✅ Hourly rate found in elements:', rate);
+          return rate;
+        }
+      }
+    }
+    
+    console.log('❌ No hourly rate found');
+    return undefined;
+  }
+
+  /**
+   * Extract numeric value from text
+   */
+  private extractNumericValue(text: string): number {
+    const match = text.match(/[\d,]+(?:\.\d{2})?/);
+    if (match) {
+      return parseFloat(match[0].replace(/,/g, ''));
+    }
+    return 0;
   }
 
   /**

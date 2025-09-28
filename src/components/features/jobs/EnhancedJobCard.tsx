@@ -123,10 +123,16 @@ const EnhancedJobCard: React.FC<EnhancedJobCardProps> = ({
           <span>Applied {formatDate(job.date_applied)}</span>
         </div>
         
-        {job.salary && (
+        {(job.salary || job.hourly_rate) && (
           <div className="flex items-center text-xs text-gray-500">
             <DollarSign className="w-3 h-3 mr-1" />
-            <span>{job.salary}</span>
+            <span>
+              {job.salary && job.salary}
+              {job.salary && job.hourly_rate && ' • '}
+              {job.hourly_rate && `$${job.hourly_rate}/hr`}
+              {job.calculated_salary && !job.salary && `≈ $${job.calculated_salary.toLocaleString()}/year`}
+              {job.calculated_hourly_rate && !job.hourly_rate && `≈ $${job.calculated_hourly_rate}/hr`}
+            </span>
           </div>
         )}
         

@@ -5,6 +5,10 @@ export interface JobApplication {
   date_applied: string;
   status: JobStatus;
   salary?: string;
+  hourly_rate?: number;
+  pay_type?: 'salary' | 'hourly';
+  calculated_salary?: number;
+  calculated_hourly_rate?: number;
   notes?: string;
   job_url?: string;
   job_description?: string;
@@ -23,6 +27,10 @@ export interface CreateJobApplication {
   date_applied: string;
   status: JobStatus;
   salary?: string;
+  hourly_rate?: number;
+  pay_type?: 'salary' | 'hourly';
+  calculated_salary?: number;
+  calculated_hourly_rate?: number;
   notes?: string;
   job_url?: string;
   job_description?: string;

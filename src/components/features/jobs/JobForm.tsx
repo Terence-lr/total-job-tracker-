@@ -20,6 +20,10 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
     date_applied: new Date().toISOString().split('T')[0],
     status: 'Applied',
     salary: '',
+    hourly_rate: undefined,
+    pay_type: 'salary',
+    calculated_salary: undefined,
+    calculated_hourly_rate: undefined,
     notes: '',
     job_url: '',
     job_description: '',
@@ -42,6 +46,10 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
         date_applied: job.date_applied,
         status: job.status,
         salary: job.salary || '',
+        hourly_rate: job.hourly_rate,
+        pay_type: job.pay_type || 'salary',
+        calculated_salary: job.calculated_salary,
+        calculated_hourly_rate: job.calculated_hourly_rate,
         notes: job.notes || '',
         job_url: job.job_url || '',
         job_description: job.job_description || '',
@@ -64,6 +72,70 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
         [name]: ''
       }));
     }
+  };
+
+  const handleSalaryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData(prev => {
+      const updated = { ...prev, salary: value };
+      
+      // Calculate hourly rate from salary
+      if (value && value.trim()) {
+        const numericValue = parseSalaryValue(value);
+        if (numericValue > 0) {
+          const hourlyRate = numericValue / (40 * 52); // 40 hours/week * 52 weeks/year
+          updated.calculated_hourly_rate = Math.round(hourlyRate * 100) / 100;
+          updated.pay_type = 'salary';
+        }
+      } else {
+        updated.calculated_hourly_rate = undefined;
+      }
+      
+      return updated;
+    });
+    setErrors(prev => ({
+      ...prev,
+      salary: ''
+    }));
+  };
+
+  const handleHourlyRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value) || 0;
+    setFormData(prev => {
+      const updated = { ...prev, hourly_rate: value };
+      
+      // Calculate salary from hourly rate
+      if (value > 0) {
+        const annualSalary = value * 40 * 52; // 40 hours/week * 52 weeks/year
+        updated.calculated_salary = Math.round(annualSalary);
+        updated.pay_type = 'hourly';
+      } else {
+        updated.calculated_salary = undefined;
+      }
+      
+      return updated;
+    });
+    setErrors(prev => ({
+      ...prev,
+      hourly_rate: ''
+    }));
+  };
+
+  const parseSalaryValue = (salary: string): number => {
+    // Remove common non-numeric characters and convert
+    let cleanSalary = salary.replace(/[^0-9.]/g, '');
+    
+    // Handle 'k' suffix (multiply by 1000)
+    if (salary.toLowerCase().includes('k')) {
+      cleanSalary = (parseFloat(cleanSalary) * 1000).toString();
+    }
+    
+    // Handle 'm' suffix (multiply by 1000000)
+    if (salary.toLowerCase().includes('m')) {
+      cleanSalary = (parseFloat(cleanSalary) * 1000000).toString();
+    }
+    
+    return parseFloat(cleanSalary) || 0;
   };
 
   const validateForm = (): boolean => {
@@ -509,11 +581,43 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                   id="salary"
                   name="salary"
                   value={formData.salary}
-                  onChange={handleChange}
+                  onChange={handleSalaryChange}
                   className="w-full px-3 py-2 sm:py-2.5 pl-9 sm:pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base"
                   placeholder="e.g., $80,000 - $100,000"
                 />
               </div>
+              {formData.calculated_hourly_rate && (
+                <p className="text-xs text-gray-400">
+                  ≈ ${formData.calculated_hourly_rate}/hour
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="hourly_rate" className="block text-sm font-medium text-gray-300">
+                Hourly Rate
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+                </div>
+                <input
+                  type="number"
+                  id="hourly_rate"
+                  name="hourly_rate"
+                  value={formData.hourly_rate || ''}
+                  onChange={handleHourlyRateChange}
+                  step="0.01"
+                  min="0"
+                  className="w-full px-3 py-2 sm:py-2.5 pl-9 sm:pl-10 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm sm:text-base"
+                  placeholder="e.g., 25.50"
+                />
+              </div>
+              {formData.calculated_salary && (
+                <p className="text-xs text-gray-400">
+                  ≈ ${formData.calculated_salary.toLocaleString()}/year
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
