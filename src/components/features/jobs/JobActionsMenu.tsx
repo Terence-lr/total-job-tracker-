@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { MoreVertical, Edit, Trash2, ArrowRight, Archive, Copy, X } from 'lucide-react';
+import { MoreVertical, Edit, Trash2, ArrowRight, Archive, Copy, X, CheckCircle, XCircle, RotateCcw } from 'lucide-react';
 import { JobApplication } from '../../../types/job';
 
 interface JobActionsMenuProps {
@@ -60,55 +60,118 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+        <Menu.Items className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
           <div className="py-1">
+            {/* Primary Actions */}
             <Menu.Item>
               {({ active }) => (
                 <button
                   onClick={() => onEdit(job)}
                   className={`${
-                    active ? 'bg-gray-100' : ''
+                    active ? 'bg-blue-50' : ''
                   } flex items-center w-full px-4 py-2 text-sm text-gray-700`}
                 >
                   <Edit className="w-4 h-4 mr-3" />
-                  Edit
+                  Edit Application
                 </button>
               )}
             </Menu.Item>
-            
+
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  onClick={handleCopyJob}
+                  className={`${
+                    active ? 'bg-gray-50' : ''
+                  } flex items-center w-full px-4 py-2 text-sm text-gray-700`}
+                >
+                  <Copy className="w-4 h-4 mr-3" />
+                  Copy Job Data
+                </button>
+              )}
+            </Menu.Item>
+
+            {/* Status Transitions */}
             {job.status === 'Applied' && (
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    onClick={() => handleStatusUpdate('Interview')}
-                    className={`${
-                      active ? 'bg-gray-100' : ''
-                    } flex items-center w-full px-4 py-2 text-sm text-gray-700`}
-                  >
-                    <ArrowRight className="w-4 h-4 mr-3" />
-                    Move to Interview
-                  </button>
-                )}
-              </Menu.Item>
+              <>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => handleStatusUpdate('Interview')}
+                      className={`${
+                        active ? 'bg-yellow-50' : ''
+                      } flex items-center w-full px-4 py-2 text-sm text-yellow-700`}
+                    >
+                      <ArrowRight className="w-4 h-4 mr-3" />
+                      Move to Interview
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => handleStatusUpdate('Rejected')}
+                      className={`${
+                        active ? 'bg-red-50' : ''
+                      } flex items-center w-full px-4 py-2 text-sm text-red-700`}
+                    >
+                      <XCircle className="w-4 h-4 mr-3" />
+                      Mark as Rejected
+                    </button>
+                  )}
+                </Menu.Item>
+              </>
             )}
-            
+
             {job.status === 'Interview' && (
+              <>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => handleStatusUpdate('Offer')}
+                      className={`${
+                        active ? 'bg-green-50' : ''
+                      } flex items-center w-full px-4 py-2 text-sm text-green-700`}
+                    >
+                      <CheckCircle className="w-4 h-4 mr-3" />
+                      Move to Offer
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      onClick={() => handleStatusUpdate('Rejected')}
+                      className={`${
+                        active ? 'bg-red-50' : ''
+                      } flex items-center w-full px-4 py-2 text-sm text-red-700`}
+                    >
+                      <XCircle className="w-4 h-4 mr-3" />
+                      Mark as Rejected
+                    </button>
+                  )}
+                </Menu.Item>
+              </>
+            )}
+
+            {job.status === 'Offer' && (
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onClick={() => handleStatusUpdate('Offer')}
+                    onClick={() => handleStatusUpdate('Rejected')}
                     className={`${
-                      active ? 'bg-gray-100' : ''
-                    } flex items-center w-full px-4 py-2 text-sm text-gray-700`}
+                      active ? 'bg-red-50' : ''
+                    } flex items-center w-full px-4 py-2 text-sm text-red-700`}
                   >
-                    <ArrowRight className="w-4 h-4 mr-3" />
-                    Move to Offer
+                    <XCircle className="w-4 h-4 mr-3" />
+                    Mark as Rejected
                   </button>
                 )}
               </Menu.Item>
             )}
-            
-            {!job.withdrawn && job.status !== 'Withdrawn' && (
+
+            {/* Withdraw/Reactivate */}
+            {!job.withdrawn && job.status !== 'Withdrawn' && job.status !== 'Archived' && (
               <Menu.Item>
                 {({ active }) => (
                   <button
@@ -123,7 +186,7 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
                 )}
               </Menu.Item>
             )}
-            
+
             {job.withdrawn && (
               <Menu.Item>
                 {({ active }) => (
@@ -133,43 +196,17 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
                       active ? 'bg-green-50' : ''
                     } flex items-center w-full px-4 py-2 text-sm text-green-600`}
                   >
-                    <ArrowRight className="w-4 h-4 mr-3" />
+                    <RotateCcw className="w-4 h-4 mr-3" />
                     Reactivate Application
                   </button>
                 )}
               </Menu.Item>
             )}
-            
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  onClick={() => handleStatusUpdate('Archived')}
-                  className={`${
-                    active ? 'bg-gray-100' : ''
-                  } flex items-center w-full px-4 py-2 text-sm text-gray-700`}
-                >
-                  <Archive className="w-4 h-4 mr-3" />
-                  Archive
-                </button>
-              )}
-            </Menu.Item>
-            
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  onClick={handleCopyJob}
-                  className={`${
-                    active ? 'bg-gray-100' : ''
-                  } flex items-center w-full px-4 py-2 text-sm text-gray-700`}
-                >
-                  <Copy className="w-4 h-4 mr-3" />
-                  Copy Job Data
-                </button>
-              )}
-            </Menu.Item>
-            
+
+            {/* Divider */}
             <div className="border-t border-gray-100 my-1" />
-            
+
+            {/* Archive/Unarchive */}
             {job.status === 'Archived' ? (
               <Menu.Item>
                 {({ active }) => (
@@ -199,6 +236,9 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
                 )}
               </Menu.Item>
             )}
+
+            {/* Danger Zone */}
+            <div className="border-t border-gray-100 my-1" />
             
             <Menu.Item>
               {({ active }) => (
