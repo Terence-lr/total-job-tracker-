@@ -45,11 +45,25 @@ const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
   };
 
   const handleWithdraw = () => {
-    onUpdate(job.id, { withdrawn: true, status: 'Withdrawn' });
+    if (onStatusChange) {
+      // Use the proper status change handler that connects to backend and updates across all pages
+      onStatusChange(job.id, 'Withdrawn', { company: job.company, position: job.position });
+    } else {
+      // Fallback to the old method if onStatusChange is not provided
+      onUpdate(job.id, { withdrawn: true, status: 'Withdrawn' });
+    }
   };
 
   const handleUnwithdraw = () => {
-    onUpdate(job.id, { withdrawn: false, status: 'Applied' });
+    if (onStatusChange) {
+      // Use the proper status change handler that connects to backend and updates across all pages
+      // When unwithdrawing, we need to determine what the previous status should be
+      // For now, we'll default to 'Applied', but this could be enhanced to remember the previous status
+      onStatusChange(job.id, 'Applied', { company: job.company, position: job.position });
+    } else {
+      // Fallback to the old method if onStatusChange is not provided
+      onUpdate(job.id, { withdrawn: false, status: 'Applied' });
+    }
   };
 
   return (

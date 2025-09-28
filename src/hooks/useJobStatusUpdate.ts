@@ -21,8 +21,17 @@ export const useJobStatusUpdate = ({
     try {
       console.log(`Attempting to update job ${jobId} status to ${newStatus}`);
       
-      // Update the job status
-      await updateJobApplication(jobId, { status: newStatus as any }, user.id);
+      // Update the job status and withdrawn field if needed
+      const updates: any = { status: newStatus as any };
+      
+      if (newStatus === 'Withdrawn') {
+        updates.withdrawn = true;
+      } else if (newStatus === 'Applied' && job) {
+        // When reactivating from withdrawn, set withdrawn to false
+        updates.withdrawn = false;
+      }
+      
+      await updateJobApplication(jobId, updates, user.id);
       console.log(`Successfully updated job ${jobId} status to ${newStatus}`);
       
       // Trigger celebration for job offers
