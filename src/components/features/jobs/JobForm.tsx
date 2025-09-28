@@ -35,7 +35,7 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
   const [urlInput, setUrlInput] = useState('');
   const [showFieldValidation, setShowFieldValidation] = useState(false);
   const [fieldValidation, setFieldValidation] = useState<Record<string, { value: string; confidence: number; needsManual: boolean }>>({});
-  const { showSuccess, showError } = useNotification();
+  const { showSuccess, showError, showInfo } = useNotification();
 
 
   useEffect(() => {
@@ -193,6 +193,9 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
     setIsExtracting(true);
     try {
       // Extract data without saving to backend first
+      // Show info notification about the extraction process
+      showInfo('Extracting Job Data', 'Analyzing the job posting...', 'This may take a few seconds depending on the website.');
+      
       const result = await automationBackendService.extractJobDataFromUrl(urlInput);
       
       if (result.success && result.data) {
@@ -203,25 +206,42 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
         
         showSuccess('Data Extracted!', 'Please review and confirm the extracted information');
       } else {
-        showError('Extraction Failed', result.error || 'Failed to extract job data');
-        // Offer manual entry option
+        // Provide more specific error messages based on the error type
+        let errorTitle = 'Extraction Failed';
+        let errorMessage = result.error || 'Failed to extract job data';
+        let errorDetails = 'You can still add the job manually by filling in the form below.';
+        
+        // Customize error message based on common failure types
+        if (result.error?.includes('Invalid URL format')) {
+          errorTitle = 'Invalid URL';
+          errorMessage = 'The URL format is not valid';
+          errorDetails = 'Please check the URL and try again with a valid job posting link.';
+        } else if (result.error?.includes('Failed to fetch')) {
+          errorTitle = 'Network Error';
+          errorMessage = 'Unable to access the job posting';
+          errorDetails = 'The website may be blocking automated access or the URL may be incorrect.';
+        } else if (result.error?.includes('CORS')) {
+          errorTitle = 'Access Restricted';
+          errorMessage = 'Cannot access this job posting';
+          errorDetails = 'The website blocks automated access. You can still add the job manually.';
+        }
+        
+        showError(errorTitle, errorMessage, errorDetails);
+        
+        // Automatically add URL to form for manual entry
         if (urlInput.trim()) {
-          const shouldAddManually = window.confirm(
-            'Automatic extraction failed. Would you like to add the URL manually and fill in the job details yourself?'
-          );
-          if (shouldAddManually) {
-            setFormData(prev => ({
-              ...prev,
-              job_url: urlInput
-            }));
-            setUrlInput('');
-            showSuccess('URL Added', 'Job URL has been added to the form. Please fill in the remaining details manually.');
-          }
+          setFormData(prev => ({
+            ...prev,
+            job_url: urlInput
+          }));
+          setUrlInput('');
+          showInfo('Manual Entry Available', 'Job URL has been added to the form. Please fill in the remaining details manually.', 'The URL has been automatically added to the Job URL field below.');
         }
       }
     } catch (error) {
       console.error('Error extracting job:', error);
-      showError('Extraction Error', 'An error occurred while extracting job data');
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      showError('Extraction Error', 'An error occurred while extracting job data', `Technical details: ${errorMessage}`);
     } finally {
       setIsExtracting(false);
     }
