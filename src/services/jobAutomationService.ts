@@ -97,7 +97,7 @@ export class JobAutomationService {
   }
 
   /**
-   * Extract job data from a URL
+   * Extract job data from a URL using universal approach
    */
   async extractJobFromUrl(url: string): Promise<JobExtractionResult> {
     try {
@@ -111,21 +111,24 @@ export class JobAutomationService {
         };
       }
 
-      // Get the domain to determine the portal
+      // Try universal extraction first
+      const universalResult = await this.extractJobDataUniversal(url);
+      
+      if (universalResult.success) {
+        return universalResult;
+      }
+
+      // Fallback to specific portal extraction
       const domain = this.extractDomain(url);
       const portalConfig = this.getPortalConfig(domain);
       
-      if (!portalConfig) {
-        return {
-          success: false,
-          error: 'Unsupported job portal'
-        };
+      if (portalConfig) {
+        const extractionResult = await this.extractJobData(url, portalConfig);
+        return extractionResult;
       }
 
-      // Extract data using the appropriate method
-      const extractionResult = await this.extractJobData(url, portalConfig);
-      
-      return extractionResult;
+      // If no specific portal config, try generic extraction
+      return await this.extractJobDataGeneric(url);
     } catch (error) {
       console.error('Error extracting job from URL:', error);
       return {
@@ -559,6 +562,188 @@ export class JobAutomationService {
     });
     
     return score / fields.length;
+  }
+
+  /**
+   * Universal job data extraction that works with any job page
+   */
+  private async extractJobDataUniversal(url: string): Promise<JobExtractionResult> {
+    try {
+      console.log('Trying universal extraction for:', url);
+      
+      // Use a different approach - try to get page title and meta data
+      const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch page: ${response.status}`);
+      }
+      
+      const html = await response.text();
+      
+      // Extract basic information from page title and meta tags
+      const jobData = this.extractBasicJobInfo(html, url);
+      
+      if (jobData.company || jobData.position) {
+        return {
+          success: true,
+          data: jobData,
+          confidence: 0.6 // Medium confidence for basic extraction
+        };
+      }
+      
+      return {
+        success: false,
+        error: 'Could not extract basic job information'
+      };
+    } catch (error) {
+      console.error('Universal extraction failed:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Universal extraction failed'
+      };
+    }
+  }
+
+  /**
+   * Generic job data extraction for any job page
+   */
+  private async extractJobDataGeneric(url: string): Promise<JobExtractionResult> {
+    try {
+      console.log('Trying generic extraction for:', url);
+      
+      const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch page: ${response.status}`);
+      }
+      
+      const html = await response.text();
+      
+      // Use enhanced generic extraction
+      const jobData = this.extractGenericJobData(html);
+      
+      // Also try to extract from URL patterns
+      const urlData = this.extractFromUrlPatterns(url);
+      
+      // Merge the data
+      const mergedData = {
+        ...jobData,
+        ...urlData,
+        job_url: url
+      };
+      
+      if (mergedData.company || mergedData.position) {
+        return {
+          success: true,
+          data: mergedData,
+          confidence: 0.5 // Lower confidence for generic extraction
+        };
+      }
+      
+      return {
+        success: false,
+        error: 'Could not extract job information from this page'
+      };
+    } catch (error) {
+      console.error('Generic extraction failed:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Generic extraction failed'
+      };
+    }
+  }
+
+  /**
+   * Extract basic job info from page title and meta tags
+   */
+  private extractBasicJobInfo(html: string, url: string): Partial<CreateJobApplication> {
+    const jobData: Partial<CreateJobApplication> = {};
+    
+    // Extract from page title
+    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    if (titleMatch && titleMatch[1]) {
+      const title = titleMatch[1].trim();
+      
+      // Try to parse company and position from title
+      const titleParts = title.split(/[-|–|at|@]/);
+      if (titleParts.length >= 2) {
+        jobData.position = titleParts[0].trim();
+        jobData.company = titleParts[1].trim();
+      } else {
+        // If we can't split, use the whole title as position
+        jobData.position = title;
+      }
+    }
+    
+    // Extract from meta description
+    const metaMatch = html.match(/<meta[^>]*name="description"[^>]*content="([^"]*)"[^>]*>/i);
+    if (metaMatch && metaMatch[1]) {
+      jobData.notes = metaMatch[1].trim().substring(0, 500);
+    }
+    
+    // Extract from Open Graph tags
+    const ogTitleMatch = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]*)"[^>]*>/i);
+    if (ogTitleMatch && ogTitleMatch[1] && !jobData.position) {
+      jobData.position = ogTitleMatch[1].trim();
+    }
+    
+    const ogDescriptionMatch = html.match(/<meta[^>]*property="og:description"[^>]*content="([^"]*)"[^>]*>/i);
+    if (ogDescriptionMatch && ogDescriptionMatch[1] && !jobData.notes) {
+      jobData.notes = ogDescriptionMatch[1].trim().substring(0, 500);
+    }
+    
+    return jobData;
+  }
+
+  /**
+   * Extract job info from URL patterns
+   */
+  private extractFromUrlPatterns(url: string): Partial<CreateJobApplication> {
+    const jobData: Partial<CreateJobApplication> = {};
+    
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      const hostname = urlObj.hostname;
+      
+      // Extract company from hostname
+      if (hostname.includes('greenhouse.io')) {
+        const parts = hostname.split('.');
+        if (parts.length > 0) {
+          jobData.company = parts[0].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+      } else if (hostname.includes('lever.co')) {
+        const parts = hostname.split('.');
+        if (parts.length > 0) {
+          jobData.company = parts[0].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+      } else if (hostname.includes('workday.com')) {
+        // Extract from subdomain
+        const subdomain = hostname.split('.')[0];
+        jobData.company = subdomain.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      }
+      
+      // Extract position from URL path
+      const pathParts = pathname.split('/').filter(part => part.length > 0);
+      if (pathParts.length > 0) {
+        const lastPart = pathParts[pathParts.length - 1];
+        // If it looks like a job title (contains common job words)
+        if (lastPart.includes('-') && (
+          lastPart.toLowerCase().includes('engineer') ||
+          lastPart.toLowerCase().includes('developer') ||
+          lastPart.toLowerCase().includes('manager') ||
+          lastPart.toLowerCase().includes('analyst') ||
+          lastPart.toLowerCase().includes('specialist')
+        )) {
+          jobData.position = lastPart.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error extracting from URL patterns:', error);
+    }
+    
+    return jobData;
   }
 }
 

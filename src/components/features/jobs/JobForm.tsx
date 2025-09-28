@@ -132,6 +132,20 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
         showSuccess('Data Extracted!', 'Please review and confirm the extracted information');
       } else {
         showError('Extraction Failed', result.error || 'Failed to extract job data');
+        // Offer manual entry option
+        if (urlInput.trim()) {
+          const shouldAddManually = window.confirm(
+            'Automatic extraction failed. Would you like to add the URL manually and fill in the job details yourself?'
+          );
+          if (shouldAddManually) {
+            setFormData(prev => ({
+              ...prev,
+              job_url: urlInput
+            }));
+            setUrlInput('');
+            showSuccess('URL Added', 'Job URL has been added to the form. Please fill in the remaining details manually.');
+          }
+        }
       }
     } catch (error) {
       console.error('Error extracting job:', error);
@@ -264,15 +278,15 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                   <Zap className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-white">Auto-Extract Job Data</h4>
-                  <p className="text-sm text-gray-400">Extract job information from any job listing URL</p>
+                  <h4 className="text-lg font-semibold text-white">Quick Job Entry</h4>
+                  <p className="text-sm text-gray-400">Try auto-extraction or add manually</p>
                 </div>
               </div>
               
               <div className="space-y-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Job Posting URL
+                    Job Posting URL (Optional)
                   </label>
                   <div className="flex space-x-2">
                     <input
@@ -293,15 +307,41 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                       ) : (
                         <Globe className="w-4 h-4" />
                       )}
-                      <span>{isExtracting ? 'Extracting...' : 'Extract'}</span>
+                      <span>{isExtracting ? 'Extracting...' : 'Try Extract'}</span>
                     </button>
                   </div>
+                </div>
+                
+                <div className="flex items-center space-x-4">
+                  <div className="flex-1 h-px bg-gray-600"></div>
+                  <span className="text-xs text-gray-400">OR</span>
+                  <div className="flex-1 h-px bg-gray-600"></div>
+                </div>
+                
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (urlInput.trim()) {
+                        setFormData(prev => ({
+                          ...prev,
+                          job_url: urlInput
+                        }));
+                        setUrlInput('');
+                        showSuccess('URL Added', 'Job URL added to form. Please fill in the job details below.');
+                      }
+                    }}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2 mx-auto"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>Add URL & Fill Manually</span>
+                  </button>
                 </div>
               </div>
 
               <div className="mt-4 pt-4 border-t border-gray-700">
                 <p className="text-xs text-gray-400">
-                  Works with any job listing page - LinkedIn, Indeed, Glassdoor, company websites, and more
+                  💡 Tip: If auto-extraction doesn't work, just add the URL and fill in the job details manually below
                 </p>
               </div>
             </div>
