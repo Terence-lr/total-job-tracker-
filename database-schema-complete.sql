@@ -36,3 +36,5 @@ CREATE POLICY "Users can insert own profile" ON user_profiles
 GRANT USAGE ON SCHEMA public TO authenticated;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated;
+
+

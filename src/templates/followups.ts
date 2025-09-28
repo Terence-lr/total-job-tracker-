@@ -56,3 +56,4 @@ Best regards,
 export type FollowUpType = keyof typeof followUpTemplates;
 
 
+

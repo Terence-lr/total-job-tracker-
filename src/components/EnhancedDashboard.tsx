@@ -35,6 +35,7 @@ const EnhancedDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showJobForm, setShowJobForm] = useState(false);
   const [editingJob, setEditingJob] = useState<JobApplication | null>(null);
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<JobFiltersType>({});

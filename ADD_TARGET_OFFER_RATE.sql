@@ -34,3 +34,5 @@ SELECT id, email, target_offer_rate, created_at
 FROM profiles 
 ORDER BY created_at DESC 
 LIMIT 5;
+
+

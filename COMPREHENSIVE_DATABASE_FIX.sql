@@ -185,3 +185,5 @@ ORDER BY ordinal_position;
 -- Step 9: Test with a sample job creation (optional)
 -- This will help verify everything works
 SELECT 'Database schema verification complete' as status;
+
+

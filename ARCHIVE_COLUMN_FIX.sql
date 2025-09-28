@@ -33,3 +33,5 @@ SELECT id, company, position, archived, created_at
 FROM jobs 
 ORDER BY created_at DESC 
 LIMIT 5;
+
+

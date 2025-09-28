@@ -73,3 +73,5 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated;
 -- WHERE table_name = 'jobs' 
 -- ORDER BY ordinal_position;
 
+
+

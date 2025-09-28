@@ -127,3 +127,5 @@ If the issue persists after following these steps:
 1. Check Supabase logs for specific error messages
 2. Verify all database scripts have been run successfully
 3. Test with a fresh job application to isolate the issue
+
+

@@ -113,3 +113,5 @@ WHERE table_name = 'job_offers' AND column_name = 'original_job_id';
 -- Step 7: Test the trigger with a sample update (optional)
 -- UPDATE jobs SET status = 'Offer' WHERE id = (SELECT id FROM jobs LIMIT 1);
 -- SELECT * FROM job_offers WHERE original_job_id = (SELECT id FROM jobs LIMIT 1);
+
+

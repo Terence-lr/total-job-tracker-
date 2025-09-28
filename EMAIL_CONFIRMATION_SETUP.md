@@ -152,3 +152,5 @@ If you're still experiencing issues:
 4. Check that your domain is properly configured in Supabase
 
 The email confirmation flow should now work seamlessly with proper user feedback and error handling!
+
+

@@ -202,3 +202,5 @@ WHERE table_name = 'job_offers' AND column_name = 'original_job_id';
 
 -- Step 16: Check if we have any jobs data
 SELECT COUNT(*) as total_jobs FROM jobs;
+
+
