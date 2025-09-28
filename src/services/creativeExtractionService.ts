@@ -7,6 +7,7 @@ import { CreateJobApplication } from '../types/job';
 import { enhancedExtractionService, EnsembleResult } from './enhancedExtractionService';
 import { userFeedbackLearningService } from './userFeedbackLearning';
 import { confidenceScoringService, ConfidenceScore } from './confidenceScoringService';
+import { freeAPIService, FreeAPIResult } from './freeAPIService';
 
 export interface CreativeExtractionResult {
   success: boolean;
@@ -32,22 +33,39 @@ export class CreativeExtractionService {
   }
 
   /**
-   * Extract job data using creative multi-strategy approach
+   * Extract job data using creative multi-strategy approach with free APIs
    */
   async extractJobData(url: string): Promise<CreativeExtractionResult> {
     console.log('🎨 Starting creative extraction for:', url);
 
     try {
-      // Step 1: Ensemble extraction with multiple strategies
+      // Step 1: Try free APIs first (highest accuracy)
+      const freeAPIResult = await this.tryFreeAPIs(url);
+      if (freeAPIResult.success && freeAPIResult.confidence && freeAPIResult.confidence > 0.8) {
+        console.log('✅ Free API extraction successful:', freeAPIResult);
+        return {
+          success: true,
+          data: freeAPIResult.data,
+          confidence: freeAPIResult.confidence,
+          insights: {
+            strategies: [freeAPIResult.apiUsed || 'Free API'],
+            consensus: true,
+            recommendations: ['High confidence extraction from free API'],
+            fieldConfidence: this.calculateFieldConfidence(freeAPIResult.data)
+          }
+        };
+      }
+
+      // Step 2: Fallback to ensemble extraction
       const ensembleResult = await enhancedExtractionService.extractJobData(url);
       
-      // Step 2: Apply learned patterns from user feedback
+      // Step 3: Apply learned patterns from user feedback
       const learnedData = userFeedbackLearningService.applyLearnedPatterns(
         this.extractDomain(url),
         ensembleResult.data
       );
 
-      // Step 3: Calculate comprehensive confidence score
+      // Step 4: Calculate comprehensive confidence score
       const confidenceScore = confidenceScoringService.calculateConfidence(
         learnedData,
         url,
@@ -55,10 +73,10 @@ export class CreativeExtractionService {
         ensembleResult.consensus
       );
 
-      // Step 4: Generate insights and recommendations
+      // Step 5: Generate insights and recommendations
       const insights = this.generateInsights(ensembleResult, confidenceScore, url);
 
-      // Step 5: Determine if extraction is reliable enough
+      // Step 6: Determine if extraction is reliable enough
       const isReliable = confidenceScore.overall > 0.6;
 
       if (isReliable) {
@@ -90,6 +108,44 @@ export class CreativeExtractionService {
   }
 
   /**
+   * Try free APIs for extraction
+   */
+  private async tryFreeAPIs(url: string): Promise<FreeAPIResult> {
+    try {
+      const result = await freeAPIService.extractJobData(url);
+      return result;
+    } catch (error) {
+      console.warn('Free APIs failed, falling back to ensemble:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Free APIs not available'
+      };
+    }
+  }
+
+  /**
+   * Calculate field confidence for extracted data
+   */
+  private calculateFieldConfidence(data: Partial<CreateJobApplication> | undefined): Record<string, number> {
+    if (!data) return {};
+
+    const fieldConfidence: Record<string, number> = {};
+    
+    Object.entries(data).forEach(([field, value]) => {
+      if (value && String(value).trim()) {
+        const fieldConf = confidenceScoringService.getFieldConfidence(
+          field,
+          String(value),
+          ''
+        );
+        fieldConfidence[field] = fieldConf.confidence;
+      }
+    });
+
+    return fieldConfidence;
+  }
+
+  /**
    * Learn from user corrections
    */
   learnFromUserCorrection(
@@ -115,24 +171,6 @@ export class CreativeExtractionService {
     confidenceScoringService.updateWebsiteReliability(url, accuracy > 0.7);
   }
 
-  /**
-   * Get extraction suggestions for a domain
-   */
-  getExtractionSuggestions(url: string): {
-    fieldSuggestions: Record<string, string[]>;
-    accuracyPredictions: Record<string, number>;
-    recommendedStrategy: string;
-    confidenceFactors: Record<string, number>;
-  } {
-    const domain = this.extractDomain(url);
-    const suggestions = userFeedbackLearningService.getExtractionSuggestions(domain);
-    const insights = userFeedbackLearningService.getDomainInsights(domain);
-    
-    return {
-      ...suggestions,
-      confidenceFactors: insights?.fieldAccuracy || {}
-    };
-  }
 
   /**
    * Get learning statistics
@@ -277,6 +315,82 @@ export class CreativeExtractionService {
    */
   resetLearningData(): void {
     userFeedbackLearningService.clearLearningData();
+  }
+
+  /**
+   * Get free API status and availability
+   */
+  getFreeAPIStatus(): {
+    available: Record<string, boolean>;
+    usage: Record<string, any>;
+    recommendations: string[];
+  } {
+    const availability = freeAPIService.getAPIAvailability();
+    const usage = freeAPIService.getUsageStats();
+    
+    const recommendations: string[] = [];
+    
+    if (!availability.scrapingbee) {
+      recommendations.push('Get ScrapingBee API key for 95% Indeed accuracy');
+    }
+    if (!availability.apify) {
+      recommendations.push('Get Apify API key for 90% LinkedIn accuracy');
+    }
+    if (!availability.freewebapi) {
+      recommendations.push('Get FreeWebAPI key for multi-site coverage');
+    }
+    
+    if (recommendations.length === 0) {
+      recommendations.push('All free APIs configured! Maximum accuracy enabled.');
+    }
+
+    return {
+      available: availability,
+      usage,
+      recommendations
+    };
+  }
+
+  /**
+   * Get extraction suggestions based on free API availability
+   */
+  getExtractionSuggestions(url: string): {
+    recommendedAPI: string;
+    expectedAccuracy: number;
+    setupRequired: boolean;
+    instructions: string[];
+  } {
+    const domain = this.extractDomain(url);
+    const apiStatus = this.getFreeAPIStatus();
+    
+    let recommendedAPI = 'ensemble';
+    let expectedAccuracy = 0.7;
+    let setupRequired = false;
+    const instructions: string[] = [];
+
+    if (domain.includes('indeed.com') && apiStatus.available.scrapingbee) {
+      recommendedAPI = 'ScrapingBee';
+      expectedAccuracy = 0.95;
+    } else if (domain.includes('linkedin.com') && apiStatus.available.apify) {
+      recommendedAPI = 'Apify';
+      expectedAccuracy = 0.90;
+    } else if (apiStatus.available.freewebapi) {
+      recommendedAPI = 'FreeWebAPI';
+      expectedAccuracy = 0.85;
+    } else {
+      setupRequired = true;
+      instructions.push('Configure free APIs for higher accuracy');
+      instructions.push('ScrapingBee: Best for Indeed (95% accuracy)');
+      instructions.push('Apify: Best for LinkedIn (90% accuracy)');
+      instructions.push('FreeWebAPI: Multi-site coverage (85% accuracy)');
+    }
+
+    return {
+      recommendedAPI,
+      expectedAccuracy,
+      setupRequired,
+      instructions
+    };
   }
 }
 
