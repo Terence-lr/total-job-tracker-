@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PartyPopper, Trophy, Star, Gift } from 'lucide-react';
+import { useCelebrationSound } from '../../../hooks/useCelebrationSound';
 
 interface OfferCelebrationProps {
   isVisible: boolean;
@@ -16,17 +17,20 @@ const OfferCelebration: React.FC<OfferCelebrationProps> = ({
   position
 }) => {
   const [showConfetti, setShowConfetti] = useState(false);
+  const { playCelebrationSound } = useCelebrationSound();
 
   useEffect(() => {
     if (isVisible) {
       setShowConfetti(true);
+      // Play celebration sound
+      playCelebrationSound();
       // Auto close after 8 seconds
       const timer = setTimeout(() => {
         onClose();
       }, 8000);
       return () => clearTimeout(timer);
     }
-  }, [isVisible, onClose]);
+  }, [isVisible, onClose, playCelebrationSound]);
 
   if (!isVisible) return null;
 
