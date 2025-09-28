@@ -93,11 +93,21 @@ export const getJobsWithFilters = async (
     query = query.lte('date_applied', filters.dateTo);
   }
 
-  // Search filtering (company, position, notes)
+  // Enhanced search filtering
   if (filters.search) {
     query = query.or(
-      `company.ilike.%${filters.search}%,position.ilike.%${filters.search}%,notes.ilike.%${filters.search}%`
+      `company.ilike.%${filters.search}%,position.ilike.%${filters.search}%,notes.ilike.%${filters.search}%,job_description.ilike.%${filters.search}%`
     );
+  }
+
+  // Company-specific search
+  if (filters.companySearch) {
+    query = query.ilike('company', `%${filters.companySearch}%`);
+  }
+
+  // Position-specific search
+  if (filters.positionSearch) {
+    query = query.ilike('position', `%${filters.positionSearch}%`);
   }
 
   // Salary range filtering

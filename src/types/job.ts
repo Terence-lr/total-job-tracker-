@@ -45,6 +45,8 @@ export interface UpdateJobApplication extends Partial<CreateJobApplication> {
 export interface JobFilters {
   status?: JobStatus | JobStatus[];
   search?: string;
+  companySearch?: string;
+  positionSearch?: string;
   dateFrom?: string;
   dateTo?: string;
   minSalary?: number;

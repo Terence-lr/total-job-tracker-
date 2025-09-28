@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { JobFilters as JobFiltersType, JobStatus } from '../../../types/job';
+import { JobFilters as JobFiltersType, JobStatus, JobApplication } from '../../../types/job';
 import { Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import SearchSuggestions from './SearchSuggestions';
 
 interface JobFiltersProps {
   filters: JobFiltersType;
   onFiltersChange: (filters: JobFiltersType) => void;
   onClearFilters: () => void;
+  jobs?: JobApplication[];
 }
 
-const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onClearFilters }) => {
+const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onClearFilters, jobs = [] }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [searchType, setSearchType] = useState<'all' | 'company' | 'position' | 'notes'>('all');
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const statusOptions: JobStatus[] = ['Applied', 'Interview', 'Offer', 'Rejected', 'Withdrawn'];
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,6 +21,42 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
       ...filters,
       search: e.target.value
     });
+  };
+
+  const handleCompanySearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onFiltersChange({
+      ...filters,
+      companySearch: e.target.value
+    });
+  };
+
+  const handlePositionSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onFiltersChange({
+      ...filters,
+      positionSearch: e.target.value
+    });
+  };
+
+  const handleSearchTypeChange = (type: 'all' | 'company' | 'position' | 'notes') => {
+    setSearchType(type);
+    // Clear search when switching types
+    onFiltersChange({
+      ...filters,
+      search: '',
+      companySearch: '',
+      positionSearch: ''
+    });
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    if (searchType === 'company') {
+      onFiltersChange({ ...filters, companySearch: suggestion });
+    } else if (searchType === 'position') {
+      onFiltersChange({ ...filters, positionSearch: suggestion });
+    } else {
+      onFiltersChange({ ...filters, search: suggestion });
+    }
+    setShowSuggestions(false);
   };
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -40,7 +80,7 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
     });
   };
 
-  const hasActiveFilters = filters.search || filters.status || filters.dateFrom || filters.dateTo;
+  const hasActiveFilters = filters.search || filters.companySearch || filters.positionSearch || filters.status || filters.dateFrom || filters.dateTo;
 
   return (
     <div>
@@ -65,20 +105,82 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
       </div>
 
       <div className={`filters-grid ${isExpanded ? 'block' : 'hidden md:grid'}`}>
-        {/* Search */}
+        {/* Enhanced Search */}
         <div className="form-group">
           <label htmlFor="search">Search</label>
-          <div className="input">
+          <div className="input relative">
             <span className="input__icon">🔎</span>
             <input
               type="text"
               id="search"
               value={filters.search || ''}
               onChange={handleSearchChange}
-              placeholder="Company, position, notes..."
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              placeholder="Search all fields..."
             />
+            {jobs.length > 0 && (
+              <SearchSuggestions
+                jobs={jobs}
+                searchType={searchType}
+                onSuggestionClick={handleSuggestionClick}
+                isVisible={showSuggestions && searchType === 'all'}
+              />
+            )}
           </div>
         </div>
+
+        {/* Search Type Selector */}
+        <div className="form-group">
+          <label htmlFor="searchType">Search Type</label>
+          <div className="input">
+            <span className="input__icon">🎯</span>
+            <select
+              id="searchType"
+              value={searchType}
+              onChange={(e) => handleSearchTypeChange(e.target.value as any)}
+            >
+              <option value="all">All Fields</option>
+              <option value="company">Company Only</option>
+              <option value="position">Position Only</option>
+              <option value="notes">Notes Only</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Company Search */}
+        {searchType === 'company' && (
+          <div className="form-group">
+            <label htmlFor="companySearch">Company Search</label>
+            <div className="input">
+              <span className="input__icon">🏢</span>
+              <input
+                type="text"
+                id="companySearch"
+                value={filters.companySearch || ''}
+                onChange={handleCompanySearchChange}
+                placeholder="Search companies..."
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Position Search */}
+        {searchType === 'position' && (
+          <div className="form-group">
+            <label htmlFor="positionSearch">Position Search</label>
+            <div className="input">
+              <span className="input__icon">💼</span>
+              <input
+                type="text"
+                id="positionSearch"
+                value={filters.positionSearch || ''}
+                onChange={handlePositionSearchChange}
+                placeholder="Search positions..."
+              />
+            </div>
+          </div>
+        )}
 
         {/* Status Filter */}
         <div className="form-group">
@@ -137,6 +239,16 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFiltersChange, onCle
             {filters.search && (
               <span className="status-pill status-applied">
                 Search: "{filters.search}"
+              </span>
+            )}
+            {filters.companySearch && (
+              <span className="status-pill status-interview">
+                Company: "{filters.companySearch}"
+              </span>
+            )}
+            {filters.positionSearch && (
+              <span className="status-pill status-offer">
+                Position: "{filters.positionSearch}"
               </span>
             )}
             {filters.status && (

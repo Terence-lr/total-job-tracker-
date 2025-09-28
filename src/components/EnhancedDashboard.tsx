@@ -112,12 +112,30 @@ const EnhancedDashboard: React.FC = () => {
   const applyFilters = useCallback(() => {
     let filtered = [...jobs];
 
+    // Enhanced search with multiple search types
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
       filtered = filtered.filter(job =>
         job.company.toLowerCase().includes(searchTerm) ||
         job.position.toLowerCase().includes(searchTerm) ||
-        (job.notes && job.notes.toLowerCase().includes(searchTerm))
+        (job.notes && job.notes.toLowerCase().includes(searchTerm)) ||
+        (job.job_description && job.job_description.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    // Company-specific search
+    if (filters.companySearch) {
+      const companyTerm = filters.companySearch.toLowerCase();
+      filtered = filtered.filter(job =>
+        job.company.toLowerCase().includes(companyTerm)
+      );
+    }
+
+    // Position-specific search
+    if (filters.positionSearch) {
+      const positionTerm = filters.positionSearch.toLowerCase();
+      filtered = filtered.filter(job =>
+        job.position.toLowerCase().includes(positionTerm)
       );
     }
 
@@ -361,6 +379,7 @@ const EnhancedDashboard: React.FC = () => {
               filters={filters}
               onFiltersChange={setFilters}
               onClearFilters={() => setFilters({})}
+              jobs={jobs}
             />
             
             {/* Show Archived Toggle */}
