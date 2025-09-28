@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { JobApplication, CreateJobApplication, JobStatus } from '../../../types/job';
-import { X, Calendar, DollarSign, Link as LinkIcon, FileText, Zap, Globe, Mail, Loader2 } from 'lucide-react';
+import { X, Calendar, DollarSign, Link as LinkIcon, FileText, Zap, Globe, Loader2, CheckCircle } from 'lucide-react';
 import Button from '../../ui/Button';
 import Select from '../../ui/Select';
 import { automationBackendService } from '../../../services/automationBackendService';
@@ -27,10 +27,10 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [automationType, setAutomationType] = useState<'url' | 'email' | null>(null);
   const [isExtracting, setIsExtracting] = useState(false);
   const [urlInput, setUrlInput] = useState('');
-  const [emailInput, setEmailInput] = useState('');
+  const [showFieldValidation, setShowFieldValidation] = useState(false);
+  const [fieldValidation, setFieldValidation] = useState<Record<string, { value: string; confidence: number; needsManual: boolean }>>({});
   const { showSuccess, showError } = useNotification();
 
 
@@ -120,11 +120,16 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
 
     setIsExtracting(true);
     try {
-      const result = await automationBackendService.extractAndSaveJobFromUrl(urlInput);
+      // Extract data without saving to backend first
+      const result = await automationBackendService.extractJobDataFromUrl(urlInput);
       
-      if (result.success) {
-        showSuccess('Job Extracted!', `Job extracted and saved successfully with ID: ${result.jobId}`);
-        onCancel(); // Close the form since job is already saved
+      if (result.success && result.data) {
+        // Analyze each field for confidence and validation
+        const fieldAnalysis = analyzeExtractedFields(result.data);
+        setFieldValidation(fieldAnalysis);
+        setShowFieldValidation(true);
+        
+        showSuccess('Data Extracted!', 'Please review and confirm the extracted information');
       } else {
         showError('Extraction Failed', result.error || 'Failed to extract job data');
       }
@@ -136,28 +141,100 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
     }
   };
 
-  const handleEmailExtraction = async () => {
-    if (!emailInput.trim()) {
-      showError('Email Content Required', 'Please enter email content');
-      return;
-    }
+  const analyzeExtractedFields = (data: Partial<CreateJobApplication>) => {
+    const analysis: Record<string, { value: string; confidence: number; needsManual: boolean }> = {};
+    
+    // Company analysis
+    const company = data.company || '';
+    analysis.company = {
+      value: company,
+      confidence: calculateConfidence(company, ['company', 'employer', 'organization']),
+      needsManual: company.length < 2 || calculateConfidence(company, ['company', 'employer', 'organization']) < 0.3
+    };
+    
+    // Position analysis
+    const position = data.position || '';
+    analysis.position = {
+      value: position,
+      confidence: calculateConfidence(position, ['position', 'title', 'role', 'job']),
+      needsManual: position.length < 2 || calculateConfidence(position, ['position', 'title', 'role', 'job']) < 0.3
+    };
+    
+    // Salary analysis
+    const salary = data.salary || '';
+    analysis.salary = {
+      value: salary,
+      confidence: calculateConfidence(salary, ['salary', 'compensation', 'pay', '$', '€', '£']),
+      needsManual: salary.length < 2 || calculateConfidence(salary, ['salary', 'compensation', 'pay', '$', '€', '£']) < 0.2
+    };
+    
+    // Notes/Description analysis
+    const notes = data.notes || '';
+    analysis.notes = {
+      value: notes,
+      confidence: calculateConfidence(notes, ['description', 'requirements', 'responsibilities', 'qualifications']),
+      needsManual: notes.length < 10 || calculateConfidence(notes, ['description', 'requirements', 'responsibilities', 'qualifications']) < 0.2
+    };
+    
+    return analysis;
+  };
 
-    setIsExtracting(true);
-    try {
-      const result = await automationBackendService.extractAndSaveJobFromEmail(emailInput);
-      
-      if (result.success) {
-        showSuccess('Job Extracted!', `Job extracted from email and saved successfully with ID: ${result.jobId}`);
-        onCancel(); // Close the form since job is already saved
-      } else {
-        showError('Extraction Failed', result.error || 'Failed to extract job data from email');
+  const calculateConfidence = (text: string, keywords: string[]): number => {
+    if (!text || text.length < 2) return 0;
+    
+    const lowerText = text.toLowerCase();
+    let score = 0;
+    
+    // Check for keyword matches
+    keywords.forEach(keyword => {
+      if (lowerText.includes(keyword.toLowerCase())) {
+        score += 0.3;
       }
-    } catch (error) {
-      console.error('Error extracting job from email:', error);
-      showError('Extraction Error', 'An error occurred while extracting job data');
-    } finally {
-      setIsExtracting(false);
+    });
+    
+    // Check for length appropriateness
+    if (text.length > 5 && text.length < 100) score += 0.2;
+    
+    // Check for common job-related patterns
+    if (lowerText.includes('engineer') || lowerText.includes('developer') || lowerText.includes('manager')) {
+      score += 0.2;
     }
+    
+    // Check for company indicators
+    if (lowerText.includes('inc') || lowerText.includes('corp') || lowerText.includes('llc') || lowerText.includes('ltd')) {
+      score += 0.2;
+    }
+    
+    return Math.min(score, 1);
+  };
+
+  const handleFieldValidation = () => {
+    // Update form data with validated fields
+    const updatedFormData = { ...formData };
+    
+    Object.entries(fieldValidation).forEach(([field, validation]) => {
+      if (validation.value && !validation.needsManual) {
+        if (field === 'company') updatedFormData.company = validation.value;
+        else if (field === 'position') updatedFormData.position = validation.value;
+        else if (field === 'salary') updatedFormData.salary = validation.value;
+        else if (field === 'notes') updatedFormData.notes = validation.value;
+      }
+    });
+    
+    setFormData(updatedFormData);
+    setShowFieldValidation(false);
+    showSuccess('Fields Updated', 'Validated fields have been added to the form');
+  };
+
+  const handleManualFieldInput = (field: string, value: string) => {
+    setFieldValidation(prev => ({
+      ...prev,
+      [field]: {
+        ...prev[field],
+        value,
+        needsManual: false
+      }
+    }));
   };
 
   const statusOptions: JobStatus[] = ['Applied', 'Interview', 'Offer', 'Rejected', 'Withdrawn'];
@@ -188,97 +265,110 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-white">Auto-Extract Job Data</h4>
-                  <p className="text-sm text-gray-400">Automatically fill the form from URL or email</p>
+                  <p className="text-sm text-gray-400">Extract job information from any job listing URL</p>
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  type="button"
-                  onClick={() => setAutomationType('url')}
-                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                >
-                  <Globe className="w-4 h-4" />
-                  <span>Extract from URL</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAutomationType('email')}
-                  className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-                >
-                  <Mail className="w-4 h-4" />
-                  <span>Extract from Email</span>
-                </button>
-              </div>
-
-              {/* URL Extraction */}
-              {automationType === 'url' && (
-                <div className="mt-4 space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Job Posting URL
-                    </label>
-                    <div className="flex space-x-2">
-                      <input
-                        type="url"
-                        value={urlInput}
-                        onChange={(e) => setUrlInput(e.target.value)}
-                        placeholder="https://linkedin.com/jobs/view/..."
-                        className="flex-1 px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleUrlExtraction}
-                        disabled={isExtracting || !urlInput.trim()}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
-                      >
-                        {isExtracting ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Globe className="w-4 h-4" />
-                        )}
-                        <span>{isExtracting ? 'Extracting...' : 'Extract'}</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Email Extraction */}
-              {automationType === 'email' && (
-                <div className="mt-4 space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Email Content
-                    </label>
-                    <textarea
-                      value={emailInput}
-                      onChange={(e) => setEmailInput(e.target.value)}
-                      placeholder="Paste job application email content here..."
-                      rows={4}
-                      className="w-full px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Job Posting URL
+                  </label>
+                  <div className="flex space-x-2">
+                    <input
+                      type="url"
+                      value={urlInput}
+                      onChange={(e) => setUrlInput(e.target.value)}
+                      placeholder="https://company.com/careers/job-posting..."
+                      className="flex-1 px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                     <button
                       type="button"
-                      onClick={handleEmailExtraction}
-                      disabled={isExtracting || !emailInput.trim()}
-                      className="w-full mt-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+                      onClick={handleUrlExtraction}
+                      disabled={isExtracting || !urlInput.trim()}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
                     >
                       {isExtracting ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
-                        <Mail className="w-4 h-4" />
+                        <Globe className="w-4 h-4" />
                       )}
-                      <span>{isExtracting ? 'Extracting...' : 'Extract from Email'}</span>
+                      <span>{isExtracting ? 'Extracting...' : 'Extract'}</span>
                     </button>
                   </div>
                 </div>
-              )}
+              </div>
 
               <div className="mt-4 pt-4 border-t border-gray-700">
                 <p className="text-xs text-gray-400">
-                  Supported platforms: LinkedIn, Indeed, Glassdoor, AngelList, Remote.co
+                  Works with any job listing page - LinkedIn, Indeed, Glassdoor, company websites, and more
                 </p>
+              </div>
+            </div>
+          )}
+
+          {/* Field Validation Section */}
+          {showFieldValidation && (
+            <div className="mb-6 p-4 bg-gradient-to-r from-green-900/20 to-blue-900/20 rounded-xl border border-green-500/30">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="p-2 bg-green-500/20 rounded-lg">
+                  <CheckCircle className="w-5 h-5 text-green-400" />
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-white">Review Extracted Data</h4>
+                  <p className="text-sm text-gray-400">Please review and confirm the extracted information</p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                {Object.entries(fieldValidation).map(([field, validation]) => (
+                  <div key={field} className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-300 capitalize">
+                      {field} {validation.needsManual && <span className="text-red-400">(Manual input required)</span>}
+                    </label>
+                    <div className="flex space-x-2">
+                      <input
+                        type="text"
+                        value={validation.value}
+                        onChange={(e) => handleManualFieldInput(field, e.target.value)}
+                        className={`flex-1 px-3 py-2 bg-gray-800 text-white border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent ${
+                          validation.needsManual 
+                            ? 'border-red-500 focus:ring-red-500' 
+                            : validation.confidence > 0.7 
+                              ? 'border-green-500 focus:ring-green-500'
+                              : 'border-yellow-500 focus:ring-yellow-500'
+                        }`}
+                        placeholder={`Enter ${field}...`}
+                      />
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${
+                          validation.confidence > 0.7 ? 'bg-green-500' : 
+                          validation.confidence > 0.4 ? 'bg-yellow-500' : 'bg-red-500'
+                        }`} />
+                        <span className="text-xs text-gray-400">
+                          {Math.round(validation.confidence * 100)}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                <div className="flex space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleFieldValidation}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    Use These Fields
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowFieldValidation(false)}
+                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
           )}

@@ -20,6 +20,47 @@ export class AutomationBackendService {
   }
 
   /**
+   * Extract job data from URL without saving to backend
+   */
+  async extractJobDataFromUrl(url: string): Promise<{
+    success: boolean;
+    data?: Partial<CreateJobApplication>;
+    error?: string;
+    confidence?: number;
+  }> {
+    try {
+      console.log('🔍 Starting URL job extraction:', url);
+      
+      // Validate URL
+      if (!this.isValidUrl(url)) {
+        throw new Error('Invalid URL format');
+      }
+
+      // Extract job data using the automation service
+      const extractionResult = await jobAutomationService.extractJobFromUrl(url);
+      
+      if (!extractionResult.success || !extractionResult.data) {
+        throw new Error(extractionResult.error || 'Failed to extract job data');
+      }
+
+      console.log('✅ Job data extracted successfully');
+      
+      return {
+        success: true,
+        data: extractionResult.data,
+        confidence: extractionResult.confidence
+      };
+
+    } catch (error) {
+      console.error('❌ Error in URL job extraction:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred'
+      };
+    }
+  }
+
+  /**
    * Extract job from URL and save to backend
    */
   async extractAndSaveJobFromUrl(url: string): Promise<{

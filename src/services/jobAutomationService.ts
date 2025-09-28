@@ -389,17 +389,23 @@ export class JobAutomationService {
   private parseHtmlWithSelectors(html: string, selectors: JobPortalConfig['selectors']): Partial<CreateJobApplication> {
     const jobData: Partial<CreateJobApplication> = {};
     
-    // Create a simple HTML parser (in a real implementation, you'd use a proper DOM parser)
+    // Enhanced HTML parsing with multiple strategies
     const extractText = (selector: string, html: string): string | null => {
-      // Simple regex-based extraction (in production, use a proper HTML parser)
-      const patterns = {
-        title: /<h1[^>]*>([^<]+)<\/h1>/gi,
-        company: /<[^>]*class="[^"]*company[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
-        description: /<div[^>]*class="[^"]*description[^"]*"[^>]*>([^<]+)<\/div>/gi
-      };
+      // Strategy 1: Try CSS selector patterns
+      const cssPatterns = [
+        new RegExp(`<[^>]*class="[^"]*${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^"]*"[^>]*>([^<]+)<\/[^>]*>`, 'gi'),
+        new RegExp(`<[^>]*id="[^"]*${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^"]*"[^>]*>([^<]+)<\/[^>]*>`, 'gi')
+      ];
       
-      // This is a simplified version - in production, use a proper HTML parser
-      return null;
+      for (const pattern of cssPatterns) {
+        const match = html.match(pattern);
+        if (match && match[1] && match[1].trim().length > 0) {
+          return match[1].trim();
+        }
+      }
+      
+      // Strategy 2: Generic content extraction
+      return this.extractGenericContent(html, selector);
     };
     
     // Extract data using selectors
@@ -426,6 +432,117 @@ export class JobAutomationService {
     if (selectors.salary) {
       const salary = extractText(selectors.salary, html);
       if (salary) jobData.salary = salary.trim();
+    }
+    
+    // Fallback: Try generic extraction if specific selectors didn't work
+    if (!jobData.company || !jobData.position) {
+      const genericData = this.extractGenericJobData(html);
+      if (!jobData.company && genericData.company) jobData.company = genericData.company;
+      if (!jobData.position && genericData.position) jobData.position = genericData.position;
+      if (!jobData.notes && genericData.notes) jobData.notes = genericData.notes;
+      if (!jobData.salary && genericData.salary) jobData.salary = genericData.salary;
+    }
+    
+    return jobData;
+  }
+
+  private extractGenericContent(html: string, fieldType: string): string | null {
+    // Remove script and style tags
+    const cleanHtml = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+                          .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+    
+    // Common patterns for different field types
+    const patterns = {
+      title: [
+        /<h1[^>]*>([^<]+)<\/h1>/gi,
+        /<h2[^>]*>([^<]+)<\/h2>/gi,
+        /<title[^>]*>([^<]+)<\/title>/gi,
+        /<[^>]*class="[^"]*title[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+        /<[^>]*class="[^"]*job-title[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi
+      ],
+      company: [
+        /<[^>]*class="[^"]*company[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+        /<[^>]*class="[^"]*employer[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+        /<[^>]*class="[^"]*organization[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+        /<[^>]*class="[^"]*brand[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi
+      ],
+      description: [
+        /<[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/[^>]*>/gi,
+        /<[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)<\/[^>]*>/gi,
+        /<[^>]*class="[^"]*job-description[^"]*"[^>]*>([\s\S]*?)<\/[^>]*>/gi
+      ],
+      salary: [
+        /<[^>]*class="[^"]*salary[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+        /<[^>]*class="[^"]*compensation[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+        /<[^>]*class="[^"]*pay[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+        /\$[\d,]+(?:k|K)?(?:\s*-\s*\$[\d,]+(?:k|K)?)?/g
+      ]
+    };
+    
+    const fieldPatterns = patterns[fieldType as keyof typeof patterns] || [];
+    
+    for (const pattern of fieldPatterns) {
+      const match = cleanHtml.match(pattern);
+      if (match && match[1] && match[1].trim().length > 0) {
+        return match[1].trim();
+      }
+    }
+    
+    return null;
+  }
+
+  private extractGenericJobData(html: string): Partial<CreateJobApplication> {
+    const jobData: Partial<CreateJobApplication> = {};
+    
+    // Extract title from various sources
+    const titlePatterns = [
+      /<h1[^>]*>([^<]+)<\/h1>/gi,
+      /<h2[^>]*>([^<]+)<\/h2>/gi,
+      /<title[^>]*>([^<]+)<\/title>/gi
+    ];
+    
+    for (const pattern of titlePatterns) {
+      const match = html.match(pattern);
+      if (match && match[1] && match[1].trim().length > 2) {
+        jobData.position = match[1].trim();
+        break;
+      }
+    }
+    
+    // Extract company from various sources
+    const companyPatterns = [
+      /<[^>]*class="[^"]*company[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*employer[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*brand[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi
+    ];
+    
+    for (const pattern of companyPatterns) {
+      const match = html.match(pattern);
+      if (match && match[1] && match[1].trim().length > 2) {
+        jobData.company = match[1].trim();
+        break;
+      }
+    }
+    
+    // Extract description
+    const descPatterns = [
+      /<[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)<\/[^>]*>/gi
+    ];
+    
+    for (const pattern of descPatterns) {
+      const match = html.match(pattern);
+      if (match && match[1] && match[1].trim().length > 10) {
+        jobData.notes = match[1].trim().substring(0, 1000); // Limit length
+        break;
+      }
+    }
+    
+    // Extract salary
+    const salaryPattern = /\$[\d,]+(?:k|K)?(?:\s*-\s*\$[\d,]+(?:k|K)?)?/g;
+    const salaryMatch = html.match(salaryPattern);
+    if (salaryMatch && salaryMatch[0]) {
+      jobData.salary = salaryMatch[0];
     }
     
     return jobData;
