@@ -4,6 +4,7 @@ import { X, Calendar, DollarSign, Link as LinkIcon, FileText, Zap, Globe, Loader
 import Button from '../../ui/Button';
 import Select from '../../ui/Select';
 import { automationBackendService } from '../../../services/automationBackendService';
+import { creativeExtractionService } from '../../../services/creativeExtractionService';
 import { useNotification } from '../../../contexts/NotificationContext';
 
 interface JobFormProps {
@@ -247,6 +248,69 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
     }
   };
 
+  const handleCreativeExtraction = async () => {
+    if (!urlInput.trim()) {
+      showError('URL Required', 'Please enter a job posting URL');
+      return;
+    }
+
+    setIsExtracting(true);
+    try {
+      // Show info notification about the creative extraction process
+      showInfo('🎨 Creative AI Extraction', 'Using multiple AI strategies for maximum accuracy...', 'This advanced extraction may take a bit longer but provides higher accuracy.');
+      
+      const result = await creativeExtractionService.extractJobData(urlInput);
+      
+      if (result.success && result.data) {
+        // Analyze each field for confidence and validation
+        const fieldAnalysis = analyzeExtractedFields(result.data);
+        setFieldValidation(fieldAnalysis);
+        setShowFieldValidation(true);
+        
+        const confidenceMessage = result.confidence ? 
+          `Confidence: ${Math.round(result.confidence * 100)}%` : 
+          'High confidence extraction';
+        
+        showSuccess('🎨 Creative Extraction Successful!', `AI-powered extraction completed. ${confidenceMessage}`, 
+          result.insights ? `Strategies used: ${result.insights.strategies.join(', ')}` : undefined);
+      } else {
+        // Provide more specific error messages based on the error type
+        let errorTitle = 'Creative Extraction Failed';
+        let errorMessage = result.error || 'Failed to extract job data with AI';
+        let errorDetails = 'You can still add the job manually by filling in the form below.';
+        
+        // Customize error message based on common failure types
+        if (result.error?.includes('Low confidence')) {
+          errorTitle = 'Low Confidence Extraction';
+          errorMessage = 'AI extraction has low confidence';
+          errorDetails = 'The AI wasn\'t confident about the extracted data. You can still use it as a starting point.';
+        } else if (result.error?.includes('Invalid URL format')) {
+          errorTitle = 'Invalid URL';
+          errorMessage = 'The URL format is not valid';
+          errorDetails = 'Please check the URL and try again with a valid job posting link.';
+        }
+        
+        showError(errorTitle, errorMessage, errorDetails);
+        
+        // Automatically add URL to form for manual entry
+        if (urlInput.trim()) {
+          setFormData(prev => ({
+            ...prev,
+            job_url: urlInput
+          }));
+          setUrlInput('');
+          showInfo('Manual Entry Available', 'Job URL has been added to the form. Please fill in the remaining details manually.', 'The URL has been automatically added to the Job URL field below.');
+        }
+      }
+    } catch (error) {
+      console.error('Error in creative extraction:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      showError('Creative Extraction Error', 'An error occurred during AI-powered extraction', `Technical details: ${errorMessage}`);
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
   const analyzeExtractedFields = (data: Partial<CreateJobApplication>) => {
     const analysis: Record<string, { value: string; confidence: number; needsManual: boolean }> = {};
     
@@ -375,34 +439,50 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                 </div>
               </div>
               
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Job Posting URL (Optional)
-                  </label>
-                  <div className="flex space-x-2">
-                    <input
-                      type="url"
-                      value={urlInput}
-                      onChange={(e) => setUrlInput(e.target.value)}
-                      placeholder="https://company.com/careers/job-posting..."
-                      className="flex-1 px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleUrlExtraction}
-                      disabled={isExtracting || !urlInput.trim()}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
-                    >
-                      {isExtracting ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Globe className="w-4 h-4" />
-                      )}
-                      <span>{isExtracting ? 'Extracting...' : 'Try Extract'}</span>
-                    </button>
-                  </div>
-                </div>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Job Posting URL (Optional)
+                      </label>
+                      <div className="flex space-x-2">
+                        <input
+                          type="url"
+                          value={urlInput}
+                          onChange={(e) => setUrlInput(e.target.value)}
+                          placeholder="https://company.com/careers/job-posting..."
+                          className="flex-1 px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleUrlExtraction}
+                          disabled={isExtracting || !urlInput.trim()}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                        >
+                          {isExtracting ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Globe className="w-4 h-4" />
+                          )}
+                          <span>{isExtracting ? 'Extracting...' : 'Try Extract'}</span>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Creative Extraction Option */}
+                    <div className="mt-3">
+                      <button
+                        type="button"
+                        onClick={handleCreativeExtraction}
+                        disabled={isExtracting || !urlInput.trim()}
+                        className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2"
+                      >
+                        <Zap className="w-4 h-4" />
+                        <span>🎨 Creative AI Extraction (Higher Accuracy)</span>
+                      </button>
+                      <p className="text-xs text-gray-400 mt-1 text-center">
+                        Uses multiple AI strategies for maximum accuracy
+                      </p>
+                    </div>
                 
                 <div className="flex items-center space-x-4">
                   <div className="flex-1 h-px bg-gray-600"></div>
