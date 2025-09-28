@@ -654,45 +654,560 @@ export class JobAutomationService {
   }
 
   /**
-   * Extract basic job info from page title and meta tags
+   * Extract basic job info from page title and meta tags with improved accuracy
    */
   private extractBasicJobInfo(html: string, url: string): Partial<CreateJobApplication> {
     const jobData: Partial<CreateJobApplication> = {};
     
-    // Extract from page title
+    // 1. COMPANY NAME EXTRACTION
+    jobData.company = this.extractCompanyName(html, url);
+    
+    // 2. POSITION/JOB TITLE EXTRACTION
+    jobData.position = this.extractJobTitle(html, url);
+    
+    // 3. SALARY/PAY EXTRACTION
+    jobData.salary = this.extractSalary(html, url);
+    
+    // 4. DESCRIPTION/NOTES EXTRACTION
+    jobData.notes = this.extractDescription(html, url);
+    
+    return jobData;
+  }
+
+  /**
+   * Extract company name with enhanced accuracy and multiple strategies
+   */
+  private extractCompanyName(html: string, url: string): string {
+    console.log('🔍 Extracting company name...');
+    
+    // Strategy 1: From page title with enhanced patterns
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
     if (titleMatch && titleMatch[1]) {
       const title = titleMatch[1].trim();
+      console.log('📄 Page title:', title);
       
-      // Try to parse company and position from title
-      const titleParts = title.split(/[-|–|at|@]/);
-      if (titleParts.length >= 2) {
-        jobData.position = titleParts[0].trim();
-        jobData.company = titleParts[1].trim();
-      } else {
-        // If we can't split, use the whole title as position
-        jobData.position = title;
+      // Enhanced patterns for different title formats
+      const patterns = [
+        // "Software Engineer at Google" or "Senior Developer at Microsoft"
+        /(.+?)\s+at\s+(.+?)(?:\s*[-|]|\s*$)/i,
+        // "Google - Software Engineer" or "Microsoft | Senior Developer"
+        /^(.+?)\s*[-|]\s*(.+)/i,
+        // "Software Engineer @ Google" or "Developer @ Microsoft"
+        /(.+?)\s+@\s+(.+)/i,
+        // "Google Careers - Software Engineer"
+        /^(.+?)\s+Careers\s*[-|]\s*(.+)/i,
+        // "Google Jobs - Software Engineer"
+        /^(.+?)\s+Jobs\s*[-|]\s*(.+)/i
+      ];
+      
+      for (const pattern of patterns) {
+        const match = title.match(pattern);
+        if (match && match[1]) {
+          const company = match[1].trim();
+          if (this.isValidCompanyName(company)) {
+            console.log('✅ Company found in title:', company);
+            return company;
+          }
+        }
       }
     }
     
-    // Extract from meta description
+    // Strategy 2: From Open Graph tags
+    const ogTitleMatch = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]*)"[^>]*>/i);
+    if (ogTitleMatch && ogTitleMatch[1]) {
+      const ogTitle = ogTitleMatch[1].trim();
+      console.log('📱 OG Title:', ogTitle);
+      
+      const patterns = [
+        /(.+?)\s+at\s+(.+)/i,
+        /(.+?)\s+-\s+(.+)/i,
+        /(.+?)\s+\|\s+(.+)/i
+      ];
+      
+      for (const pattern of patterns) {
+        const match = ogTitle.match(pattern);
+        if (match && match[2]) {
+          const company = match[2].trim();
+          if (this.isValidCompanyName(company)) {
+            console.log('✅ Company found in OG title:', company);
+            return company;
+          }
+        }
+      }
+    }
+    
+    // Strategy 3: From URL patterns (enhanced)
+    const urlCompany = this.extractCompanyFromUrl(url);
+    if (urlCompany) {
+      console.log('✅ Company found in URL:', urlCompany);
+      return urlCompany;
+    }
+    
+    // Strategy 4: From meta tags and structured data
+    const metaPatterns = [
+      /<meta[^>]*name="company"[^>]*content="([^"]*)"[^>]*>/i,
+      /<meta[^>]*property="og:site_name"[^>]*content="([^"]*)"[^>]*>/i,
+      /<meta[^>]*name="application-name"[^>]*content="([^"]*)"[^>]*>/i
+    ];
+    
+    for (const pattern of metaPatterns) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        const company = match[1].trim();
+        if (this.isValidCompanyName(company)) {
+          console.log('✅ Company found in meta tags:', company);
+          return company;
+        }
+      }
+    }
+    
+    // Strategy 5: From structured data (JSON-LD)
+    const jsonLdMatch = html.match(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi);
+    if (jsonLdMatch) {
+      for (const script of jsonLdMatch) {
+        try {
+          const jsonContent = script.replace(/<script[^>]*>|<\/script>/gi, '');
+          const data = JSON.parse(jsonContent);
+          
+          if (data['@type'] === 'JobPosting' && data.hiringOrganization && data.hiringOrganization.name) {
+            const company = data.hiringOrganization.name.trim();
+            if (this.isValidCompanyName(company)) {
+              console.log('✅ Company found in structured data:', company);
+              return company;
+            }
+          }
+        } catch (e) {
+          // Continue to next script
+        }
+      }
+    }
+    
+    console.log('❌ No company name found');
+    return '';
+  }
+
+  /**
+   * Validate if a string looks like a valid company name
+   */
+  private isValidCompanyName(name: string): boolean {
+    if (!name || name.length < 2 || name.length > 100) return false;
+    
+    // Remove common suffixes that might be in titles
+    const cleanName = name
+      .replace(/\s*[-|]\s*.*$/, '') // Remove everything after dash or pipe
+      .replace(/\s*Careers?.*$/i, '') // Remove "Careers" suffix
+      .replace(/\s*Jobs?.*$/i, '') // Remove "Jobs" suffix
+      .replace(/\s*Hiring.*$/i, '') // Remove "Hiring" suffix
+      .trim();
+    
+    // Check if it contains job-related words that shouldn't be in company names
+    const jobWords = ['engineer', 'developer', 'manager', 'analyst', 'specialist', 'coordinator', 'director', 'lead', 'senior', 'junior', 'associate', 'assistant', 'consultant', 'advisor', 'architect', 'designer', 'programmer', 'administrator', 'supervisor', 'executive', 'officer', 'representative'];
+    const lowerName = cleanName.toLowerCase();
+    
+    if (jobWords.some(word => lowerName.includes(word))) return false;
+    
+    // Check if it looks like a company name
+    return cleanName.length >= 2 && cleanName.length <= 50;
+  }
+
+  /**
+   * Extract job title with enhanced accuracy and multiple strategies
+   */
+  private extractJobTitle(html: string, url: string): string {
+    console.log('🔍 Extracting job title...');
+    
+    // Strategy 1: From page title with enhanced patterns
+    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    if (titleMatch && titleMatch[1]) {
+      const title = titleMatch[1].trim();
+      console.log('📄 Page title:', title);
+      
+      // Enhanced patterns for different title formats
+      const patterns = [
+        // "Software Engineer at Google" or "Senior Developer at Microsoft"
+        /(.+?)\s+at\s+(.+)/i,
+        // "Google - Software Engineer" or "Microsoft | Senior Developer"
+        /^(.+?)\s*[-|]\s*(.+)/i,
+        // "Software Engineer @ Google" or "Developer @ Microsoft"
+        /(.+?)\s+@\s+(.+)/i,
+        // "Google Careers - Software Engineer"
+        /^(.+?)\s+Careers\s*[-|]\s*(.+)/i,
+        // "Google Jobs - Software Engineer"
+        /^(.+?)\s+Jobs\s*[-|]\s*(.+)/i
+      ];
+      
+      for (const pattern of patterns) {
+        const match = title.match(pattern);
+        if (match && match[2]) {
+          const jobTitle = match[2].trim();
+          if (this.isValidJobTitle(jobTitle)) {
+            console.log('✅ Job title found in title:', jobTitle);
+            return jobTitle;
+          }
+        }
+      }
+      
+      // If no pattern matches, use the whole title if it looks like a job title
+      if (this.isValidJobTitle(title)) {
+        console.log('✅ Job title found (whole title):', title);
+        return title;
+      }
+    }
+    
+    // Strategy 2: From Open Graph tags
+    const ogTitleMatch = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]*)"[^>]*>/i);
+    if (ogTitleMatch && ogTitleMatch[1]) {
+      const ogTitle = ogTitleMatch[1].trim();
+      console.log('📱 OG Title:', ogTitle);
+      
+      if (this.isValidJobTitle(ogTitle)) {
+        console.log('✅ Job title found in OG title:', ogTitle);
+        return ogTitle;
+      }
+    }
+    
+    // Strategy 3: From h1 tags (most reliable for job titles)
+    const h1Match = html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+    if (h1Match && h1Match[1]) {
+      const h1Text = h1Match[1].trim();
+      console.log('📋 H1 text:', h1Text);
+      
+      if (this.isValidJobTitle(h1Text)) {
+        console.log('✅ Job title found in H1:', h1Text);
+        return h1Text;
+      }
+    }
+    
+    // Strategy 4: From structured data (JSON-LD)
+    const jsonLdMatch = html.match(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi);
+    if (jsonLdMatch) {
+      for (const script of jsonLdMatch) {
+        try {
+          const jsonContent = script.replace(/<script[^>]*>|<\/script>/gi, '');
+          const data = JSON.parse(jsonContent);
+          
+          if (data['@type'] === 'JobPosting' && data.title) {
+            const jobTitle = data.title.trim();
+            if (this.isValidJobTitle(jobTitle)) {
+              console.log('✅ Job title found in structured data:', jobTitle);
+              return jobTitle;
+            }
+          }
+        } catch (e) {
+          // Continue to next script
+        }
+      }
+    }
+    
+    // Strategy 5: From common job title elements
+    const titleElements = [
+      /<[^>]*class="[^"]*job-title[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*position[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*title[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*role[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi
+    ];
+    
+    for (const pattern of titleElements) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        const jobTitle = match[1].trim();
+        if (this.isValidJobTitle(jobTitle)) {
+          console.log('✅ Job title found in elements:', jobTitle);
+          return jobTitle;
+        }
+      }
+    }
+    
+    console.log('❌ No job title found');
+    return '';
+  }
+
+  /**
+   * Validate if a string looks like a valid job title
+   */
+  private isValidJobTitle(title: string): boolean {
+    if (!title || title.length < 3 || title.length > 100) return false;
+    
+    // Remove common prefixes/suffixes
+    const cleanTitle = title
+      .replace(/^(Job\s*:?\s*|Position\s*:?\s*|Role\s*:?\s*)/i, '') // Remove "Job:", "Position:", etc.
+      .replace(/\s*[-|]\s*.*$/, '') // Remove everything after dash or pipe
+      .replace(/\s*at\s+.*$/i, '') // Remove "at Company" part
+      .replace(/\s*@\s+.*$/i, '') // Remove "@ Company" part
+      .trim();
+    
+    // Check if it contains job-related keywords
+    const jobKeywords = [
+      'engineer', 'developer', 'manager', 'analyst', 'specialist', 'coordinator',
+      'director', 'lead', 'senior', 'junior', 'associate', 'assistant',
+      'consultant', 'advisor', 'architect', 'designer', 'programmer',
+      'administrator', 'supervisor', 'executive', 'officer', 'representative',
+      'coordinator', 'technician', 'specialist', 'expert', 'professional'
+    ];
+    
+    const lowerTitle = cleanTitle.toLowerCase();
+    const hasJobKeyword = jobKeywords.some(keyword => lowerTitle.includes(keyword));
+    
+    // Check if it looks like a job title (has job keywords and reasonable length)
+    return hasJobKeyword && cleanTitle.length >= 3 && cleanTitle.length <= 80;
+  }
+
+  /**
+   * Extract salary/pay information with enhanced accuracy and multiple strategies
+   */
+  private extractSalary(html: string, url: string): string {
+    console.log('🔍 Extracting salary information...');
+    
+    // Strategy 1: Look for salary patterns in the HTML with enhanced patterns
+    const salaryPatterns = [
+      // Standard salary formats
+      /\$[\d,]+(?:k|K)?(?:\s*-\s*\$[\d,]+(?:k|K)?)?/g,
+      /\$[\d,]+(?:k|K)?\s*to\s*\$[\d,]+(?:k|K)?/g,
+      /\$[\d,]+(?:k|K)?\s*-\s*\$[\d,]+(?:k|K)?/g,
+      
+      // Annual salary formats
+      /[\d,]+(?:k|K)?\s*per\s+year/gi,
+      /[\d,]+(?:k|K)?\s*annually/gi,
+      /[\d,]+(?:k|K)?\s*per\s+annum/gi,
+      /[\d,]+(?:k|K)?\s*yr/gi,
+      
+      // Hourly rate formats
+      /\$[\d,]+(?:\.\d{2})?\s*per\s+hour/gi,
+      /\$[\d,]+(?:\.\d{2})?\s*hourly/gi,
+      /\$[\d,]+(?:\.\d{2})?\s*\/hr/gi,
+      /\$[\d,]+(?:\.\d{2})?\s*\/hour/gi,
+      
+      // Salary range formats
+      /[\d,]+(?:k|K)?\s*-\s*[\d,]+(?:k|K)?/g,
+      /[\d,]+(?:k|K)?\s*to\s*[\d,]+(?:k|K)?/g,
+      
+      // Labeled salary formats
+      /salary[:\s]*\$?[\d,]+(?:k|K)?/gi,
+      /compensation[:\s]*\$?[\d,]+(?:k|K)?/gi,
+      /pay[:\s]*\$?[\d,]+(?:k|K)?/gi,
+      /wage[:\s]*\$?[\d,]+(?:k|K)?/gi,
+      /rate[:\s]*\$?[\d,]+(?:k|K)?/gi
+    ];
+    
+    for (const pattern of salaryPatterns) {
+      const matches = html.match(pattern);
+      if (matches && matches.length > 0) {
+        // Return the first match that looks like a salary
+        for (const match of matches) {
+          if (this.isValidSalary(match)) {
+            console.log('✅ Salary found in patterns:', match.trim());
+            return match.trim();
+          }
+        }
+      }
+    }
+    
+    // Strategy 2: Look in specific elements with enhanced selectors
+    const salaryElements = [
+      /<[^>]*class="[^"]*salary[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*compensation[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*pay[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*wage[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*rate[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*benefits[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*remuneration[^"]*"[^>]*>([^<]+)<\/[^>]*>/gi
+    ];
+    
+    for (const pattern of salaryElements) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        const salary = match[1].trim();
+        if (this.isValidSalary(salary)) {
+          console.log('✅ Salary found in elements:', salary);
+          return salary;
+        }
+      }
+    }
+    
+    // Strategy 3: Look in structured data (JSON-LD)
+    const jsonLdMatch = html.match(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi);
+    if (jsonLdMatch) {
+      for (const script of jsonLdMatch) {
+        try {
+          const jsonContent = script.replace(/<script[^>]*>|<\/script>/gi, '');
+          const data = JSON.parse(jsonContent);
+          
+          if (data['@type'] === 'JobPosting' && data.baseSalary) {
+            const salary = data.baseSalary.value?.value || data.baseSalary.value;
+            if (salary && this.isValidSalary(salary.toString())) {
+              console.log('✅ Salary found in structured data:', salary);
+              return salary.toString();
+            }
+          }
+        } catch (e) {
+          // Continue to next script
+        }
+      }
+    }
+    
+    // Strategy 4: Look in data attributes
+    const dataAttributes = [
+      /data-salary="([^"]*)"/gi,
+      /data-pay="([^"]*)"/gi,
+      /data-compensation="([^"]*)"/gi,
+      /data-rate="([^"]*)"/gi
+    ];
+    
+    for (const pattern of dataAttributes) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        const salary = match[1].trim();
+        if (this.isValidSalary(salary)) {
+          console.log('✅ Salary found in data attributes:', salary);
+          return salary;
+        }
+      }
+    }
+    
+    console.log('❌ No salary information found');
+    return '';
+  }
+
+  /**
+   * Validate if a string looks like a valid salary
+   */
+  private isValidSalary(salary: string): boolean {
+    if (!salary || salary.length < 2) return false;
+    
+    const cleanSalary = salary.trim();
+    
+    // Check for common salary patterns
+    const salaryPatterns = [
+      /^\$[\d,]+(?:k|K)?$/, // $50,000 or $50k
+      /^\$[\d,]+(?:k|K)?\s*-\s*\$[\d,]+(?:k|K)?$/, // $50,000 - $70,000
+      /^\$[\d,]+(?:k|K)?\s*to\s*\$[\d,]+(?:k|K)?$/, // $50,000 to $70,000
+      /^[\d,]+(?:k|K)?\s*per\s+year$/i, // 50k per year
+      /^[\d,]+(?:k|K)?\s*annually$/i, // 50k annually
+      /^\$[\d,]+(?:\.\d{2})?\s*per\s+hour$/i, // $25.50 per hour
+      /^\$[\d,]+(?:\.\d{2})?\s*hourly$/i, // $25.50 hourly
+      /^\$[\d,]+(?:\.\d{2})?\s*\/hr$/i, // $25.50/hr
+      /^\$[\d,]+(?:\.\d{2})?\s*\/hour$/i, // $25.50/hour
+      /^[\d,]+(?:k|K)?\s*-\s*[\d,]+(?:k|K)?$/, // 50k - 70k
+      /^[\d,]+(?:k|K)?\s*to\s*[\d,]+(?:k|K)?$/ // 50k to 70k
+    ];
+    
+    return salaryPatterns.some(pattern => pattern.test(cleanSalary));
+  }
+
+  /**
+   * Extract job description
+   */
+  private extractDescription(html: string, url: string): string {
+    // Strategy 1: From meta description
     const metaMatch = html.match(/<meta[^>]*name="description"[^>]*content="([^"]*)"[^>]*>/i);
     if (metaMatch && metaMatch[1]) {
-      jobData.notes = metaMatch[1].trim().substring(0, 500);
+      return metaMatch[1].trim().substring(0, 1000);
     }
     
-    // Extract from Open Graph tags
-    const ogTitleMatch = html.match(/<meta[^>]*property="og:title"[^>]*content="([^"]*)"[^>]*>/i);
-    if (ogTitleMatch && ogTitleMatch[1] && !jobData.position) {
-      jobData.position = ogTitleMatch[1].trim();
+    // Strategy 2: From Open Graph description
+    const ogDescMatch = html.match(/<meta[^>]*property="og:description"[^>]*content="([^"]*)"[^>]*>/i);
+    if (ogDescMatch && ogDescMatch[1]) {
+      return ogDescMatch[1].trim().substring(0, 1000);
     }
     
-    const ogDescriptionMatch = html.match(/<meta[^>]*property="og:description"[^>]*content="([^"]*)"[^>]*>/i);
-    if (ogDescriptionMatch && ogDescriptionMatch[1] && !jobData.notes) {
-      jobData.notes = ogDescriptionMatch[1].trim().substring(0, 500);
+    // Strategy 3: From content divs
+    const contentPatterns = [
+      /<[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*content[^"]*"[^>]*>([\s\S]*?)<\/[^>]*>/gi,
+      /<[^>]*class="[^"]*job-description[^"]*"[^>]*>([\s\S]*?)<\/[^>]*>/gi
+    ];
+    
+    for (const pattern of contentPatterns) {
+      const match = html.match(pattern);
+      if (match && match[1]) {
+        const content = match[1].trim();
+        if (content.length > 50 && content.length < 2000) {
+          return content.substring(0, 1000);
+        }
+      }
     }
     
-    return jobData;
+    return '';
+  }
+
+  /**
+   * Helper function to check if text looks like a job title
+   */
+  private looksLikeJobTitle(text: string): boolean {
+    const jobKeywords = [
+      'engineer', 'developer', 'manager', 'analyst', 'specialist', 'coordinator',
+      'director', 'lead', 'senior', 'junior', 'associate', 'assistant',
+      'consultant', 'advisor', 'architect', 'designer', 'programmer',
+      'administrator', 'supervisor', 'executive', 'officer', 'representative'
+    ];
+    
+    const lowerText = text.toLowerCase();
+    return jobKeywords.some(keyword => lowerText.includes(keyword)) && 
+           text.length > 5 && text.length < 100;
+  }
+
+  /**
+   * Helper function to check if text looks like a salary
+   */
+  private looksLikeSalary(text: string): boolean {
+    // Check for common salary patterns
+    const salaryPatterns = [
+      /^\$[\d,]+(?:k|K)?$/,
+      /^\$[\d,]+(?:k|K)?\s*-\s*\$[\d,]+(?:k|K)?$/,
+      /^[\d,]+(?:k|K)?\s*per\s+year$/i,
+      /^[\d,]+(?:k|K)?\s*annually$/i,
+      /^[\d,]+(?:k|K)?\s*per\s+hour$/i,
+      /^[\d,]+(?:k|K)?\s*hourly$/i
+    ];
+    
+    return salaryPatterns.some(pattern => pattern.test(text.trim()));
+  }
+
+  /**
+   * Extract company name from URL patterns
+   */
+  private extractCompanyFromUrl(url: string): string {
+    try {
+      const urlObj = new URL(url);
+      const hostname = urlObj.hostname;
+      
+      // Extract company from hostname
+      if (hostname.includes('greenhouse.io')) {
+        const parts = hostname.split('.');
+        if (parts.length > 0) {
+          return parts[0].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+      } else if (hostname.includes('lever.co')) {
+        const parts = hostname.split('.');
+        if (parts.length > 0) {
+          return parts[0].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+      } else if (hostname.includes('workday.com')) {
+        // Extract from subdomain
+        const subdomain = hostname.split('.')[0];
+        return subdomain.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      } else if (hostname.includes('linkedin.com')) {
+        // For LinkedIn, we can't easily extract company from URL
+        return '';
+      } else if (hostname.includes('indeed.com')) {
+        // For Indeed, we can't easily extract company from URL
+        return '';
+      } else {
+        // For company websites, try to extract from subdomain or domain
+        const parts = hostname.split('.');
+        if (parts.length > 1) {
+          const companyPart = parts[0];
+          if (companyPart !== 'www' && companyPart !== 'careers' && companyPart !== 'jobs') {
+            return companyPart.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          }
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error extracting company from URL:', error);
+    }
+    
+    return '';
   }
 
   /**
