@@ -12,6 +12,8 @@ export interface JobApplication {
   notes?: string;
   job_url?: string;
   job_description?: string;
+  location?: string;
+  employment_type?: string;
   offers?: string;
   withdrawn?: boolean;
   user_id: string;
@@ -61,6 +63,8 @@ export interface CreateJobApplication {
   notes?: string;
   job_url?: string;
   job_description?: string;
+  location?: string;
+  employment_type?: string;
   offers?: string;
   withdrawn?: boolean;
 }
