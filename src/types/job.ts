@@ -19,6 +19,33 @@ export interface JobApplication {
   updated_at: Date;
 }
 
+// New comprehensive job interface
+export interface Job {
+  id: string;
+  user_id: string;
+  company: string;
+  position: string;
+  salary?: string | null;
+  hourly_rate?: string | null;
+  job_url?: string | null;
+  status: 'applied' | 'interview' | 'offer' | 'rejected';
+  notes?: string | null;
+  applied_date: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface JobFormData {
+  company: string;
+  position: string;
+  salary?: string | null;
+  hourly_rate?: string | null;
+  job_url?: string | null;
+  status: string;
+  notes?: string | null;
+  applied_date: string;
+}
+
 export type JobStatus = 'Applied' | 'Interview' | 'Offer' | 'Rejected' | 'Withdrawn' | 'Archived';
 
 export interface CreateJobApplication {

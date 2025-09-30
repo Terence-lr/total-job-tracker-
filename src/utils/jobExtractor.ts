@@ -120,6 +120,11 @@ async function tryJSearchExtraction(
     // Handle rate limiting gracefully
     if (error.response?.status === 429) {
       console.warn('JSearch rate limit hit');
+      return { 
+        company: '', 
+        position: '', 
+        error: 'API limit reached. Please try manual entry or wait a moment.'
+      };
     }
     return { company: '', position: '' };
   }

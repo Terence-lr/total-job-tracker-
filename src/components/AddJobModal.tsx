@@ -56,7 +56,7 @@ export const AddJobModal: React.FC<AddJobModalProps> = ({
           // Partial extraction
           setExtractionStatus({
             type: 'partial',
-            message: extracted.error
+            message: 'Partial extraction. Please verify and fill missing fields.'
           });
         } else {
           // Full success
@@ -66,19 +66,43 @@ export const AddJobModal: React.FC<AddJobModalProps> = ({
           });
         }
       } else {
-        // Failed extraction
+        // Determine specific error type
+        let errorMessage = 'Could not extract job details automatically. Please fill manually.';
+        
+        if (extracted.error) {
+          if (extracted.error.includes('Invalid URL format')) {
+            errorMessage = 'Invalid URL format. Please enter a valid job posting URL.';
+          } else if (extracted.error.includes('API limit') || extracted.error.includes('rate limit')) {
+            errorMessage = 'API limit reached. Please try manual entry or wait a moment.';
+          } else if (extracted.error.includes('Could not extract')) {
+            errorMessage = 'Could not extract job details automatically. Please fill manually.';
+          } else {
+            errorMessage = extracted.error;
+          }
+        }
+
         setExtractionStatus({
           type: 'error',
-          message:
-            extracted.error ||
-            'Could not extract details. Please fill manually.'
+          message: errorMessage
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Extraction error:', error);
+      
+      // Handle specific error types
+      let errorMessage = 'Extraction failed. Please try manual entry.';
+      
+      if (error.response?.status === 429) {
+        errorMessage = 'API limit reached. Please try manual entry or wait a moment.';
+      } else if (error.code === 'NETWORK_ERROR' || error.message?.includes('Network Error')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (error.message?.includes('timeout')) {
+        errorMessage = 'Request timed out. Please try again.';
+      }
+
       setExtractionStatus({
         type: 'error',
-        message: 'Extraction failed. Please try manual entry.'
+        message: errorMessage
       });
     } finally {
       setIsExtracting(false);
