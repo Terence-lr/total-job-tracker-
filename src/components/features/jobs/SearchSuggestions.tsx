@@ -70,3 +70,4 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
 };
 
 export default SearchSuggestions;
+

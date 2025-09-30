@@ -213,3 +213,4 @@ npm install puppeteer
 **Skip expensive APIs** like Indeed ($299/month) unless you have high volume needs.
 
 The current system already provides 70-80% accuracy and works with most job portals. The automation saves significant time even without perfect accuracy.
+

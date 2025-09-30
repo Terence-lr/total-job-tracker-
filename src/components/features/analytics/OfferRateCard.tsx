@@ -165,3 +165,4 @@ const OfferRateCard: React.FC<OfferRateCardProps> = ({ jobs, className = '' }) =
 export default OfferRateCard;
 
 
+

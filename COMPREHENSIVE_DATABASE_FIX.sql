@@ -187,3 +187,4 @@ ORDER BY ordinal_position;
 SELECT 'Database schema verification complete' as status;
 
 
+

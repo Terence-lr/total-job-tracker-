@@ -154,3 +154,4 @@ If you're still experiencing issues:
 The email confirmation flow should now work seamlessly with proper user feedback and error handling!
 
 
+

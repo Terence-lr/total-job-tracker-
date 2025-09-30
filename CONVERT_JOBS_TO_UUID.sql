@@ -192,3 +192,4 @@ WHERE table_name = 'job_offers' AND column_name = 'original_job_id';
 SELECT COUNT(*) as total_jobs FROM jobs;
 
 
+

@@ -87,3 +87,4 @@ COMMENT ON COLUMN jobs.hourly_rate IS 'Hourly rate in dollars (e.g., 25.50)';
 COMMENT ON COLUMN jobs.pay_type IS 'Type of pay: salary or hourly';
 COMMENT ON COLUMN jobs.calculated_salary IS 'Auto-calculated gross annual salary from hourly rate';
 COMMENT ON COLUMN jobs.calculated_hourly_rate IS 'Auto-calculated gross hourly rate from salary';
+

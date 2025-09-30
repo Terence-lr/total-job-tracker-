@@ -27,3 +27,4 @@ REACT_APP_APIFY_KEY=your_apify_key_here
 # Sign up at: https://freewebapi.com/
 # Free tier: 100 requests/month
 REACT_APP_FREEWEBAPI_KEY=your_freewebapi_key_here
+

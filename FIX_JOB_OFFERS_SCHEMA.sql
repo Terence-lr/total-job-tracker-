@@ -115,3 +115,4 @@ WHERE table_name = 'job_offers' AND column_name = 'original_job_id';
 -- SELECT * FROM job_offers WHERE original_job_id = (SELECT id FROM jobs LIMIT 1);
 
 
+

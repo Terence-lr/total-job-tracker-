@@ -249,3 +249,4 @@ const JobAutomationDashboard: React.FC<JobAutomationDashboardProps> = ({
 };
 
 export default JobAutomationDashboard;
+
