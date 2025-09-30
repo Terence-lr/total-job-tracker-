@@ -1,4 +1,4 @@
-import { JobApplication, CreateJobApplication } from '../types/job';
+import { CreateJobApplication } from '../types/job';
 import { createJobApplication } from './enhancedJobService';
 
 export interface JobExtractionResult {
@@ -277,7 +277,7 @@ export class JobAutomationService {
         };
 
         // Save to backend using existing service
-        const jobId = await createJobApplication(jobData);
+        await createJobApplication(jobData);
         
         return {
           success: true,
@@ -319,7 +319,7 @@ export class JobAutomationService {
         };
 
         // Save to backend using existing service
-        const jobId = await createJobApplication(jobData);
+        await createJobApplication(jobData);
         
         return {
           success: true,
@@ -396,8 +396,8 @@ export class JobAutomationService {
     const extractText = (selector: string, html: string): string | null => {
       // Strategy 1: Try CSS selector patterns
       const cssPatterns = [
-        new RegExp(`<[^>]*class="[^"]*${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^"]*"[^>]*>([^<]+)<\/[^>]*>`, 'gi'),
-        new RegExp(`<[^>]*id="[^"]*${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^"]*"[^>]*>([^<]+)<\/[^>]*>`, 'gi')
+        new RegExp(`<[^>]*class="[^"]*${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^"]*"[^>]*>([^<]+)</[^>]*>`, 'gi'),
+        new RegExp(`<[^>]*id="[^"]*${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^"]*"[^>]*>([^<]+)</[^>]*>`, 'gi')
       ];
       
       for (const pattern of cssPatterns) {

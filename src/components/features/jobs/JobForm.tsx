@@ -4,7 +4,6 @@ import { X, Calendar, DollarSign, Link as LinkIcon, FileText, Zap, Loader2, Chec
 import Button from '../../ui/Button';
 import Select from '../../ui/Select';
 import { creativeExtractionService } from '../../../services/creativeExtractionService';
-import { extractJobFromURL } from '../../../utils/jobExtractor';
 import { useNotification } from '../../../contexts/NotificationContext';
 
 interface JobFormProps {

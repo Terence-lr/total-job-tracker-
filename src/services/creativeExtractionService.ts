@@ -159,7 +159,6 @@ export class CreativeExtractionService {
     );
 
     // Update confidence scoring based on user feedback
-    const domain = this.extractDomain(url);
     const accuracy = this.calculateAccuracy(originalExtraction, userCorrection);
     confidenceScoringService.updateUserHistoryAccuracy(url, accuracy);
     confidenceScoringService.updateWebsiteReliability(url, accuracy > 0.7);
