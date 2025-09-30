@@ -67,7 +67,7 @@ export const extractJobFromURL = async (
     }
 
     // If we got partial data from any method, return it
-    const combined = {
+    const combined: ExtractedJobData = {
       company: urlResult.company || metaResult.company || '',
       position: urlResult.position || metaResult.position || '',
       salary: urlResult.salary || metaResult.salary,
