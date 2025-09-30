@@ -11,6 +11,9 @@ export interface ExtractedJobData {
   error?: string;
 }
 
+// Cache successful extractions by URL
+const cache = new Map<string, ExtractedJobData>();
+
 interface JSearchJob {
   employer_name: string;
   job_title: string;
@@ -24,10 +27,17 @@ interface JSearchJob {
 
 /**
  * Main extraction function - tries multiple methods in order
+ * Strategy: JSearch first (fastest, most reliable) → metadata scraping → URL parsing
  */
 export const extractJobFromURL = async (
   jobURL: string
 ): Promise<ExtractedJobData> => {
+  // Check cache first
+  if (cache.has(jobURL)) {
+    console.log('📦 Using cached extraction for:', jobURL);
+    return cache.get(jobURL)!;
+  }
+
   // Validate URL format
   if (!isValidURL(jobURL)) {
     return {
@@ -38,40 +48,57 @@ export const extractJobFromURL = async (
   }
 
   try {
-    // METHOD 1: Try JSearch API first (most reliable)
+    console.log('🔍 Starting extraction for:', jobURL);
+
+    // METHOD 1: Try JSearch API first (fastest, most reliable)
+    console.log('📡 Trying JSearch API...');
     const jSearchResult = await tryJSearchExtraction(jobURL);
     if (jSearchResult.company && jSearchResult.position) {
+      console.log('✅ JSearch extraction successful');
+      cache.set(jobURL, jSearchResult);
       return jSearchResult;
     }
 
     // METHOD 2: Fallback to metadata scraping
+    console.log('🌐 Trying metadata scraping...');
     const metadataResult = await tryMetadataExtraction(jobURL);
     if (metadataResult.company && metadataResult.position) {
+      console.log('✅ Metadata extraction successful');
+      cache.set(jobURL, metadataResult);
       return metadataResult;
     }
 
     // METHOD 3: Try URL parsing as last resort
+    console.log('🔗 Trying URL parsing...');
     const urlParseResult = parseJobInfoFromURL(jobURL);
     if (urlParseResult.company || urlParseResult.position) {
-      return {
+      console.log('⚠️ URL parsing partial success');
+      const result = {
         ...urlParseResult,
         error: 'Partial extraction. Please verify and fill missing fields.'
       };
+      cache.set(jobURL, result);
+      return result;
     }
 
     // All methods failed
-    return {
+    console.log('❌ All extraction methods failed');
+    const errorResult = {
       company: '',
       position: '',
       error: 'Could not extract job details automatically. Please fill manually.'
     };
+    cache.set(jobURL, errorResult);
+    return errorResult;
   } catch (error) {
-    console.error('Job extraction error:', error);
-    return {
+    console.error('❌ Job extraction error:', error);
+    const errorResult = {
       company: '',
       position: '',
       error: 'Extraction failed. Please try again or fill manually.'
     };
+    cache.set(jobURL, errorResult);
+    return errorResult;
   }
 };
 
@@ -98,7 +125,7 @@ async function tryJSearchExtraction(
         'X-RapidAPI-Key': process.env.REACT_APP_RAPIDAPI_KEY || '',
         'X-RapidAPI-Host': 'jsearch.p.rapidapi.com'
       },
-      timeout: 10000 // 10 second timeout
+      timeout: 10000 // 10 seconds max for API calls
     };
 
     const response = await axios.request(options);
@@ -142,7 +169,7 @@ async function tryMetadataExtraction(
       jobURL
     )}`;
 
-    const response = await axios.get(proxyURL, { timeout: 8000 });
+    const response = await axios.get(proxyURL, { timeout: 8000 }); // 8 seconds for metadata scraping
 
     if (!response.data?.contents) {
       return { company: '', position: '' };
@@ -428,3 +455,32 @@ function capitalizeWords(text: string): string {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ');
 }
+
+/**
+ * Cache management functions
+ */
+export const clearExtractionCache = () => {
+  cache.clear();
+  console.log('🗑️ Extraction cache cleared');
+};
+
+export const getCacheSize = () => {
+  return cache.size;
+};
+
+export const getCacheStats = () => {
+  const stats = {
+    size: cache.size,
+    urls: Array.from(cache.keys()),
+    successful: Array.from(cache.values()).filter(result => 
+      result.company && result.position && !result.error
+    ).length,
+    partial: Array.from(cache.values()).filter(result => 
+      result.error && result.error.includes('Partial extraction')
+    ).length,
+    failed: Array.from(cache.values()).filter(result => 
+      result.error && !result.error.includes('Partial extraction')
+    ).length
+  };
+  return stats;
+};
