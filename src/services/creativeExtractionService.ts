@@ -61,7 +61,8 @@ export class CreativeExtractionService {
           company: result.company,
           position: result.position,
           salary: result.salary,
-          hourly_rate: result.hourlyRate ? parseFloat(result.hourlyRate) : undefined, // Parse if needed
+          hourly_rate: result.hourlyRate ? parseFloat(result.hourlyRate) : undefined,
+          job_description: result.jobDescription,
           job_url: result.jobUrl || url,
         };
 

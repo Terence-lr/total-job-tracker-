@@ -33,8 +33,8 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isExtracting, setIsExtracting] = useState(false);
   const [urlInput, setUrlInput] = useState('');
-  const [showFieldValidation, setShowFieldValidation] = useState(false);
-  const [fieldValidation, setFieldValidation] = useState<Record<string, { value: string; confidence: number; needsManual: boolean }>>({});
+  const [showExtractionPreview, setShowExtractionPreview] = useState(false);
+  const [extractedData, setExtractedData] = useState<Partial<CreateJobApplication>>({});
   const { showSuccess, showError, showInfo } = useNotification();
 
 
@@ -193,21 +193,20 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
 
     setIsExtracting(true);
     try {
-      // Show info notification about the extraction process
-      showInfo('Auto-Extracting Job Data', 'Using RapidAPI JSearch for 92% accuracy...', 'This may take a few seconds.');
+      // Show info notification about the AI extraction process
+      showInfo('AI-Powered Extraction', 'Using advanced AI for maximum accuracy...', 'This may take a few seconds.');
       
       const result = await creativeExtractionService.extractJobData(urlInput);
       
       if (result.success && result.data) {
-        // Analyze each field for confidence and validation
-        const fieldAnalysis = analyzeExtractedFields(result.data);
-        setFieldValidation(fieldAnalysis);
-        setShowFieldValidation(true);
+        // Store extracted data and show preview
+        setExtractedData(result.data);
+        setShowExtractionPreview(true);
         
-        showSuccess('Job Data Extracted!', 'RapidAPI JSearch found job information. Please review and confirm the extracted data.');
+        showSuccess('AI Extraction Complete!', 'Job data has been extracted. Please review and approve the information below.');
       } else {
         // Provide more specific error messages based on the error type
-        let errorTitle = 'Extraction Failed';
+        let errorTitle = 'AI Extraction Failed';
         let errorMessage = result.error || 'Failed to extract job data';
         let errorDetails = 'You can still add the job manually by filling in the form below.';
         
@@ -243,100 +242,23 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
     }
   };
 
-  const analyzeExtractedFields = (data: Partial<CreateJobApplication>) => {
-    const analysis: Record<string, { value: string; confidence: number; needsManual: boolean }> = {};
-    
-    // Company analysis
-    const company = data.company || '';
-    analysis.company = {
-      value: company,
-      confidence: calculateConfidence(company, ['company', 'employer', 'organization']),
-      needsManual: company.length < 2 || calculateConfidence(company, ['company', 'employer', 'organization']) < 0.3
-    };
-    
-    // Position analysis
-    const position = data.position || '';
-    analysis.position = {
-      value: position,
-      confidence: calculateConfidence(position, ['position', 'title', 'role', 'job']),
-      needsManual: position.length < 2 || calculateConfidence(position, ['position', 'title', 'role', 'job']) < 0.3
-    };
-    
-    // Salary analysis
-    const salary = data.salary || '';
-    analysis.salary = {
-      value: salary,
-      confidence: calculateConfidence(salary, ['salary', 'compensation', 'pay', '$', '€', '£']),
-      needsManual: salary.length < 2 || calculateConfidence(salary, ['salary', 'compensation', 'pay', '$', '€', '£']) < 0.2
-    };
-    
-    // Notes/Description analysis
-    const notes = data.notes || '';
-    analysis.notes = {
-      value: notes,
-      confidence: calculateConfidence(notes, ['description', 'requirements', 'responsibilities', 'qualifications']),
-      needsManual: notes.length < 10 || calculateConfidence(notes, ['description', 'requirements', 'responsibilities', 'qualifications']) < 0.2
-    };
-    
-    return analysis;
-  };
-
-  const calculateConfidence = (text: string, keywords: string[]): number => {
-    if (!text || text.length < 2) return 0;
-    
-    const lowerText = text.toLowerCase();
-    let score = 0;
-    
-    // Check for keyword matches
-    keywords.forEach(keyword => {
-      if (lowerText.includes(keyword.toLowerCase())) {
-        score += 0.3;
-      }
-    });
-    
-    // Check for length appropriateness
-    if (text.length > 5 && text.length < 100) score += 0.2;
-    
-    // Check for common job-related patterns
-    if (lowerText.includes('engineer') || lowerText.includes('developer') || lowerText.includes('manager')) {
-      score += 0.2;
-    }
-    
-    // Check for company indicators
-    if (lowerText.includes('inc') || lowerText.includes('corp') || lowerText.includes('llc') || lowerText.includes('ltd')) {
-      score += 0.2;
-    }
-    
-    return Math.min(score, 1);
-  };
-
-  const handleFieldValidation = () => {
-    // Update form data with validated fields
-    const updatedFormData = { ...formData };
-    
-    Object.entries(fieldValidation).forEach(([field, validation]) => {
-      if (validation.value && !validation.needsManual) {
-        if (field === 'company') updatedFormData.company = validation.value;
-        else if (field === 'position') updatedFormData.position = validation.value;
-        else if (field === 'salary') updatedFormData.salary = validation.value;
-        else if (field === 'notes') updatedFormData.notes = validation.value;
-      }
-    });
-    
-    setFormData(updatedFormData);
-    setShowFieldValidation(false);
-    showSuccess('Fields Updated', 'Validated fields have been added to the form');
-  };
-
-  const handleManualFieldInput = (field: string, value: string) => {
-    setFieldValidation(prev => ({
+  const handleApproveExtraction = () => {
+    // Auto-fill the form with extracted data
+    setFormData(prev => ({
       ...prev,
-      [field]: {
-        ...prev[field],
-        value,
-        needsManual: false
-      }
+      ...extractedData,
+      job_url: urlInput // Use the original URL
     }));
+    
+    setShowExtractionPreview(false);
+    setUrlInput('');
+    showSuccess('Data Applied!', 'AI-extracted data has been added to the form. You can make any final adjustments before submitting.');
+  };
+
+  const handleRejectExtraction = () => {
+    setShowExtractionPreview(false);
+    setExtractedData({});
+    showInfo('Extraction Rejected', 'You can try again or fill the form manually.');
   };
 
   const statusOptions: JobStatus[] = ['Applied', 'Interview', 'Offer', 'Rejected', 'Withdrawn'];
@@ -399,7 +321,7 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                         </button>
                       </div>
                       <p className="text-xs text-gray-400 mt-1">
-                        Uses RapidAPI JSearch for 92% accuracy
+                        Uses advanced AI for maximum accuracy
                       </p>
                     </div>
                 
@@ -438,66 +360,74 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
             </div>
           )}
 
-          {/* Field Validation Section */}
-          {showFieldValidation && (
-            <div className="mb-6 p-4 bg-gradient-to-r from-green-900/20 to-blue-900/20 rounded-xl border border-green-500/30">
+          {/* AI Extraction Preview Section */}
+          {showExtractionPreview && (
+            <div className="mb-6 p-4 bg-gradient-to-r from-purple-900/20 to-blue-900/20 rounded-xl border border-purple-500/30">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="p-2 bg-green-500/20 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
+                <div className="p-2 bg-purple-500/20 rounded-lg">
+                  <Zap className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-white">Review Extracted Data</h4>
-                  <p className="text-sm text-gray-400">Please review and confirm the extracted information</p>
+                  <h4 className="text-lg font-semibold text-white">AI-Extracted Job Data</h4>
+                  <p className="text-sm text-gray-400">Please review and approve the AI-extracted information</p>
                 </div>
               </div>
               
               <div className="space-y-4">
-                {Object.entries(fieldValidation).map(([field, validation]) => (
-                  <div key={field} className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-300 capitalize">
-                      {field} {validation.needsManual && <span className="text-red-400">(Manual input required)</span>}
-                    </label>
-                    <div className="flex space-x-2">
-                      <input
-                        type="text"
-                        value={validation.value}
-                        onChange={(e) => handleManualFieldInput(field, e.target.value)}
-                        className={`flex-1 px-3 py-2 bg-gray-800 text-white border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent ${
-                          validation.needsManual 
-                            ? 'border-red-500 focus:ring-red-500' 
-                            : validation.confidence > 0.7 
-                              ? 'border-green-500 focus:ring-green-500'
-                              : 'border-yellow-500 focus:ring-yellow-500'
-                        }`}
-                        placeholder={`Enter ${field}...`}
-                      />
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-3 h-3 rounded-full ${
-                          validation.confidence > 0.7 ? 'bg-green-500' : 
-                          validation.confidence > 0.4 ? 'bg-yellow-500' : 'bg-red-500'
-                        }`} />
-                        <span className="text-xs text-gray-400">
-                          {Math.round(validation.confidence * 100)}%
-                        </span>
-                      </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-300">Company</label>
+                    <div className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white">
+                      {extractedData.company || 'Not found'}
                     </div>
                   </div>
-                ))}
+                  
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-300">Position</label>
+                    <div className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white">
+                      {extractedData.position || 'Not found'}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-300">Salary</label>
+                    <div className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white">
+                      {extractedData.salary || 'Not found'}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-300">Hourly Rate</label>
+                    <div className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white">
+                      {extractedData.hourly_rate ? `$${extractedData.hourly_rate}/hour` : 'Not found'}
+                    </div>
+                  </div>
+                </div>
+                
+                {extractedData.job_description && (
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-300">Job Description</label>
+                    <div className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white max-h-32 overflow-y-auto">
+                      {extractedData.job_description}
+                    </div>
+                  </div>
+                )}
                 
                 <div className="flex space-x-3 pt-4">
                   <button
                     type="button"
-                    onClick={handleFieldValidation}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    onClick={handleApproveExtraction}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
                   >
-                    Use These Fields
+                    <CheckCircle className="w-4 h-4" />
+                    <span>Approve & Use This Data</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowFieldValidation(false)}
+                    onClick={handleRejectExtraction}
                     className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
                   >
-                    Cancel
+                    Reject & Try Again
                   </button>
                 </div>
               </div>

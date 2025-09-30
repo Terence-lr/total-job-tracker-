@@ -6,6 +6,9 @@ export interface ExtractedJobData {
   position: string;
   salary?: string;
   hourlyRate?: string;
+  jobDescription?: string;
+  location?: string;
+  employmentType?: string;
   jobUrl?: string;
   error?: string;
 }
