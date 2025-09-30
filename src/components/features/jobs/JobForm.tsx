@@ -243,10 +243,24 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
   };
 
   const handleApproveExtraction = () => {
-    // Auto-fill the form with extracted data
+    // Process extracted data to handle calculated values
+    const processedData = { ...extractedData };
+    
+    // If hourly_rate is a string with calculated value, extract the numeric value
+    if (processedData.hourly_rate && typeof processedData.hourly_rate === 'string') {
+      const hourlyStr = processedData.hourly_rate as string;
+      if (hourlyStr.includes('(calculated)')) {
+        const numericValue = parseFloat(hourlyStr.replace(/[^0-9.]/g, ''));
+        if (!isNaN(numericValue)) {
+          processedData.hourly_rate = numericValue;
+        }
+      }
+    }
+    
+    // Auto-fill the form with processed data
     setFormData(prev => ({
       ...prev,
-      ...extractedData,
+      ...processedData,
       job_url: urlInput // Use the original URL
     }));
     
@@ -259,6 +273,11 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
     setShowExtractionPreview(false);
     setExtractedData({});
     showInfo('Extraction Rejected', 'You can try again or fill the form manually.');
+  };
+
+  // Helper function to check if a value is calculated
+  const isCalculated = (value: any): boolean => {
+    return typeof value === 'string' && value.includes('(calculated)');
   };
 
   const statusOptions: JobStatus[] = ['Applied', 'Interview', 'Offer', 'Rejected', 'Withdrawn'];
@@ -391,19 +410,29 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                   
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-300">Salary</label>
-                    <div className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white">
+                    <div className={`px-3 py-2 bg-gray-800 border rounded-lg text-white ${
+                      isCalculated(extractedData.salary) ? 'border-blue-500' : 'border-gray-600'
+                    }`}>
                       {extractedData.salary || 'Not found'}
+                      {isCalculated(extractedData.salary) && (
+                        <div className="text-xs text-blue-400 mt-1">💡 Auto-calculated from hourly rate</div>
+                      )}
                     </div>
                   </div>
                   
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-300">Hourly Rate</label>
-                    <div className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white">
+                    <div className={`px-3 py-2 bg-gray-800 border rounded-lg text-white ${
+                      isCalculated(extractedData.hourly_rate) ? 'border-blue-500' : 'border-gray-600'
+                    }`}>
                       {extractedData.hourly_rate ? 
                         (typeof extractedData.hourly_rate === 'number' ? 
                           `$${extractedData.hourly_rate}/hour` : 
                           extractedData.hourly_rate) : 
                         'Not found'}
+                      {isCalculated(extractedData.hourly_rate) && (
+                        <div className="text-xs text-blue-400 mt-1">💡 Auto-calculated from annual salary</div>
+                      )}
                     </div>
                   </div>
                 </div>
