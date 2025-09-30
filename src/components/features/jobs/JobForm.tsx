@@ -399,7 +399,11 @@ const JobForm: React.FC<JobFormProps> = ({ job, onSubmit, onCancel, isLoading })
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-300">Hourly Rate</label>
                     <div className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white">
-                      {extractedData.hourly_rate ? `$${extractedData.hourly_rate}/hour` : 'Not found'}
+                      {extractedData.hourly_rate ? 
+                        (typeof extractedData.hourly_rate === 'number' ? 
+                          `$${extractedData.hourly_rate}/hour` : 
+                          extractedData.hourly_rate) : 
+                        'Not found'}
                     </div>
                   </div>
                 </div>
