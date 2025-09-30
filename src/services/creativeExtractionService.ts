@@ -61,7 +61,7 @@ export class CreativeExtractionService {
           company: result.company,
           position: result.position,
           salary: result.salary,
-          hourly_rate: result.hourlyRate ? parseFloat(result.hourlyRate) : undefined,
+          hourly_rate: result.hourlyRate ? parseFloat(result.hourlyRate) : undefined, // Parse if needed
           job_url: result.jobUrl || url,
         };
 
@@ -70,7 +70,7 @@ export class CreativeExtractionService {
           data: jobData,
           confidence: this.calculateConfidence(result),
           insights: {
-            strategies: ['Serverless API'],
+            strategies: ['Serverless API'], // IMPROVED: Could log method used if passed from API
             consensus: true,
             recommendations: ['High confidence serverless extraction'],
             fieldConfidence: this.calculateFieldConfidence(jobData)
@@ -115,7 +115,7 @@ export class CreativeExtractionService {
     // Base score for having data
     if (result.company) score += 0.4;
     if (result.position) score += 0.4;
-    if (result.salary) score += 0.2;
+    if (result.salary || result.hourlyRate) score += 0.2;
     
     // Bonus for complete data
     if (result.company && result.position) score += 0.1;
