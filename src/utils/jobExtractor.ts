@@ -215,7 +215,6 @@ function parseJobFromEnhancedURL(jobURL: string): ExtractedJobData {
       // Position might be in path
       const jobsIndex = pathParts.indexOf('jobs');
       if (jobsIndex !== -1 && pathParts[jobsIndex + 1]) {
-        const jobId = pathParts[jobsIndex + 1];
         // Sometimes position is after the ID
         if (pathParts[jobsIndex + 2]) {
           position = cleanTitle(pathParts[jobsIndex + 2]);
@@ -553,7 +552,6 @@ async function tryMetadataWithProxies(jobURL: string): Promise<ExtractedJobData>
       // Try meta tags
       const ogTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content') || '';
       const pageTitle = doc.querySelector('title')?.textContent || '';
-      const description = doc.querySelector('meta[name="description"]')?.getAttribute('content') || '';
 
       // Extract from title
       const titleText = ogTitle || pageTitle;
