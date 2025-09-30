@@ -1,7 +1,5 @@
 // src/utils/jobExtractor.ts
-// FIXED VERSION - Works with ANY job site
-
-import axios from 'axios';
+// FIXED VERSION - Works with ANY job site (Using Fetch, no dependencies)
 
 export interface ExtractedJobData {
   company: string;
@@ -446,26 +444,37 @@ async function tryJSearchAPI(jobURL: string): Promise<ExtractedJobData> {
       searchQuery = 'software engineer'; // Fallback
     }
 
-    const options = {
+    const queryParams = new URLSearchParams({
+      query: searchQuery,
+      page: '1',
+      num_pages: '1',
+      date_posted: 'month'
+    });
+
+    const response = await fetch(`https://jsearch.p.rapidapi.com/search?${queryParams}`, {
       method: 'GET',
-      url: 'https://jsearch.p.rapidapi.com/search',
-      params: {
-        query: searchQuery,
-        page: '1',
-        num_pages: '1',
-        date_posted: 'month'
-      },
       headers: {
         'X-RapidAPI-Key': apiKey,
         'X-RapidAPI-Host': 'jsearch.p.rapidapi.com'
-      },
-      timeout: 8000
-    };
+      }
+    });
 
-    const response = await axios.request(options);
+    if (!response.ok) {
+      if (response.status === 429) {
+        console.log('API rate limit reached');
+        return {
+          company: '',
+          position: '',
+          error: 'API limit reached. Using fallback methods.'
+        };
+      }
+      throw new Error(`API error: ${response.status}`);
+    }
 
-    if (response.data?.data?.length > 0) {
-      const job = response.data.data[0];
+    const data = await response.json();
+
+    if (data?.data?.length > 0) {
+      const job = data.data[0];
       
       let salary = '';
       let hourlyRate = '';
@@ -496,14 +505,6 @@ async function tryJSearchAPI(jobURL: string): Promise<ExtractedJobData> {
     return { company: '', position: '' };
 
   } catch (error: any) {
-    if (error.response?.status === 429) {
-      console.log('API rate limit reached');
-      return {
-        company: '',
-        position: '',
-        error: 'API limit reached. Using fallback methods.'
-      };
-    }
     console.error('JSearch API error:', error.message);
     return { company: '', position: '' };
   }
@@ -521,16 +522,23 @@ async function tryMetadataWithProxies(jobURL: string): Promise<ExtractedJobData>
 
   for (const proxyURL of proxies) {
     try {
-      const response = await axios.get(proxyURL, { 
-        timeout: 5000,
-        validateStatus: () => true
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const response = await fetch(proxyURL, {
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
-      if (!response.data) continue;
+      if (!response.ok) continue;
 
-      const html = typeof response.data === 'string' 
-        ? response.data 
-        : response.data.contents || '';
+      const responseData = await response.json().catch(() => null);
+      if (!responseData) continue;
+
+      const html = typeof responseData === 'string' 
+        ? responseData 
+        : responseData.contents || '';
 
       if (!html || html.length < 100) continue;
 
