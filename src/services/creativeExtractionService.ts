@@ -45,7 +45,7 @@ export class CreativeExtractionService {
           success: false,
           error: result.error,
           insights: {
-            strategies: ['Serverless API'],
+            strategies: ['Hybrid Cheerio + AI'], // UPDATED: Reflect hybrid
             consensus: false,
             recommendations: ['Please try manual entry or check the URL'],
             fieldConfidence: {}
@@ -70,9 +70,9 @@ export class CreativeExtractionService {
           data: jobData,
           confidence: this.calculateConfidence(result),
           insights: {
-            strategies: ['Serverless API'], // IMPROVED: Could log method used if passed from API
+            strategies: ['Hybrid Cheerio + AI'],
             consensus: true,
-            recommendations: ['High confidence serverless extraction'],
+            recommendations: ['High confidence extraction (AI fallback if needed)'],
             fieldConfidence: this.calculateFieldConfidence(jobData)
           }
         };
@@ -84,7 +84,7 @@ export class CreativeExtractionService {
         success: false,
         error: 'Could not extract job data automatically',
         insights: {
-          strategies: ['Serverless API'],
+          strategies: ['Hybrid Cheerio + AI'],
           consensus: false,
           recommendations: ['Please try manual entry'],
           fieldConfidence: {}
@@ -97,7 +97,7 @@ export class CreativeExtractionService {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown extraction error',
         insights: {
-          strategies: ['Serverless API'],
+          strategies: ['Hybrid Cheerio + AI'],
           consensus: false,
           recommendations: ['Please try manual entry'],
           fieldConfidence: {}
@@ -112,12 +112,10 @@ export class CreativeExtractionService {
   private calculateConfidence(result: ExtractedJobData): number {
     let score = 0;
     
-    // Base score for having data
     if (result.company) score += 0.4;
     if (result.position) score += 0.4;
-    if (result.salary || result.hourlyRate) score += 0.2;
-    
-    // Bonus for complete data
+    if (result.salary) score += 0.1;
+    if (result.hourlyRate) score += 0.1;
     if (result.company && result.position) score += 0.1;
     
     return Math.min(score, 1);
@@ -131,10 +129,10 @@ export class CreativeExtractionService {
 
     const confidence: Record<string, number> = {};
     
-    if (data.company) confidence.company = 0.9;
-    if (data.position) confidence.position = 0.9;
-    if (data.salary) confidence.salary = 0.7;
-    if (data.hourly_rate) confidence.hourly_rate = 0.7;
+    if (data.company) confidence.company = 0.95; // UPDATED: Slightly higher for AI
+    if (data.position) confidence.position = 0.95;
+    if (data.salary) confidence.salary = 0.8;
+    if (data.hourly_rate) confidence.hourly_rate = 0.8;
     if (data.job_url) confidence.job_url = 1.0;
     
     return confidence;
